@@ -12,7 +12,7 @@ from pathlib import Path
 import fitz  # PyMuPDF
 from PIL import Image
 import io
-from main import StandardDocumentFeatureExtractor
+from main_new import StandardDocumentFeatureExtractor
 
 class PDFProcessor:
     def __init__(self, source_drive="E:\\1T硬盘D\\2个项目资料\\充电控制器\\办公\\国网控制器\\国网2.0控制器\\国网六统一\\发布版", target_folder="jc"):
@@ -98,14 +98,14 @@ class PDFProcessor:
                 confidence = feature_data.get('confidence', 0.0)
                 print(f"    {feature_name}: {status} (置信度: {confidence:.2f})")
             
-            # 检查特征4、5、6是否同时满足
-            feature_4_detected = feature_details['feature_4_first_horizontal_line']['detected']
-            feature_5_detected = feature_details['feature_5_standard_names']['detected']
-            feature_6_detected = feature_details['feature_6_publication_time']['detected']
+            # 检查关键特征（特征3、4、5）
+            feature_3_detected = feature_details['feature_3_standard_number_line']['detected']
+            feature_4_detected = feature_details['feature_4_standard_names']['detected']
+            feature_5_detected = feature_details['feature_5_publication_time']['detected']
             
-            # 调整后的标准：特征数>=4个，且关键特征至少满足2个
-            total_features_ok = detected >= 4  # 降低特征数要求
-            critical_features_count = sum([feature_4_detected, feature_5_detected, feature_6_detected])
+            # 新标准：特征数>=5个，且关键特征至少满足2个
+            total_features_ok = detected >= 5  # 6个特征中至少5个
+            critical_features_count = sum([feature_3_detected, feature_4_detected, feature_5_detected])
             critical_features_ok = critical_features_count >= 2  # 只需要2个关键特征
             
             # 计算位置符合度（基于confidence值）
@@ -122,22 +122,22 @@ class PDFProcessor:
             template_similarity = features.get('template_similarity', 0.0)
             
             print(f"  检测条件评估:")
-            print(f"    总特征数>=4: {'✅' if total_features_ok else '❌'} ({detected}/7)")
+            print(f"    总特征数>=5: {'✅' if total_features_ok else '❌'} ({detected}/6)")
             print(f"    关键特征>=2个: {'✅' if critical_features_ok else '❌'} ({critical_features_count}/3)")
             print(f"    位置符合度>0.6: {'✅' if position_confidence > 0.6 else '❌'} ({position_confidence:.2f})")
             print(f"    模板相似度>0.2: {'✅' if template_similarity > 0.2 else '❌'} ({template_similarity:.3f})")
             
-            # 检查是否满足调整后的条件：特征数>=4个，关键特征>=2个，位置符合度>0.6，模板相似度>0.2
+            # 检查是否满足新条件：特征数>=5个，关键特征>=2个，位置符合度>0.6，模板相似度>0.2
             if total_features_ok and critical_features_ok and position_confidence > 0.6 and template_similarity > 0.2:
-                print(f"  ✅ 第一页满足条件（特征数{detected}>=4，关键特征{critical_features_count}/3，位置符合度{position_confidence:.2f}，模板相似度{template_similarity:.3f}）")
+                print(f"  ✅ 第一页满足条件（特征数{detected}>=5，关键特征{critical_features_count}/3，位置符合度{position_confidence:.2f}，模板相似度{template_similarity:.3f}）")
                 return {"success": True, "copied": True, "features": detected, "confidence": position_confidence, "template_similarity": template_similarity}
             else:
                 # 显示详细信息
                 print(f"  ❌ 第一页不满足条件")
-                print(f"    特征4（第一横线）: {'✅' if feature_4_detected else '❌'}")
-                print(f"    特征5（标准名称）: {'✅' if feature_5_detected else '❌'}")
-                print(f"    特征6（发布时间）: {'✅' if feature_6_detected else '❌'}")
-                print(f"    总特征数>=4: {'✅' if total_features_ok else '❌'} ({detected}/7)")
+                print(f"    特征3（标准号和横线）: {'✅' if feature_3_detected else '❌'}")
+                print(f"    特征4（标准名称）: {'✅' if feature_4_detected else '❌'}")
+                print(f"    特征5（发布时间）: {'✅' if feature_5_detected else '❌'}")
+                print(f"    总特征数>=5: {'✅' if total_features_ok else '❌'} ({detected}/6)")
                 print(f"    关键特征>=2个: {'✅' if critical_features_ok else '❌'} ({critical_features_count}/3)")
                 print(f"    位置符合度: {position_confidence:.2f}")
                 print(f"    模板相似度: {template_similarity:.3f}")

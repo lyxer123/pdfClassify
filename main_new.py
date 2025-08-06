@@ -411,7 +411,7 @@ def main():
     import sys
     
     if len(sys.argv) != 2:
-        print("用法: python main.py <image_path>")
+        print("用法: python main_new.py <image_path>")
         return
     
     image_path = sys.argv[1]
