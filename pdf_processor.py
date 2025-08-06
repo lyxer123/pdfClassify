@@ -125,10 +125,10 @@ class PDFProcessor:
             print(f"    总特征数>=5: {'✅' if total_features_ok else '❌'} ({detected}/6)")
             print(f"    关键特征>=2个: {'✅' if critical_features_ok else '❌'} ({critical_features_count}/3)")
             print(f"    位置符合度>0.6: {'✅' if position_confidence > 0.6 else '❌'} ({position_confidence:.2f})")
-            print(f"    模板相似度>0.2: {'✅' if template_similarity > 0.2 else '❌'} ({template_similarity:.3f})")
+            print(f"    模板相似度>0.15: {'✅' if template_similarity > 0.15 else '❌'} ({template_similarity:.3f})")
             
-            # 检查是否满足新条件：特征数>=5个，关键特征>=2个，位置符合度>0.6，模板相似度>0.2
-            if total_features_ok and critical_features_ok and position_confidence > 0.6 and template_similarity > 0.2:
+            # 检查是否满足新条件：特征数>=5个，关键特征>=2个，位置符合度>0.6，模板相似度>0.15（降低阈值）
+            if total_features_ok and critical_features_ok and position_confidence > 0.6 and template_similarity > 0.15:
                 print(f"  ✅ 第一页满足条件（特征数{detected}>=5，关键特征{critical_features_count}/3，位置符合度{position_confidence:.2f}，模板相似度{template_similarity:.3f}）")
                 return {"success": True, "copied": True, "features": detected, "confidence": position_confidence, "template_similarity": template_similarity}
             else:

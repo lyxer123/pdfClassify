@@ -117,7 +117,7 @@ def test_six_features():
         print(f"  - 6个特征中必须检测到≥5个")
         print(f"  - 关键特征（特征3、4、5）中至少满足2个")
         print(f"  - 位置符合度>0.6")
-        print(f"  - 模板相似度>0.2")
+        print(f"  - 模板相似度>0.15（优化后）")
         
     except Exception as e:
         print(f"❌ 搜索PDF文件时出错: {e}")

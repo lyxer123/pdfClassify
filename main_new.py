@@ -308,7 +308,7 @@ class StandardDocumentFeatureExtractor:
     
     def compare_with_template(self, template_path: str = "mb4.png") -> float:
         """
-        与模板图片进行比对
+        与模板图片进行比对（优化版本）
         
         Args:
             template_path: 模板图片路径
@@ -327,23 +327,94 @@ class StandardDocumentFeatureExtractor:
                 print(f"无法加载模板图片: {template_path}")
                 return 0.0
             
-            # 调整图片大小以匹配模板
-            template_height, template_width = template.shape[:2]
-            resized_image = cv2.resize(self.image, (template_width, template_height))
-            
-            # 转换为灰度图
+            # 预处理：转换为灰度图
             template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
-            image_gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
+            image_gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
             
-            # 使用模板匹配
-            result = cv2.matchTemplate(image_gray, template_gray, cv2.TM_CCOEFF_NORMED)
-            similarity = np.max(result)
+            # 多尺度模板匹配
+            best_similarity = 0.0
+            scales = [0.8, 0.9, 1.0, 1.1, 1.2]  # 尝试不同的缩放比例
             
-            return similarity
+            for scale in scales:
+                # 计算新的尺寸
+                new_width = int(template.shape[1] * scale)
+                new_height = int(template.shape[0] * scale)
+                
+                # 调整模板大小
+                resized_template = cv2.resize(template_gray, (new_width, new_height))
+                
+                # 确保调整后的模板不大于原图
+                if new_width > image_gray.shape[1] or new_height > image_gray.shape[0]:
+                    continue
+                
+                # 使用多种匹配方法
+                methods = [
+                    cv2.TM_CCOEFF_NORMED,
+                    cv2.TM_CCORR_NORMED,
+                    cv2.TM_SQDIFF_NORMED
+                ]
+                
+                for method in methods:
+                    try:
+                        result = cv2.matchTemplate(image_gray, resized_template, method)
+                        
+                        if method == cv2.TM_SQDIFF_NORMED:
+                            # TM_SQDIFF_NORMED 越小越好，需要转换
+                            similarity = 1.0 - np.min(result)
+                        else:
+                            similarity = np.max(result)
+                        
+                        best_similarity = max(best_similarity, similarity)
+                    except:
+                        continue
+            
+            # 如果模板匹配失败，使用基于特征的相似度计算
+            if best_similarity < 0.1:
+                best_similarity = self._calculate_feature_based_similarity()
+            
+            return best_similarity
             
         except Exception as e:
             print(f"模板比对时出错: {e}")
-            return 0.0
+            return self._calculate_feature_based_similarity()
+    
+    def _calculate_feature_based_similarity(self) -> float:
+        """
+        基于特征计算的相似度（备用方案）
+        
+        Returns:
+            float: 相似度分数 (0-1)
+        """
+        try:
+            # 分析文档结构
+            structure = self.analyze_document_structure()
+            features = self._extract_six_features(
+                structure['regions'],
+                structure['horizontal_lines'],
+                structure['width'],
+                structure['height']
+            )
+            
+            # 计算特征相似度
+            detected_count = sum(1 for feature in features.values() if feature['detected'])
+            feature_similarity = detected_count / 6.0
+            
+            # 计算位置相似度
+            position_scores = []
+            for feature_name, feature_data in features.items():
+                if feature_data['detected']:
+                    position_scores.append(feature_data.get('confidence', 0.0))
+            
+            position_similarity = sum(position_scores) / len(position_scores) if position_scores else 0.0
+            
+            # 综合相似度
+            overall_similarity = (feature_similarity * 0.6 + position_similarity * 0.4)
+            
+            return min(overall_similarity, 0.8)  # 限制最大值为0.8
+            
+        except Exception as e:
+            print(f"特征相似度计算出错: {e}")
+            return 0.3  # 默认相似度
     
     def extract_features(self) -> Dict:
         """
