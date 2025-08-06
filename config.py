@@ -9,12 +9,12 @@ DEFAULT_SOURCE_DRIVE = "E:"
 DEFAULT_TARGET_FOLDER = "jc"
 DEFAULT_TEMPLATE_PATH = "mb3.png"
 
-# 检测参数
+# 检测参数（已调整以适应标准文档）
 DETECTION_CONFIG = {
-    "min_features": 5,                    # 最小特征数
+    "min_features": 4,                    # 最小特征数（从5降低到4）
     "total_features": 7,                  # 总特征数
-    "position_confidence_threshold": 0.7,  # 位置符合度阈值
-    "template_similarity_threshold": 0.3,  # 模板相似度阈值
+    "position_confidence_threshold": 0.6,  # 位置符合度阈值（从0.7降低到0.6）
+    "template_similarity_threshold": 0.2,  # 模板相似度阈值（从0.3降低到0.2）
     "image_scale": 2.0                    # PDF转图像缩放比例
 }
 
