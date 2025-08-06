@@ -47,8 +47,9 @@ class PDFProcessor:
         try:
             doc = fitz.open(str(pdf_path))
             images = []
-            for page_num in range(len(doc)):
-                page = doc.load_page(page_num)
+            # 只处理第一页
+            if len(doc) > 0:
+                page = doc.load_page(0)  # 只获取第一页
                 mat = fitz.Matrix(2.0, 2.0)
                 pix = page.get_pixmap(matrix=mat)
                 img_data = pix.tobytes("png")
@@ -81,84 +82,52 @@ class PDFProcessor:
         if not images:
             return {"success": False, "copied": False}
         
-        print(f"共 {len(images)} 页")
-        max_features = 0
-        best_page = 0
-        best_features = None
+        print(f"处理第一页")
+        image = images[0]  # 只处理第一页
+        features = self.analyze_page(image, 1)
         
-        for page_num, image in enumerate(images):
-            features = self.analyze_page(image, page_num + 1)
-            if features:
-                detected = features['detected_features']
-                feature_details = features['features']
-                print(f"  第{page_num + 1}页: {detected}/7 特征")
-                
-                # 检查特征4、5、6是否同时满足
-                feature_4_detected = feature_details['feature_4_first_horizontal_line']['detected']
-                feature_5_detected = feature_details['feature_5_standard_names']['detected']
-                feature_6_detected = feature_details['feature_6_publication_time']['detected']
-                
-                # 新标准：特征数>=5个，且相对位置比较符合
-                total_features_ok = detected >= 5
-                critical_features_ok = feature_4_detected and feature_5_detected and feature_6_detected
-                
-                # 计算位置符合度（基于confidence值）
-                position_confidence = 0.0
-                if feature_details:
-                    confidences = []
-                    for feature_name, feature_data in feature_details.items():
-                        if feature_data['detected'] and 'confidence' in feature_data:
-                            confidences.append(feature_data['confidence'])
-                    if confidences:
-                        position_confidence = sum(confidences) / len(confidences)
-                
-                # 获取模板比对相似度
-                template_similarity = features.get('template_similarity', 0.0)
-                
-                # 检查是否满足新条件：特征数>=5个，且相对位置比较符合，且模板相似度较高
-                if total_features_ok and critical_features_ok and position_confidence > 0.7 and template_similarity > 0.3:
-                    print(f"  ✅ 第{page_num + 1}页满足条件（特征数{detected}>=5，关键特征齐全，位置符合度{position_confidence:.2f}，模板相似度{template_similarity:.3f}）")
-                    return {"success": True, "copied": True, "features": detected, "confidence": position_confidence, "template_similarity": template_similarity}
-                
-                # 记录最佳结果（即使不满足条件）
-                if detected > max_features:
-                    max_features = detected
-                    best_page = page_num + 1
-                    best_features = feature_details
-                
-                # 第一页满足条件，直接返回
-                if page_num == 0 and total_features_ok and critical_features_ok and position_confidence > 0.7 and template_similarity > 0.3:
-                    print(f"  ✅ 第一页满足条件，拷贝文件")
-                    return {"success": True, "copied": True, "features": detected, "confidence": position_confidence, "template_similarity": template_similarity}
+        if features:
+            detected = features['detected_features']
+            feature_details = features['features']
+            print(f"  第一页: {detected}/7 特征")
+            
+            # 检查特征4、5、6是否同时满足
+            feature_4_detected = feature_details['feature_4_first_horizontal_line']['detected']
+            feature_5_detected = feature_details['feature_5_standard_names']['detected']
+            feature_6_detected = feature_details['feature_6_publication_time']['detected']
+            
+            # 新标准：特征数>=5个，且相对位置比较符合
+            total_features_ok = detected >= 5
+            critical_features_ok = feature_4_detected and feature_5_detected and feature_6_detected
+            
+            # 计算位置符合度（基于confidence值）
+            position_confidence = 0.0
+            if feature_details:
+                confidences = []
+                for feature_name, feature_data in feature_details.items():
+                    if feature_data['detected'] and 'confidence' in feature_data:
+                        confidences.append(feature_data['confidence'])
+                if confidences:
+                    position_confidence = sum(confidences) / len(confidences)
+            
+            # 获取模板比对相似度
+            template_similarity = features.get('template_similarity', 0.0)
+            
+            # 检查是否满足新条件：特征数>=5个，且相对位置比较符合，且模板相似度较高
+            if total_features_ok and critical_features_ok and position_confidence > 0.7 and template_similarity > 0.3:
+                print(f"  ✅ 第一页满足条件（特征数{detected}>=5，关键特征齐全，位置符合度{position_confidence:.2f}，模板相似度{template_similarity:.3f}）")
+                return {"success": True, "copied": True, "features": detected, "confidence": position_confidence, "template_similarity": template_similarity}
+            else:
+                # 显示详细信息
+                print(f"  ❌ 第一页不满足条件")
+                print(f"    特征4（第一横线）: {'✅' if feature_4_detected else '❌'}")
+                print(f"    特征5（标准名称）: {'✅' if feature_5_detected else '❌'}")
+                print(f"    特征6（发布时间）: {'✅' if feature_6_detected else '❌'}")
+                print(f"    总特征数>=5: {'✅' if total_features_ok else '❌'}")
+                print(f"    位置符合度: {position_confidence:.2f}")
+                print(f"    模板相似度: {template_similarity:.3f}")
         
-        # 如果没有页面满足条件，显示详细信息
-        if best_features:
-            feature_4_detected = best_features['feature_4_first_horizontal_line']['detected']
-            feature_5_detected = best_features['feature_5_standard_names']['detected']
-            feature_6_detected = best_features['feature_6_publication_time']['detected']
-            
-            # 计算最佳页面的位置符合度和模板相似度
-            best_confidences = []
-            for feature_name, feature_data in best_features.items():
-                if feature_data['detected'] and 'confidence' in feature_data:
-                    best_confidences.append(feature_data['confidence'])
-            best_position_confidence = sum(best_confidences) / len(best_confidences) if best_confidences else 0.0
-            
-            # 获取最佳页面的模板相似度（如果有的话）
-            best_template_similarity = 0.0
-            if hasattr(features, 'get') and features.get('template_similarity'):
-                best_template_similarity = features.get('template_similarity', 0.0)
-            
-            print(f"  ❌ 无页面满足条件")
-            print(f"    最佳页面（第{best_page}页）: {max_features}/7 特征")
-            print(f"    特征4（第一横线）: {'✅' if feature_4_detected else '❌'}")
-            print(f"    特征5（标准名称）: {'✅' if feature_5_detected else '❌'}")
-            print(f"    特征6（发布时间）: {'✅' if feature_6_detected else '❌'}")
-            print(f"    总特征数>=5: {'✅' if max_features >= 5 else '❌'}")
-            print(f"    位置符合度: {best_position_confidence:.2f}")
-            print(f"    模板相似度: {best_template_similarity:.3f}")
-        
-        return {"success": True, "copied": False, "features": max_features}
+        return {"success": True, "copied": False, "features": detected if features else 0}
     
     def copy_file(self, pdf_path):
         try:
@@ -180,7 +149,7 @@ class PDFProcessor:
             return False
     
     def process_all(self):
-        print("PDF 文件批量处理 - E:盘扫描")
+        print("PDF 文件批量处理 - E:盘扫描（仅第一页）")
         print("=" * 50)
         
         pdf_files = self.get_pdf_files()
@@ -203,6 +172,7 @@ class PDFProcessor:
         print(f"总文件数: {total_count}")
         print(f"成功拷贝: {copied_count}")
         print(f"拷贝的文件保存在: {self.target_folder.absolute()}")
+        print(f"注意: 仅处理了每个PDF文件的第一页")
 
 def main():
     processor = PDFProcessor()

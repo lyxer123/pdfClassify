@@ -35,5 +35,6 @@ PAGE_REGIONS = {
 # 性能配置
 PERFORMANCE_CONFIG = {
     "progress_update_interval": 100,  # 进度更新间隔
-    "temp_file_cleanup": True        # 清理临时文件
+    "temp_file_cleanup": True,       # 清理临时文件
+    "first_page_only": True          # 仅处理第一页
 } 
