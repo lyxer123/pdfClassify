@@ -48,12 +48,12 @@ def test_six_features():
         # 创建处理器并测试
         processor = PDFProcessor(source_drive=target_path)
         
-        # 测试前3个文件
-        test_files = pdf_files[:3]
+        # 测试所有文件
+        test_files = pdf_files
         results = []
         
         print(f"\n{'='*60}")
-        print("开始测试PDF文件（6个特征检测）")
+        print("开始测试所有PDF文件（6个特征检测）")
         print(f"{'='*60}")
         
         for i, pdf_path in enumerate(test_files, 1):
