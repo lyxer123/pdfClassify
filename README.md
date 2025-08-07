@@ -2,7 +2,7 @@
 
 ## 项目简介
 
-本项目是一个基于计算机视觉的PDF标准文档自动识别和分类系统。系统能够扫描指定驱动器下的所有PDF文件，通过分析文档的7个关键特征来判断是否为标准文档，并将符合条件的标准文档自动拷贝到指定文件夹。
+本项目是一个基于计算机视觉的PDF标准文档自动识别和分类系统。系统能够扫描指定驱动器下的所有PDF文件，通过分析文档的6个关键特征来判断是否为标准文档，并将符合条件的标准文档自动拷贝到指定文件夹。
 
 ## 功能特点
 
@@ -64,7 +64,7 @@ python pdf_processor.py
 ### 主要参数
 - `source_drive`: 源驱动器路径（默认：E:）
 - `target_folder`: 目标文件夹（默认：jc）
-- `template_path`: 模板图片路径（默认：mb3.png）
+- `template_path`: 模板图片路径（默认：mb4.png）
 
 ### 检测标准（基于mb4.png）
 - **特征数量要求**：6个特征中必须检测到≥5个
@@ -104,13 +104,17 @@ python pdf_processor.py
 
 ```
 pdfClassify/
-├── main.py                 # 核心特征提取模块
-├── pdf_processor.py        # PDF处理主程序
-├── visualization.py        # 可视化工具
-├── mb4.png               # 标准模板图片
-├── jc/                   # 输出文件夹
-├── README.md             # 项目说明文档
-└── requirements.txt      # 依赖库列表
+├── main_new.py              # 核心特征提取模块
+├── pdf_processor.py         # PDF处理主程序
+├── mb4.png                 # 标准模板图片
+├── mb3.png                 # 备用模板图片
+├── mb2.png                 # 备用模板图片
+├── mb.png                  # 备用模板图片
+├── jc.png                  # 示例图片
+├── detected_features.png    # 特征检测示例图片
+├── jc/                     # 输出文件夹
+├── README.md               # 项目说明文档
+└── requirements.txt        # 依赖库列表
 ```
 
 ## 使用示例
@@ -222,9 +226,14 @@ logging.basicConfig(level=logging.DEBUG)
 
 ## 更新日志
 
+### v1.1.0 (2025-01-XX)
+- 项目清理，删除无关测试文件
+- 保留核心功能文件
+- 优化项目结构
+
 ### v1.0.0 (2025-08-06)
 - 初始版本发布
-- 实现7个特征检测
+- 实现6个特征检测
 - 添加模板比对功能
 - 支持批量处理
 
