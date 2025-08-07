@@ -15,7 +15,7 @@ import io
 from main_new import StandardDocumentFeatureExtractor
 
 class PDFProcessor:
-    def __init__(self, source_drive="E:", target_folder="jc"):
+    def __init__(self, source_drive="I:", target_folder="jc"):
         self.source_drive = Path(source_drive)
         self.target_folder = Path(target_folder)
         self.target_folder.mkdir(exist_ok=True)
