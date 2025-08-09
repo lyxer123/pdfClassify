@@ -34,6 +34,7 @@ def demo_usage():
     print(f"  2. 黑色文字比例 >= {extractor.color_thresholds['text_ratio_min']*100}%")
     print(f"  3. 整体RGB亮度 >= {extractor.color_thresholds['brightness_min']}")
     print(f"  4. 图像对比度 >= {extractor.color_thresholds['contrast_min']}")
+    print(f"  5. 彩色文字比例 <= {extractor.color_thresholds['colored_text_max']*100}%")
 
 
 def demo_with_folder(folder_path):

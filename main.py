@@ -52,7 +52,8 @@ class PDFFeatureExtractor:
             'bg_ratio_min': 0.95,     # 背景色占比最小值（基于标准PDF 5%分位数: 95.2%）
             'text_ratio_min': 0.011,  # 文字色占比最小值（基于标准PDF 5%分位数: 1.2%）
             'contrast_min': 29,       # 最小对比度（基于标准PDF 5%分位数: 29.5）
-            'brightness_min': 246     # 最小亮度（基于标准PDF 5%分位数: 246.2）
+            'brightness_min': 246,    # 最小亮度（基于标准PDF 5%分位数: 246.2）
+            'colored_text_max': 0.05  # 彩色文字最大允许比例（5%）
         }
     
     def pdf_to_images(self, pdf_path, max_pages=5):
@@ -125,10 +126,14 @@ class PDFFeatureExtractor:
             white_pixels = np.sum(white_mask)
             white_ratio = white_pixels / total_pixels
             
-            # 分析黑色文字像素
+            # 分析黑色文字像素（严格的黑色）
             black_mask = np.all(rgb_image <= self.color_thresholds['black_text_max'], axis=2)
             black_pixels = np.sum(black_mask)
             black_ratio = black_pixels / total_pixels
+            
+            # 检测彩色文字（红色、蓝色、绿色等非黑白色）
+            colored_text_pixels = self._detect_colored_text(rgb_image)
+            colored_text_ratio = colored_text_pixels / total_pixels
             
             # 分析灰度分布
             gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)
@@ -141,6 +146,7 @@ class PDFFeatureExtractor:
                 'mean_rgb': mean_colors.tolist(),
                 'white_bg_ratio': float(white_ratio),
                 'black_text_ratio': float(black_ratio),
+                'colored_text_ratio': float(colored_text_ratio),  # 新增：彩色文字比例
                 'contrast': float(contrast),
                 'image_size': [width, height],
                 'total_pixels': total_pixels,
@@ -152,6 +158,46 @@ class PDFFeatureExtractor:
         except Exception as e:
             logger.error(f"颜色特征分析失败: {str(e)}")
             return None
+    
+    def _detect_colored_text(self, rgb_image):
+        """
+        检测彩色文字像素（红色、蓝色、绿色等非黑白色）
+        
+        Args:
+            rgb_image: RGB图像数组
+            
+        Returns:
+            int: 彩色文字像素数量
+        """
+        # 排除白色背景
+        non_white_mask = np.any(rgb_image < self.color_thresholds['white_bg_min'], axis=2)
+        
+        # 排除黑色文字
+        non_black_mask = np.any(rgb_image > self.color_thresholds['black_text_max'], axis=2)
+        
+        # 彩色文字 = 非白色背景 且 非黑色文字
+        colored_mask = non_white_mask & non_black_mask
+        
+        # 进一步检测明显的彩色（RGB通道差异较大）
+        r, g, b = rgb_image[:, :, 0], rgb_image[:, :, 1], rgb_image[:, :, 2]
+        
+        # 检测红色文字（红色分量明显大于绿色和蓝色）
+        red_text_mask = (r > g + 30) & (r > b + 30) & (r > 100)
+        
+        # 检测蓝色文字（蓝色分量明显大于红色和绿色）
+        blue_text_mask = (b > r + 30) & (b > g + 30) & (b > 100)
+        
+        # 检测绿色文字（绿色分量明显大于红色和蓝色）
+        green_text_mask = (g > r + 30) & (g > b + 30) & (g > 100)
+        
+        # 检测其他明显的彩色（RGB通道标准差较大）
+        rgb_std = np.std(rgb_image, axis=2)
+        high_variance_mask = (rgb_std > 15) & non_white_mask & non_black_mask
+        
+        # 综合所有彩色文字检测结果
+        all_colored_mask = colored_mask | red_text_mask | blue_text_mask | green_text_mask | high_variance_mask
+        
+        return np.sum(all_colored_mask)
     
     def check_standard_compliance(self, features):
         """
@@ -180,13 +226,17 @@ class PDFFeatureExtractor:
         # 检查对比度（确保有足够的对比度）
         contrast_ok = features['contrast'] >= self.color_thresholds['contrast_min']
         
-        compliance = white_bg_ok and black_text_ok and brightness_ok and contrast_ok
+        # 检查彩色文字比例（不应有过多彩色文字）
+        colored_text_ok = features['colored_text_ratio'] <= self.color_thresholds['colored_text_max']
+        
+        compliance = white_bg_ok and black_text_ok and brightness_ok and contrast_ok and colored_text_ok
         
         logger.info(f"标准符合性检查:")
         logger.info(f"  白色背景比例: {features['white_bg_ratio']:.3f} (>= {self.color_thresholds['bg_ratio_min']}) - {'✓' if white_bg_ok else '✗'}")
         logger.info(f"  黑色文字比例: {features['black_text_ratio']:.3f} (>= {self.color_thresholds['text_ratio_min']}) - {'✓' if black_text_ok else '✗'}")
         logger.info(f"  整体亮度: {avg_brightness:.1f} (>= {self.color_thresholds['brightness_min']}) - {'✓' if brightness_ok else '✗'}")
         logger.info(f"  对比度: {features['contrast']:.1f} (>= {self.color_thresholds['contrast_min']}) - {'✓' if contrast_ok else '✗'}")
+        logger.info(f"  彩色文字比例: {features['colored_text_ratio']:.3f} (<= {self.color_thresholds['colored_text_max']}) - {'✓' if colored_text_ok else '✗'}")
         logger.info(f"  最终结果: {'符合标准' if compliance else '不符合标准'}")
         
         return compliance
