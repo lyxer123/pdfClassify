@@ -171,7 +171,7 @@ def demo_feature_visualization():
     else:
         print("❌ test_features.py 文件不存在")
 
-def demo_batch_processing(test_dir="test_pdfs", output_dir="jc"):
+def demo_batch_processing(test_dir="input_pdfs", output_dir="jc"):
     """演示批量处理功能"""
     print("\n" + "="*60)
     print("【演示3】批量处理功能")
@@ -187,8 +187,8 @@ def demo_batch_processing(test_dir="test_pdfs", output_dir="jc"):
     print(f"📄 在 {test_dir} 目录中找到 {len(pdf_files)} 个PDF文件")
     
     if len(pdf_files) == 0:
-        print("💡 提示: 将PDF文件放入 test_pdfs 目录来测试批量处理功能")
-        print("   示例: python main.py test_pdfs")
+        print("💡 提示: 将PDF文件放入 input_pdfs 目录来测试批量处理功能")
+        print("   示例: python main.py input_pdfs")
         return
     
     # 初始化处理器
@@ -238,7 +238,7 @@ def run_demo_mode():
     
     # 创建测试环境
     print("创建测试环境...")
-    test_dirs = ['test_pdfs', 'jc']
+    test_dirs = ['input_pdfs', 'jc', 'templates', 'data']
     for dir_name in test_dirs:
         os.makedirs(dir_name, exist_ok=True)
         print(f"✓ 创建目录: {dir_name}")

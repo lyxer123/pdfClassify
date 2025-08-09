@@ -91,25 +91,25 @@ pip install -r requirements.txt
 python main.py
 
 # 处理指定目录
-python main.py C:\path\to\pdf\files
+python main.py input_pdfs
 
 # 指定输出目录
-python main.py --output-dir results C:\path\to\pdf\files
+python main.py input_pdfs --output-dir results
 ```
 
 ### 高级选项
 ```bash
 # 设置处理超时时间（秒）
-python main.py --timeout 30
+python main.py input_pdfs --timeout 30
 
 # 使用自定义模板
-python main.py --template my_template.png
+python main.py input_pdfs --template templates/mb6.png
 
 # 详细输出模式
-python main.py --verbose
+python main.py input_pdfs --verbose
 
 # 递归搜索子目录
-python main.py --recursive
+python main.py input_pdfs --recursive
 ```
 
 ### 批处理脚本使用
@@ -155,7 +155,7 @@ pdfClassify/
 │   └── mb6.png                 # 标准文档模板
 ├── input_pdfs/                 # 待处理PDF文件目录
 ├── jc/                        # 标准文档输出目录
-└── logs/                      # 日志文件目录
+└── data/                      # 数据目录（日志、报告、备份等）
 ```
 
 ## 核心算法
@@ -320,7 +320,7 @@ python test_features.py
 
 ### 模板示意图
 
-![标准模板示意图](mb6.png)
+![标准模板示意图](templates/mb6.png)
 
 *图：mb6.png标注版 - 展示了蓝色区域框（上/中/下）和红色关键框（1-6号）的标准布局*
 
@@ -374,7 +374,7 @@ cat pdf_classify.log
 project/
 ├── input_pdfs/          # 待处理PDF文件
 ├── jc/                 # 匹配成功的文件（自动生成）
-├── logs/               # 日志文件
+├── data/               # 数据文件（日志、报告、备份等）
 └── templates/          # 自定义模板
 ```
 
@@ -387,9 +387,9 @@ project/
 
 ### 3. 模板自定义
 如需使用自定义模板：
-1. 准备标注图像（参考mb6.png格式）
+1. 准备标注图像（参考templates/mb6.png格式）
 2. 确保包含蓝色区域框和红色关键框
-3. 使用 `--template` 参数指定
+3. 使用 `--template` 参数指定（如：`--template templates/custom.png`）
 
 ## 📞 技术支持
 
@@ -460,9 +460,9 @@ pip install -r requirements.txt --upgrade
 ## 版本信息
 
 - **版本**: 2.1.0
-- **作者**: PDF标准文档分类系统
+- **作者**: lyxer123
 - **更新日期**: 2024年
-- **模板版本**: mb6.png (企业标准特征模板)
+- **模板版本**: mb6.png 
 
 ## 许可证
 

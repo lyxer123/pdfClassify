@@ -47,7 +47,7 @@ def check_tesseract():
 
 def create_directories():
     """创建必要目录"""
-    directories = ["jc", "test_pdfs"]
+    directories = ["jc", "input_pdfs", "templates", "data"]
     for dir_name in directories:
         os.makedirs(dir_name, exist_ok=True)
         print(f"✅ 创建目录: {dir_name}")
@@ -90,11 +90,14 @@ def test_installation():
         from pdf_processor import PDFProcessor
         print("✅ PDF处理器模块导入成功")
         
-        if os.path.exists("mb6.png"):
+        if os.path.exists("templates/mb6.png"):
+            processor = PDFProcessor()
+            print("✅ PDF处理器初始化成功")
+        elif os.path.exists("mb6.png"):
             processor = PDFProcessor()
             print("✅ PDF处理器初始化成功")
         else:
-            print("⚠️  模板文件mb6.png不存在，某些功能可能无法使用")
+            print("⚠️  模板文件templates/mb6.png不存在，某些功能可能无法使用")
         
         return True
     except Exception as e:
@@ -130,8 +133,8 @@ def main():
         print("\n📖 使用方法:")
         print("  python main.py              # 处理当前目录PDF")
         print("  python test_features.py     # 测试特征提取")
-        print("  python demo.py              # 运行演示")
-        print("  python example_usage.py     # 查看使用示例")
+        print("  python main.py --demo       # 运行演示")
+        print("  python pdf_tools.py examples # 查看使用示例")
     else:
         print("\n❌ 安装未完全成功，请检查错误信息并重新安装")
 

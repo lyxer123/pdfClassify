@@ -11,6 +11,9 @@ import json
 import shutil
 import logging
 import subprocess
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
 from datetime import datetime
 from pdf_processor import PDFProcessor
 
@@ -334,7 +337,7 @@ def scan_drive_recursive(drive_path, output_dir="jc", confirm_required=True):
         logger.error(f"扫描失败: {e}")
         return None
 
-def monitor_processing(input_dir="input_pdfs", output_dir="jc", check_interval=30, reports_dir="reports"):
+def monitor_processing(input_dir="input_pdfs", output_dir="jc", check_interval=30, reports_dir="data"):
     """
     监控处理系统
     
@@ -342,7 +345,7 @@ def monitor_processing(input_dir="input_pdfs", output_dir="jc", check_interval=3
         input_dir: 输入目录
         output_dir: 输出目录
         check_interval: 检查间隔（秒）
-        reports_dir: 报告目录
+        reports_dir: 报告目录（存储在data目录中）
     """
     print("PDF处理监控系统启动...")
     
@@ -401,7 +404,7 @@ def create_deployment_config(config_file="deployment_config.json"):
         "environment": {
             "input_directory": "./input_pdfs",
             "output_directory": "./jc", 
-            "template_file": "./mb6.png",
+            "template_file": "./templates/mb6.png",
             "log_file": "./pdf_classify.log"
         },
         "processing_settings": {
@@ -432,10 +435,8 @@ def create_directory_structure():
     directories = [
         "input_pdfs",      # 输入PDF目录
         "jc",              # 匹配成功输出目录
-        "logs",            # 日志目录
         "templates",       # 自定义模板目录
-        "backup",          # 备份目录
-        "reports"          # 报告目录
+        "data"             # 数据目录（包含日志、报告、备份等）
     ]
     
     for directory in directories:
@@ -443,7 +444,8 @@ def create_directory_structure():
         print(f"✅ 创建目录: {directory}")
     
     # 复制模板文件
-    if os.path.exists("mb6.png"):
+    # 如果mb6.png在根目录，移动到templates目录
+    if os.path.exists("mb6.png") and not os.path.exists("templates/mb6.png"):
         shutil.copy2("mb6.png", "templates/mb6.png")
         print("✅ 模板文件已复制到templates目录")
 
@@ -650,24 +652,26 @@ def example_basic_usage():
     
     # 1. 初始化PDF处理器
     try:
-        processor = PDFProcessor(template_path="mb6.png")
+        # 尝试找到模板文件
+        template_path = "templates/mb6.png" if os.path.exists("templates/mb6.png") else "mb6.png"
+        processor = PDFProcessor(template_path=template_path)
         print("✓ PDF处理器初始化完成")
     except Exception as e:
         print(f"✗ PDF处理器初始化失败: {e}")
         return False
     
     # 2. 检查模板特征
-    if os.path.exists("mb6.png"):
+    if os.path.exists(template_path):
         try:
             import cv2
-            template_image = cv2.imread("mb6.png")
+            template_image = cv2.imread(template_path)
             features = processor._extract_features(template_image)
             is_valid = processor._validate_features(features)
             print(f"✓ 模板特征验证: {'通过' if is_valid else '失败'}")
         except Exception as e:
             print(f"✗ 模板特征验证失败: {e}")
     else:
-        print("⚠️  模板文件mb6.png不存在")
+        print("⚠️  模板文件不存在")
     
     # 3. 批量处理示例（如果有PDF文件）
     test_dir = "."  # 当前目录
@@ -725,7 +729,9 @@ def example_feature_extraction():
     """特征提取示例"""
     print("\n=== 特征提取示例 ===")
     
-    if not os.path.exists("mb6.png"):
+    # 检查模板文件
+    template_path = "templates/mb6.png" if os.path.exists("templates/mb6.png") else "mb6.png"
+    if not os.path.exists(template_path):
         print("模板文件不存在，跳过特征提取示例")
         return
     
@@ -733,7 +739,7 @@ def example_feature_extraction():
         import cv2
         
         # 加载模板图像
-        template_image = cv2.imread("mb6.png")
+        template_image = cv2.imread(template_path)
         print(f"模板图像尺寸: {template_image.shape}")
         
         # 提取特征
@@ -792,6 +798,296 @@ def run_examples():
         print("请检查依赖项是否正确安装")
         return False
 
+# ==================== 环境检查功能 (来自setup.py) ====================
+
+def check_python_version():
+    """检查Python版本"""
+    version = sys.version_info
+    if version.major < 3 or (version.major == 3 and version.minor < 7):
+        print("❌ 需要Python 3.7或更高版本")
+        print(f"当前版本: {version.major}.{version.minor}.{version.micro}")
+        return False
+    
+    print(f"✅ Python版本: {version.major}.{version.minor}.{version.micro}")
+    return True
+
+def install_requirements():
+    """安装依赖包"""
+    print("📦 安装Python依赖包...")
+    
+    try:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+        print("✅ Python依赖包安装成功")
+        return True
+    except subprocess.CalledProcessError:
+        print("❌ Python依赖包安装失败")
+        return False
+
+def check_tesseract():
+    """检查Tesseract OCR"""
+    try:
+        import pytesseract
+        version = pytesseract.get_tesseract_version()
+        print(f"✅ Tesseract OCR版本: {version}")
+        return True
+    except Exception as e:
+        print("❌ Tesseract OCR未正确安装")
+        print("请手动安装Tesseract OCR:")
+        print("  Windows: https://github.com/UB-Mannheim/tesseract/wiki")
+        print("  Linux: sudo apt-get install tesseract-ocr tesseract-ocr-chi-sim")
+        print("  macOS: brew install tesseract")
+        return False
+
+def check_pdf_backends():
+    """检查PDF处理后端"""
+    print("\n🔧 检查PDF处理后端...")
+    
+    backends = []
+    
+    # 检查pdf2image和poppler
+    try:
+        from pdf2image import convert_from_path
+        print("✅ pdf2image 可用")
+        backends.append("pdf2image")
+    except ImportError:
+        print("❌ pdf2image 未安装")
+    
+    # 检查PyMuPDF
+    try:
+        import fitz
+        print("✅ PyMuPDF 可用")
+        backends.append("PyMuPDF")
+    except ImportError:
+        print("❌ PyMuPDF 未安装")
+    
+    if not backends:
+        print("❌ 没有可用的PDF处理后端")
+        print("请安装: pip install PyMuPDF 或安装poppler")
+        return False
+    else:
+        print(f"✅ 可用的PDF后端: {', '.join(backends)}")
+        return True
+
+def test_installation():
+    """测试安装"""
+    print("\n🔧 测试安装...")
+    
+    try:
+        from pdf_processor import PDFProcessor
+        print("✅ PDF处理器模块导入成功")
+        
+        # 检查模板文件
+        template_path = "templates/mb6.png" if os.path.exists("templates/mb6.png") else "mb6.png"
+        if os.path.exists(template_path):
+            processor = PDFProcessor()
+            print("✅ PDF处理器初始化成功")
+        else:
+            print("⚠️  模板文件templates/mb6.png不存在，某些功能可能无法使用")
+        
+        return True
+    except Exception as e:
+        print(f"❌ 安装测试失败: {e}")
+        return False
+
+def setup_environment():
+    """环境安装和检查"""
+    print("🚀 PDF标准文档分类系统安装向导")
+    print("="*50)
+    
+    # 检查Python版本
+    if not check_python_version():
+        return
+    
+    # 安装依赖
+    if not install_requirements():
+        print("请手动运行: pip install -r requirements.txt")
+        return
+    
+    # 检查Tesseract
+    check_tesseract()
+    
+    # 检查PDF后端
+    check_pdf_backends()
+    
+    # 创建目录
+    directories = ["jc", "input_pdfs", "templates", "data"]
+    for directory in directories:
+        os.makedirs(directory, exist_ok=True)
+        print(f"✅ 创建目录: {directory}")
+    
+    # 测试安装
+    if test_installation():
+        print("\n🎉 安装完成！")
+        print("\n📖 使用方法:")
+        print("  python main.py              # 处理当前目录PDF")
+        print("  python pdf_tools.py test-features # 测试特征提取")
+        print("  python main.py --demo       # 运行演示")
+        print("  python pdf_tools.py examples # 查看使用示例")
+    else:
+        print("\n❌ 安装未完全成功，请检查错误信息并重新安装")
+
+# ==================== 特征可视化功能 (来自test_features.py) ====================
+
+def visualize_features(image, features, output_path="feature_visualization.png"):
+    """
+    可视化特征提取结果
+    
+    Args:
+        image: 原始图像
+        features: 提取的特征
+        output_path: 输出路径
+    """
+    # 创建图像副本用于标注
+    vis_image = image.copy()
+    height, width = image.shape[:2]
+    
+    # 标注区域
+    regions = features.get('regions', {})
+    if 'upper' in regions:
+        cv2.rectangle(vis_image, 
+                     (0, regions['upper']['y']), 
+                     (width, regions['upper']['y'] + regions['upper']['height']),
+                     (255, 0, 0), 3)  # 蓝色
+        cv2.putText(vis_image, 'UPPER', (10, regions['upper']['y'] + 30),
+                   cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+    
+    if 'middle' in regions:
+        cv2.rectangle(vis_image, 
+                     (0, regions['middle']['y']), 
+                     (width, regions['middle']['y'] + regions['middle']['height']),
+                     (0, 255, 0), 3)  # 绿色
+        cv2.putText(vis_image, 'MIDDLE', (10, regions['middle']['y'] + 30),
+                   cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    
+    if 'lower' in regions:
+        cv2.rectangle(vis_image, 
+                     (0, regions['lower']['y']), 
+                     (width, regions['lower']['y'] + regions['lower']['height']),
+                     (0, 0, 255), 3)  # 红色
+        cv2.putText(vis_image, 'LOWER', (10, regions['lower']['y'] + 30),
+                   cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+    
+    # 标注关键框
+    key_boxes = features.get('key_boxes', {})
+    colors = [(255, 255, 0), (255, 0, 255), (0, 255, 255), 
+              (128, 255, 128), (255, 128, 128), (128, 128, 255)]
+    
+    for i, (box_name, box_info) in enumerate(key_boxes.items()):
+        if i < len(colors):
+            color = colors[i]
+            x, y, w, h = box_info['x'], box_info['y'], box_info['w'], box_info['h']
+            cv2.rectangle(vis_image, (x, y), (x + w, y + h), color, 2)
+            cv2.putText(vis_image, box_name.upper(), (x, y - 10),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+    
+    # 保存可视化结果
+    cv2.imwrite(output_path, vis_image)
+    print(f"可视化结果已保存到: {output_path}")
+
+def test_features_extraction():
+    """测试特征提取功能（来自test_features.py的功能）"""
+    print("开始测试特征提取功能...")
+    
+    # 检查模板文件
+    template_path = "templates/mb6.png" if os.path.exists("templates/mb6.png") else "mb6.png"
+    if not os.path.exists(template_path):
+        print(f"错误: 模板文件不存在（已检查 templates/mb6.png 和 mb6.png）")
+        return
+    
+    # 初始化PDF处理器
+    try:
+        processor = PDFProcessor(template_path=template_path)
+        print("PDF处理器初始化成功")
+    except Exception as e:
+        print(f"PDF处理器初始化失败: {e}")
+        return
+    
+    # 加载模板图像
+    template_image = cv2.imread(template_path)
+    if template_image is None:
+        print("模板图像加载失败")
+        return
+    
+    print(f"模板图像大小: {template_image.shape[1]}x{template_image.shape[0]}")
+    
+    # 提取特征
+    print("\n正在提取特征...")
+    features = processor._extract_features(template_image)
+    
+    # 详细显示特征信息
+    print("="*60)
+    print("特征提取分析结果")
+    print("="*60)
+    
+    # 颜色特征
+    print("\n【颜色特征】")
+    print(f"白色背景占比: {features.get('white_ratio', 0):.3f} ({features.get('white_ratio', 0)*100:.1f}%)")
+    print(f"黑色文字占比: {features.get('black_ratio', 0):.3f} ({features.get('black_ratio', 0)*100:.1f}%)")
+    
+    # 区域信息
+    print("\n【区域信息】")
+    regions = features.get('regions', {})
+    for region_name, region_info in regions.items():
+        print(f"{region_name}: y={region_info['y']}, height={region_info['height']}")
+    
+    # 关键框信息
+    print("\n【关键框信息】")
+    key_boxes = features.get('key_boxes', {})
+    for box_name, box_info in key_boxes.items():
+        print(f"{box_name}: x={box_info['x']}, y={box_info['y']}, w={box_info['w']}, h={box_info['h']}")
+    
+    # 关键词验证
+    print("\n【关键词验证】")
+    keywords = features.get('keywords', {})
+    for keyword, found in keywords.items():
+        print(f"{keyword}: {'✓' if found else '✗'}")
+    
+    # 线条检测
+    print("\n【线条检测】")
+    lines = features.get('lines', {})
+    for line_name, valid in lines.items():
+        print(f"{line_name}: {'✓' if valid else '✗'}")
+    
+    # 区域比例
+    print("\n【区域比例】")
+    ratios = features.get('region_ratios', {})
+    for ratio_name, ratio_value in ratios.items():
+        print(f"{ratio_name}: {ratio_value*100:.1f}%")
+    
+    # 位置关系
+    print("\n【位置关系】")
+    positions = features.get('position_checks', {})
+    for pos_name, valid in positions.items():
+        print(f"{pos_name}: {'✓' if valid else '✗'}")
+    
+    # 内容约束
+    print("\n【内容约束】")
+    constraints = features.get('content_constraints', {})
+    for constraint_name, valid in constraints.items():
+        print(f"{constraint_name}: {'✓' if valid else '✗'}")
+    
+    # 模板验证
+    print("\n【模板验证】")
+    is_valid = processor._validate_features(features)
+    print(f"模板特征验证: {'✓ 通过' if is_valid else '✗ 失败'}")
+    
+    # 详细匹配度分析
+    validation_result = processor._calculate_match_score(features)
+    if validation_result:
+        print(f"\n【详细匹配度分析】")
+        for category, score in validation_result.items():
+            if category != 'total_score':
+                print(f"{category}: {score}")
+        print(f"\n总体匹配度: {validation_result.get('total_score', 0)}")
+        print(f"验证阈值: 70% ({'通过' if validation_result.get('total_score', 0) >= 70 else '失败'})")
+    
+    # 生成可视化结果
+    print("\n正在生成可视化结果...")
+    visualize_features(template_image, features)
+    
+    print("\n特征提取测试完成！")
+    print("="*60)
+
 def main():
     """主函数 - 命令行工具"""
     if len(sys.argv) < 2:
@@ -804,6 +1100,8 @@ def main():
         print("  python pdf_tools.py config                      # 创建/加载配置文件")
         print("  python pdf_tools.py examples                    # 运行使用示例")
         print("  python pdf_tools.py install-service             # 安装系统服务")
+        print("  python pdf_tools.py setup                       # 环境检查和安装")
+        print("  python pdf_tools.py test-features               # 测试特征提取")
         return
     
     command = sys.argv[1].lower()
@@ -844,6 +1142,12 @@ def main():
     
     elif command == "install-service":
         install_service()
+    
+    elif command == "setup":
+        setup_environment()
+    
+    elif command == "test-features":
+        test_features_extraction()
     
     else:
         print(f"未知命令: {command}")

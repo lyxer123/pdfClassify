@@ -163,10 +163,13 @@ def main():
     print("开始测试特征提取功能...")
     
     # 检查模板文件
-    template_path = "mb6.png"
+    template_path = "templates/mb6.png"
     if not os.path.exists(template_path):
-        print(f"错误: 模板文件 {template_path} 不存在")
-        return
+        # 尝试备用路径
+        template_path = "mb6.png"
+        if not os.path.exists(template_path):
+            print(f"错误: 模板文件不存在（已检查 templates/mb6.png 和 mb6.png）")
+            return
     
     # 初始化PDF处理器
     try:
