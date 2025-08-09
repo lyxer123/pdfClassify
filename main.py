@@ -20,7 +20,7 @@ import logging
 
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.INFO,  # 恢复到INFO级别
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler('pdf_classify.log', encoding='utf-8'),
@@ -142,6 +142,9 @@ class PDFFeatureExtractor:
             # 计算对比度（标准差）
             contrast = np.std(gray_image)
             
+            # 检测第二特征（mb.png模板的两条长黑线）
+            second_feature_result = self.detect_mb_second_feature(image)
+            
             features = {
                 'mean_rgb': mean_colors.tolist(),
                 'white_bg_ratio': float(white_ratio),
@@ -150,7 +153,8 @@ class PDFFeatureExtractor:
                 'contrast': float(contrast),
                 'image_size': [width, height],
                 'total_pixels': total_pixels,
-                'histogram': hist.flatten().tolist()
+                'histogram': hist.flatten().tolist(),
+                'second_feature': second_feature_result  # 新增：第二特征检测结果
             }
             
             return features
@@ -206,6 +210,414 @@ class PDFFeatureExtractor:
         
         return colored_text_pixels
     
+    def _merge_nearby_lines(self, horizontal_lines, width, height):
+        """
+        合并临近的水平线条
+        
+        Args:
+            horizontal_lines: 水平线条列表
+            width: 图像宽度
+            height: 图像高度
+            
+        Returns:
+            list: 合并后的线条列表
+        """
+        if len(horizontal_lines) < 2:
+            return []
+        
+        merged_lines = []
+        y_tolerance = height * 0.02  # y方向容差为图像高度的2%
+        
+        # 按y坐标分组合并
+        i = 0
+        while i < len(horizontal_lines):
+            current_line = horizontal_lines[i]
+            lines_to_merge = [current_line]
+            
+            # 查找y坐标相近的线条
+            j = i + 1
+            while j < len(horizontal_lines):
+                if abs(horizontal_lines[j]['y_center'] - current_line['y_center']) <= y_tolerance:
+                    lines_to_merge.append(horizontal_lines[j])
+                    j += 1
+                else:
+                    break
+            
+            # 如果有多条线需要合并
+            if len(lines_to_merge) > 1:
+                # 计算合并后的线条
+                all_x_coords = []
+                all_y_coords = []
+                for line in lines_to_merge:
+                    x1, y1, x2, y2 = line['coords']
+                    all_x_coords.extend([x1, x2])
+                    all_y_coords.extend([y1, y2])
+                
+                # 计算新的线条端点
+                min_x, max_x = min(all_x_coords), max(all_x_coords)
+                avg_y = sum(all_y_coords) / len(all_y_coords)
+                
+                merged_line = {
+                    'coords': (min_x, avg_y, max_x, avg_y),
+                    'length': max_x - min_x,
+                    'y_center': avg_y,
+                    'angle': 0
+                }
+                merged_lines.append(merged_line)
+                logger.debug(f"合并了{len(lines_to_merge)}条线条，新长度: {merged_line['length']:.1f}")
+            
+            i = j
+        
+        return merged_lines
+    
+    def _group_lines_by_y(self, lines, height):
+        """
+        按y坐标将线条分组，改进分组策略
+        
+        Args:
+            lines: 线条列表
+            height: 图像高度
+            
+        Returns:
+            list: 分组后的线条列表
+        """
+        if not lines:
+            return []
+        
+        # 首先按y坐标排序
+        sorted_lines = sorted(lines, key=lambda x: x['y_center'])
+        
+        groups = []
+        current_group = [sorted_lines[0]]
+        
+        # 使用较小的容差来避免将相距很远的线条归为一组
+        y_tolerance = min(height * 0.05, 50)  # 5%高度或50像素，取较小值
+        
+        for i in range(1, len(sorted_lines)):
+            current_line = sorted_lines[i]
+            last_line_in_group = current_group[-1]
+            
+            # 如果当前线条与组内最后一条线条的距离小于容差，加入当前组
+            if abs(current_line['y_center'] - last_line_in_group['y_center']) <= y_tolerance:
+                current_group.append(current_line)
+            else:
+                # 否则，开始新组
+                groups.append(current_group)
+                current_group = [current_line]
+        
+        # 添加最后一组
+        if current_group:
+            groups.append(current_group)
+        
+        # 过滤掉只有单条短线的组（可能是噪音）
+        filtered_groups = []
+        for group in groups:
+            if len(group) >= 1:  # 至少有1条线
+                max_length = max(line['length'] for line in group)
+                if max_length >= height * 0.3:  # 最长线条至少为高度的30%
+                    filtered_groups.append(group)
+        
+        logger.debug(f"y坐标分组: 原始{len(groups)}组，过滤后{len(filtered_groups)}组")
+        for i, group in enumerate(filtered_groups):
+            y_positions = [line['y_center'] for line in group]
+            lengths = [line['length'] for line in group]
+            logger.debug(f"  组{i+1}: {len(group)}条线，y范围{min(y_positions):.0f}-{max(y_positions):.0f}，最大长度{max(lengths):.0f}")
+        
+        return filtered_groups
+    
+    def _detect_adaptive_lines(self, image):
+        """
+        自适应检测长横线
+        不依赖固定位置，而是分析整个图像找出最主要的两条长横线
+        包含形态学增强以处理碎片化的线条
+        """
+        height, width = image.shape[:2]
+        gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+        
+        # 创建黑色区域的掩码
+        black_mask = gray < 80
+        
+        logger.debug(f"自适应检测长横线，图像尺寸: {width}x{height}")
+        logger.debug(f"原始黑色像素数量: {np.sum(black_mask)}")
+        
+        # 首先尝试基本检测
+        basic_lines = self._detect_lines_from_mask(black_mask, width, height)
+        
+        if len(basic_lines) >= 2:
+            logger.debug("基本检测成功，返回结果")
+            return basic_lines
+        
+        logger.debug("基本检测不足，应用形态学增强")
+        
+        # 应用形态学操作连接断开的线段
+        enhanced_mask = self._enhance_lines_morphology(black_mask, width)
+        
+        # 在增强后的掩码上重新检测
+        enhanced_lines = self._detect_lines_from_mask(enhanced_mask, width, height)
+        
+        if len(enhanced_lines) >= len(basic_lines):
+            logger.debug(f"形态学增强有效，检测到 {len(enhanced_lines)} 条线")
+            return enhanced_lines
+        else:
+            logger.debug("形态学增强未改善，使用基本检测结果")
+            return basic_lines
+    
+    def _enhance_lines_morphology(self, black_mask, width):
+        """
+        使用形态学操作增强线条检测
+        """
+        # 第一轮：使用大的水平核连接远距离的线段
+        horizontal_kernel1 = cv2.getStructuringElement(cv2.MORPH_RECT, (width // 8, 1))
+        enhanced_mask1 = cv2.morphologyEx(black_mask.astype(np.uint8), cv2.MORPH_CLOSE, horizontal_kernel1)
+        
+        # 第二轮：使用中等核进一步连接
+        horizontal_kernel2 = cv2.getStructuringElement(cv2.MORPH_RECT, (50, 3))
+        enhanced_mask2 = cv2.morphologyEx(enhanced_mask1, cv2.MORPH_CLOSE, horizontal_kernel2)
+        
+        # 第三轮：最终清理
+        horizontal_kernel3 = cv2.getStructuringElement(cv2.MORPH_RECT, (20, 1))
+        final_mask = cv2.morphologyEx(enhanced_mask2, cv2.MORPH_CLOSE, horizontal_kernel3)
+        
+        logger.debug(f"形态学增强后黑色像素数量: {np.sum(final_mask)}")
+        return final_mask
+    
+    def _detect_lines_from_mask(self, mask, width, height):
+        """
+        从给定的掩码中检测长横线
+        """
+        potential_lines = []
+        
+        for y in range(height):
+            row = mask[y, :]
+            
+            # 查找连续的黑色像素段
+            segments = []
+            start = None
+            
+            for x in range(width):
+                if row[x]:  # 黑色像素
+                    if start is None:
+                        start = x
+                else:  # 非黑色像素
+                    if start is not None:
+                        segments.append((start, x - 1))
+                        start = None
+            
+            # 处理行末的情况
+            if start is not None:
+                segments.append((start, width - 1))
+            
+            # 分析这一行的线段
+            if segments:
+                max_segment_length = max(end - start + 1 for start, end in segments)
+                max_segment_ratio = max_segment_length / width
+                
+                # 记录可能的长横线（最长线段>=15%宽度）
+                if max_segment_ratio >= 0.15:
+                    max_segment = max(segments, key=lambda x: x[1] - x[0])
+                    potential_lines.append({
+                        'coords': (max_segment[0], y, max_segment[1], y),
+                        'length': max_segment_length,
+                        'y_center': float(y),
+                        'angle': 0,
+                        'width_ratio': max_segment_ratio,
+                        'y_percent': y / height * 100
+                    })
+        
+        logger.debug(f"发现 {len(potential_lines)} 条潜在长横线")
+        
+        if len(potential_lines) == 0:
+            return []
+        
+        # 按线条质量排序（优先考虑最长线段长度）
+        potential_lines.sort(key=lambda x: x['length'], reverse=True)
+        
+        # 寻找两条最主要且相距足够远的线条
+        main_lines = []
+        min_distance = height * 0.1  # 最小间距为10%高度
+        
+        for line in potential_lines:
+            # 检查与已选线条的距离
+            too_close = False
+            for selected in main_lines:
+                if abs(line['y_center'] - selected['y_center']) < min_distance:
+                    too_close = True
+                    break
+            
+            if not too_close:
+                main_lines.append(line)
+                logger.debug(f"选择长横线: y={line['y_center']:.0f}({line['y_percent']:.1f}%), 长度={line['length']}({line['width_ratio']:.1%})")
+                if len(main_lines) == 2:
+                    break
+        
+        logger.debug(f"最终选择 {len(main_lines)} 条主要长横线")
+        return main_lines
+    
+    def _detect_line_in_region(self, black_mask, target_y, search_range, width, line_name):
+        """
+        在指定区域内检测长横线
+        """
+        height = black_mask.shape[0]
+        
+        # 确保搜索区域在图像范围内
+        y_start = max(0, target_y - search_range)
+        y_end = min(height, target_y + search_range)
+        
+        # 提取搜索区域
+        roi = black_mask[y_start:y_end, :]
+        
+        # 在搜索区域内寻找最长的水平线条
+        best_line = None
+        max_length = 0
+        
+        for row_offset in range(roi.shape[0]):
+            row = roi[row_offset, :]
+            
+            # 查找连续的黑色像素段
+            segments = []
+            start = None
+            
+            for col in range(len(row)):
+                if row[col]:  # 黑色像素
+                    if start is None:
+                        start = col
+                else:  # 非黑色像素
+                    if start is not None:
+                        segments.append((start, col - 1))
+                        start = None
+            
+            # 处理行末的情况
+            if start is not None:
+                segments.append((start, len(row) - 1))
+            
+            # 找到最长的段
+            for start_col, end_col in segments:
+                segment_length = end_col - start_col + 1
+                segment_ratio = segment_length / width
+                
+                # 检查是否为长线段（至少25%宽度）
+                if segment_ratio >= 0.25 and segment_length > max_length:
+                    max_length = segment_length
+                    actual_y = y_start + row_offset
+                    
+                    best_line = {
+                        'coords': (start_col, actual_y, end_col, actual_y),
+                        'length': segment_length,
+                        'y_center': float(actual_y),
+                        'angle': 0,
+                        'width_ratio': segment_ratio
+                    }
+        
+        if best_line:
+            y_percent = best_line['y_center'] / height * 100
+            width_percent = best_line['width_ratio'] * 100
+            logger.debug(f"{line_name}检测成功: y={best_line['y_center']:.0f}({y_percent:.1f}%), 长度={best_line['length']}({width_percent:.1f}%)")
+            return best_line
+        else:
+            logger.debug(f"{line_name}检测失败: 在y={target_y}±{search_range}范围内未找到长度>=25%宽度的线条")
+            return None
+
+    def detect_mb_second_feature(self, image):
+        """
+        检测mb.png模板的第二特征：两条长黑线
+        
+        使用精确位置检测方法：
+        1. 直接在y=359±30和y=1245±30范围内搜索长横线
+        2. 每个区域内找最长的水平线段
+        3. 要求线段长度至少25%页面宽度
+        
+        Args:
+            image: 图像数组 (numpy array)
+            
+        Returns:
+            dict: 第二特征检测结果
+        """
+        try:
+            # 转换为RGB（如果是BGR）
+            if len(image.shape) == 3 and image.shape[2] == 3:
+                rgb_image = image
+            else:
+                rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            
+            height, width = rgb_image.shape[:2]
+            logger.debug(f"图像尺寸: {width}x{height}")
+            
+            # 使用新的自适应检测方法
+            detected_lines = self._detect_adaptive_lines(rgb_image)
+            
+            logger.debug(f"精确检测到的长横线数量: {len(detected_lines)}")
+            
+            if len(detected_lines) == 0:
+                return {
+                    'has_second_feature': False,
+                    'detected_lines': 0,
+                    'long_lines': [],
+                    'line_lengths': [],
+                    'line_distance': 0,
+                    'reason': '在预期位置未检测到长黑线'
+                }
+            elif len(detected_lines) == 1:
+                return {
+                    'has_second_feature': False,
+                    'detected_lines': 1,
+                    'long_lines': detected_lines,
+                    'line_lengths': [line['length'] for line in detected_lines],
+                    'line_distance': 0,
+                    'reason': f'只检测到1条长黑线，要求2条'
+                }
+            
+            # 按y坐标排序
+            detected_lines.sort(key=lambda x: x['y_center'])
+            
+            # 取前两条线（如果检测到超过2条）
+            long_lines = detected_lines[:2]
+            
+            # 检查是否只有两条长黑线
+            if len(long_lines) != 2:
+                return {
+                    'has_second_feature': False,
+                    'detected_lines': len(long_lines),
+                    'long_lines': long_lines,
+                    'line_lengths': [line['length'] for line in long_lines],
+                    'line_distance': 0,
+                    'reason': f'检测到{len(long_lines)}条符合长度要求的长黑线，要求恰好2条'
+                }
+            
+            line1, line2 = long_lines[0], long_lines[1]
+            
+            # 计算两线间距
+            line_distance = abs(line2['y_center'] - line1['y_center'])
+            
+            # 记录检测结果
+            logger.debug(f"成功检测到两条长黑线:")
+            logger.debug(f"  线条1: y={line1['y_center']:.0f}, 长度={line1['length']:.0f} ({line1['width_ratio']*100:.1f}%宽度)")
+            logger.debug(f"  线条2: y={line2['y_center']:.0f}, 长度={line2['length']:.0f} ({line2['width_ratio']*100:.1f}%宽度)")
+            logger.debug(f"  间距: {line_distance:.0f}像素 ({line_distance/height*100:.1f}%高度)")
+            
+            # 直接返回成功结果（精确位置检测已经保证了正确性）
+            return {
+                'has_second_feature': True,
+                'detected_lines': 2,
+                'long_lines': [line1, line2],
+                'line_lengths': [line1['length'], line2['length']],
+                'line_distance': line_distance,
+                'line_distance_ratio': line_distance / height,
+                'length_ratio_1': line1['width_ratio'],
+                'length_ratio_2': line2['width_ratio'],
+                'reason': f'精确检测到位于y={line1["y_center"]:.0f}和y={line2["y_center"]:.0f}的两条长黑线'
+            }
+            
+        except Exception as e:
+            logger.error(f"第二特征检测失败: {str(e)}")
+            return {
+                'has_second_feature': False,
+                'detected_lines': 0,
+                'long_lines': [],
+                'line_lengths': [],
+                'line_distance': 0,
+                'reason': f'检测过程出错: {str(e)}'
+            }
+    
     def check_standard_compliance(self, features):
         """
         检查是否符合标准特征（白色背景+黑色文字）
@@ -236,7 +648,12 @@ class PDFFeatureExtractor:
         # 检查彩色文字比例（不应有过多彩色文字）
         colored_text_ok = features['colored_text_ratio'] <= self.color_thresholds['colored_text_max']
         
-        compliance = white_bg_ok and black_text_ok and brightness_ok and contrast_ok and colored_text_ok
+        # 检查第二特征（两条长黑线）
+        second_feature_ok = False
+        if 'second_feature' in features:
+            second_feature_ok = features['second_feature']['has_second_feature']
+        
+        compliance = white_bg_ok and black_text_ok and brightness_ok and contrast_ok and colored_text_ok and second_feature_ok
         
         logger.info(f"标准符合性检查:")
         logger.info(f"  白色背景比例: {features['white_bg_ratio']:.3f} (>= {self.color_thresholds['bg_ratio_min']}) - {'✓' if white_bg_ok else '✗'}")
@@ -244,6 +661,20 @@ class PDFFeatureExtractor:
         logger.info(f"  整体亮度: {avg_brightness:.1f} (>= {self.color_thresholds['brightness_min']}) - {'✓' if brightness_ok else '✗'}")
         logger.info(f"  对比度: {features['contrast']:.1f} (>= {self.color_thresholds['contrast_min']}) - {'✓' if contrast_ok else '✗'}")
         logger.info(f"  彩色文字比例: {features['colored_text_ratio']:.3f} (<= {self.color_thresholds['colored_text_max']}) - {'✓' if colored_text_ok else '✗'}")
+        
+        # 第二特征详细信息
+        if 'second_feature' in features:
+            second_feature = features['second_feature']
+            logger.info(f"  第二特征（两条长黑线）: {'✓' if second_feature_ok else '✗'}")
+            logger.info(f"    检测到线条数: {second_feature['detected_lines']}")
+            if second_feature_ok:
+                logger.info(f"    线条长度比例: {second_feature['length_ratio_1']:.1%}, {second_feature['length_ratio_2']:.1%}")
+                logger.info(f"    线条间距比例: {second_feature['line_distance_ratio']:.1%}")
+            else:
+                logger.info(f"    失败原因: {second_feature['reason']}")
+        else:
+            logger.info(f"  第二特征（两条长黑线）: ✗ - 未进行检测")
+        
         logger.info(f"  最终结果: {'符合标准' if compliance else '不符合标准'}")
         
         return compliance

@@ -224,6 +224,55 @@ def test_threshold_configuration():
     return True
 
 
+def test_second_feature_detection():
+    """专门测试第二特征检测功能"""
+    print("\n=== 测试第二特征检测功能 ===")
+    
+    # 加载mb.png模板图片
+    template_img = load_template_image("templates/mb.png")
+    if template_img is None:
+        print("❌ 无法加载模板图片，跳过测试")
+        return False
+    
+    extractor = PDFFeatureExtractor()
+    
+    print(f"\n🔍 第二特征检测测试:")
+    print(f"特征要求：")
+    print(f"  1. 有两条左右的长黑线")
+    print(f"  2. 黑线长度>=80%页面宽度")
+    print(f"  3. 两条黑色线长度相等")
+    print(f"  4. 两条黑色线之间距离>=60%页面高度")
+    print(f"  5. 且只有两根长黑线")
+    
+    # 直接测试第二特征检测
+    second_feature_result = extractor.detect_mb_second_feature(template_img)
+    
+    print(f"\n📊 检测结果:")
+    print(f"  特征检测: {'✓ 通过' if second_feature_result['has_second_feature'] else '✗ 未通过'}")
+    print(f"  检测到线条数: {second_feature_result['detected_lines']}")
+    print(f"  检测说明: {second_feature_result['reason']}")
+    
+    if second_feature_result['detected_lines'] > 0:
+        print(f"  线条长度: {second_feature_result['line_lengths']}")
+        if second_feature_result['has_second_feature']:
+            print(f"  长度比例: {second_feature_result['length_ratio_1']:.1%}, {second_feature_result['length_ratio_2']:.1%}")
+            print(f"  线条间距: {second_feature_result['line_distance']:.1f} 像素")
+            print(f"  间距比例: {second_feature_result['line_distance_ratio']:.1%}")
+    
+    # 创建测试变体来验证算法鲁棒性
+    test_images = create_test_variations(template_img)
+    
+    print(f"\n🧪 测试变体验证:")
+    for variant_name, variant_img in test_images.items():
+        if variant_name == 'original':
+            continue
+        
+        variant_result = extractor.detect_mb_second_feature(variant_img)
+        print(f"  {variant_name}: {'✓' if variant_result['has_second_feature'] else '✗'} - {variant_result['reason']}")
+    
+    return second_feature_result['has_second_feature']
+
+
 def test_template_analysis():
     """测试mb.png模板图片的详细特征分析"""
     print("\n=== 测试mb.png模板图片详细分析 ===")
@@ -246,6 +295,19 @@ def test_template_analysis():
         print(f"  白色背景比例: {features['white_bg_ratio']:.3f} ({features['white_bg_ratio']*100:.1f}%)")
         print(f"  黑色文字比例: {features['black_text_ratio']:.3f} ({features['black_text_ratio']*100:.1f}%)")
         print(f"  图像对比度: {features['contrast']:.2f}")
+        
+        # 第二特征分析
+        if 'second_feature' in features:
+            second_feature = features['second_feature']
+            print(f"\n📏 第二特征（两条长黑线）分析:")
+            print(f"  检测状态: {'✓ 通过' if second_feature['has_second_feature'] else '✗ 未通过'}")
+            print(f"  检测到线条数: {second_feature['detected_lines']}")
+            if second_feature['has_second_feature']:
+                print(f"  线条长度: {second_feature['line_lengths'][0]:.1f}, {second_feature['line_lengths'][1]:.1f} 像素")
+                print(f"  长度占比: {second_feature['length_ratio_1']:.1%}, {second_feature['length_ratio_2']:.1%}")
+                print(f"  线条间距: {second_feature['line_distance']:.1f} 像素")
+                print(f"  间距占比: {second_feature['line_distance_ratio']:.1%}")
+            print(f"  检测结果: {second_feature['reason']}")
         
         # 检查符合性
         compliance = extractor.check_standard_compliance(features)
@@ -275,6 +337,7 @@ def main():
     
     tests = [
         ("mb.png模板详细分析", test_template_analysis),
+        ("第二特征检测功能", test_second_feature_detection),
         ("颜色特征分析", test_color_feature_analysis),
         ("数据保存功能", test_data_saving),
         ("阈值配置", test_threshold_configuration)

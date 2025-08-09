@@ -9,6 +9,7 @@
     ],
     "white_bg_ratio": 0.9683634274998355,
     "black_text_ratio": 0.02074811374553111,
+    "colored_text_ratio": 0.0,
     "contrast": 36.25055216446635,
     "image_size": [
       1016,
@@ -272,8 +273,11 @@
       9861.0,
       150691.0,
       1221287.0
-    ]
-  },
-  "compliance": true,
-  "timestamp": "2024-01-15T10:30:00"
-}
+    ],
+    "second_feature": {
+      "has_second_feature": false,
+      "detected_lines": 1,
+      "long_lines": [
+        {
+          "coords": [
+            

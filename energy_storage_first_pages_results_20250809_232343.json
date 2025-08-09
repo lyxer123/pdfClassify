@@ -1,0 +1,997 @@
+{
+  "scan_time": "2025-08-09T23:23:43.055611",
+  "source_directory": "F:\\标准规范要求\\储能",
+  "total_files": 52,
+  "successful_files": 52,
+  "success_rate": 100.0,
+  "files": [
+    {
+      "file_path": "F:\\标准规范要求\\储能\\AQ 7017-2025锂离子电池生产安全规范.pdf",
+      "file_name": "AQ 7017-2025锂离子电池生产安全规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 428.0,
+        "y_percent": 25.415676959619955,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8060453400503779,
+        "length": 960
+      },
+      "distance": 1029.0,
+      "distance_ratio": 0.6110451306413301
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\DB 11-T XXXX-XXXX 电力储能系统建设运行规范.pdf",
+      "file_name": "DB 11-T XXXX-XXXX 电力储能系统建设运行规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\DB61-T 1757-2023 电化学储能电站安全风险评估规范.pdf",
+      "file_name": "DB61-T 1757-2023 电化学储能电站安全风险评估规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1031.0,
+      "distance_ratio": 0.6122327790973872
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\DL-T xxxx-202x 电力系统新型储能电站规划设计技术导则.pdf",
+      "file_name": "DL-T xxxx-202x 电力系统新型储能电站规划设计技术导则.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 398.0,
+        "y_percent": 23.634204275534444,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1461.0,
+        "y_percent": 86.75771971496437,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "distance": 1063.0,
+      "distance_ratio": 0.6312351543942993
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB 50058-2014 爆炸危险环境电力装置设计规范.pdf",
+      "file_name": "GB 50058-2014 爆炸危险环境电力装置设计规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 385.0,
+        "y_percent": 22.8486646884273,
+        "width_ratio": 0.8429890848026869,
+        "length": 1004
+      },
+      "line2": {
+        "y_center": 1330.0,
+        "y_percent": 78.93175074183976,
+        "width_ratio": 0.8421494542401343,
+        "length": 1003
+      },
+      "distance": 945.0,
+      "distance_ratio": 0.5608308605341247
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB 50472-2008 电子工业洁净厂房设计规范.pdf",
+      "file_name": "GB 50472-2008 电子工业洁净厂房设计规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 248.0,
+        "y_percent": 21.830985915492956,
+        "width_ratio": 0.9457070707070707,
+        "length": 749
+      },
+      "line2": {
+        "y_center": 926.0,
+        "y_percent": 81.51408450704226,
+        "width_ratio": 0.9457070707070707,
+        "length": 749
+      },
+      "distance": 678.0,
+      "distance_ratio": 0.596830985915493
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB 51377-2019 锂离子电池工厂设计标准.pdf",
+      "file_name": "GB 51377-2019 锂离子电池工厂设计标准.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 635.0,
+        "y_percent": 18.567251461988306,
+        "width_ratio": 0.6837098692033293,
+        "length": 2300
+      },
+      "line2": {
+        "y_center": 2725.0,
+        "y_percent": 79.67836257309942,
+        "width_ratio": 0.6837098692033293,
+        "length": 2300
+      },
+      "distance": 2090.0,
+      "distance_ratio": 0.6111111111111112
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 34120-2023 电化学储能系统储能变流器技术要求.pdf",
+      "file_name": "GB-T 34120-2023 电化学储能系统储能变流器技术要求.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.163204747774483,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.40949554896142,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6124629080118694
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 34131-2023 电力储能用电池管理系统.pdf",
+      "file_name": "GB-T 34131-2023 电力储能用电池管理系统.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1031.0,
+      "distance_ratio": 0.6122327790973872
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 36276-2023 电力储能用锂离子电池.pdf",
+      "file_name": "GB-T 36276-2023 电力储能用锂离子电池.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.382031905961377,
+        "length": 455
+      },
+      "line2": {
+        "y_center": 1466.0,
+        "y_percent": 87.05463182897863,
+        "width_ratio": 0.38623005877413935,
+        "length": 460
+      },
+      "distance": 1042.0,
+      "distance_ratio": 0.6187648456057007
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 36547-2018 电化学储能系统接入电网技术规定.pdf",
+      "file_name": "GB-T 36547-2018 电化学储能系统接入电网技术规定.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 245.0,
+        "y_percent": 14.540059347181009,
+        "width_ratio": 0.7516778523489933,
+        "length": 896
+      },
+      "line2": {
+        "y_center": 767.0,
+        "y_percent": 45.519287833827896,
+        "width_ratio": 0.7869127516778524,
+        "length": 938
+      },
+      "distance": 522.0,
+      "distance_ratio": 0.30979228486646887
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 36548-2024 电化学储能电站接入电网测试规程.pdf",
+      "file_name": "GB-T 36548-2024 电化学储能电站接入电网测试规程.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 423.0,
+        "y_percent": 25.1187648456057,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.40142517814728,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 36549-2018 电化学储能电站运行指标及评价.pdf",
+      "file_name": "GB-T 36549-2018 电化学储能电站运行指标及评价.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 40090-2021 储能电站运行维护规程.pdf",
+      "file_name": "GB-T 40090-2021 储能电站运行维护规程.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 42288-2022 电化学储能电站安全规程.pdf",
+      "file_name": "GB-T 42288-2022 电化学储能电站安全规程.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 42312-2023 电化学储能电站生产安全应急预案编制导则.pdf",
+      "file_name": "GB-T 42312-2023 电化学储能电站生产安全应急预案编制导则.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 42314-2023 电化学储能电站危险源辨识技术导则.pdf",
+      "file_name": "GB-T 42314-2023 电化学储能电站危险源辨识技术导则.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 42315-2023 电化学储能电站检修规程.pdf",
+      "file_name": "GB-T 42315-2023 电化学储能电站检修规程.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 42317-2023 电化学储能电站应急演练规程.pdf",
+      "file_name": "GB-T 42317-2023 电化学储能电站应急演练规程.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1031.0,
+      "distance_ratio": 0.6122327790973872
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 42318-2023 电化学储能电站环境影响评价导则.pdf",
+      "file_name": "GB-T 42318-2023 电化学储能电站环境影响评价导则.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1031.0,
+      "distance_ratio": 0.6122327790973872
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 42715-2023 移动式储能电站通用规范.pdf",
+      "file_name": "GB-T 42715-2023 移动式储能电站通用规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 42716-2023 电化学储能电站建模导则.pdf",
+      "file_name": "GB-T 42716-2023 电化学储能电站建模导则.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1031.0,
+      "distance_ratio": 0.6122327790973872
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 42717-2023 电化学储能电站并网性能评价方法.pdf",
+      "file_name": "GB-T 42717-2023 电化学储能电站并网性能评价方法.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 42726-2023 电化学储能电站监控系统技术规范.pdf",
+      "file_name": "GB-T 42726-2023 电化学储能电站监控系统技术规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1031.0,
+      "distance_ratio": 0.6122327790973872
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 42737-2023 电化学储能电站调试规程.pdf",
+      "file_name": "GB-T 42737-2023 电化学储能电站调试规程.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.163204747774483,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.40949554896142,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6124629080118694
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 43686-2024 电化学储能电站后评价导则.pdf",
+      "file_name": "GB-T 43686-2024 电化学储能电站后评价导则.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 657.0,
+        "y_percent": 14.6,
+        "width_ratio": 0.8067754077791719,
+        "length": 2572
+      },
+      "line2": {
+        "y_center": 1135.0,
+        "y_percent": 25.222222222222225,
+        "width_ratio": 0.8074027603513174,
+        "length": 2574
+      },
+      "distance": 478.0,
+      "distance_ratio": 0.10622222222222222
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 43695-2024 锂离子电池和电池组能源转换效率要求和测量方法.pdf",
+      "file_name": "GB-T 43695-2024 锂离子电池和电池组能源转换效率要求和测量方法.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.163204747774483,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.40949554896142,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6124629080118694
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 43868-2024 电化学储能电站启动验收规程.pdf",
+      "file_name": "GB-T 43868-2024 电化学储能电站启动验收规程.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 423.0,
+        "y_percent": 25.10385756676558,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.35014836795251,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6124629080118694
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 44026-2024 预制舱式锂离子电池储能系统技术规范.pdf",
+      "file_name": "GB-T 44026-2024 预制舱式锂离子电池储能系统技术规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 258.0,
+        "y_percent": 15.320665083135394,
+        "width_ratio": 0.8035264483627204,
+        "length": 957
+      },
+      "line2": {
+        "y_center": 697.0,
+        "y_percent": 41.3895486935867,
+        "width_ratio": 0.7724601175482787,
+        "length": 920
+      },
+      "distance": 439.0,
+      "distance_ratio": 0.26068883610451304
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 44111-2024 电化学储能电站检修试验规程.pdf",
+      "file_name": "GB-T 44111-2024 电化学储能电站检修试验规程.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 423.0,
+        "y_percent": 25.10385756676558,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.35014836795251,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6124629080118694
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 44112-2024 电化学储能电站接入电网运行控制规范.pdf",
+      "file_name": "GB-T 44112-2024 电化学储能电站接入电网运行控制规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 423.0,
+        "y_percent": 25.10385756676558,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.35014836795251,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6124629080118694
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 44113-2024 用户侧电化学储能系统并网管理规范.pdf",
+      "file_name": "GB-T 44113-2024 用户侧电化学储能系统并网管理规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 44114-2024 电化学储能系统接入低压配电网运行控制规范.pdf",
+      "file_name": "GB-T 44114-2024 电化学储能系统接入低压配电网运行控制规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 117.0,
+        "y_percent": 14.49814126394052,
+        "width_ratio": 0.8076923076923077,
+        "length": 462
+      },
+      "line2": {
+        "y_center": 404.0,
+        "y_percent": 50.06195786864932,
+        "width_ratio": 0.7465034965034965,
+        "length": 427
+      },
+      "distance": 287.0,
+      "distance_ratio": 0.355638166047088
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 44117-2024 电化学储能电站模型参数测试规程.pdf",
+      "file_name": "GB-T 44117-2024 电化学储能电站模型参数测试规程.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 423.0,
+        "y_percent": 25.10385756676558,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.35014836795251,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6124629080118694
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 44133-2024 智能电化学储能电站技术导则.pdf",
+      "file_name": "GB-T 44133-2024 智能电化学储能电站技术导则.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 419.0,
+        "y_percent": 24.8812351543943,
+        "width_ratio": 0.8102434928631402,
+        "length": 965
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.40142517814728,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1036.0,
+      "distance_ratio": 0.6152019002375297
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 44134-2024 电力系统配置电化学储能电站规划导则.pdf",
+      "file_name": "GB-T 44134-2024 电力系统配置电化学储能电站规划导则.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 419.0,
+        "y_percent": 24.8812351543943,
+        "width_ratio": 0.8102434928631402,
+        "length": 965
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.40142517814728,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1036.0,
+      "distance_ratio": 0.6152019002375297
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 44265-2024 电力储能电站钠离子电池技术规范.pdf",
+      "file_name": "GB-T 44265-2024 电力储能电站钠离子电池技术规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 422.0,
+        "y_percent": 25.05938242280285,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.40142517814728,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1033.0,
+      "distance_ratio": 0.6134204275534442
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 44659.3-2024 新能源场站及接入系统短路电流计算 第3部分：储能电站.pdf",
+      "file_name": "GB-T 44659.3-2024 新能源场站及接入系统短路电流计算 第3部分：储能电站.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 423.0,
+        "y_percent": 25.10385756676558,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.35014836795251,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6124629080118694
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 44767-2024 电化学储能电站安全监测信息系统技术导则.pdf",
+      "file_name": "GB-T 44767-2024 电化学储能电站安全监测信息系统技术导则.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 422.0,
+        "y_percent": 25.05938242280285,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.40142517814728,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1033.0,
+      "distance_ratio": 0.6134204275534442
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T 44803-2024 电化学储能电站应急物资技术导则.pdf",
+      "file_name": "GB-T 44803-2024 电化学储能电站应急物资技术导则.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 422.0,
+        "y_percent": 25.05938242280285,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.40142517814728,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1033.0,
+      "distance_ratio": 0.6134204275534442
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\GB-T XXXX-XXXX 电化学储能电站检修试验规程.pdf",
+      "file_name": "GB-T XXXX-XXXX 电化学储能电站检修试验规程.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 246.0,
+        "y_percent": 14.608076009501186,
+        "width_ratio": 0.783375314861461,
+        "length": 933
+      },
+      "line2": {
+        "y_center": 672.0,
+        "y_percent": 39.90498812351544,
+        "width_ratio": 0.5600335852225021,
+        "length": 667
+      },
+      "distance": 426.0,
+      "distance_ratio": 0.2529691211401425
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\T-CES 243-2023 构网型储能系统并网技术规范.pdf",
+      "file_name": "T-CES 243-2023 构网型储能系统并网技术规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 435.0,
+        "y_percent": 26.016746411483254,
+        "width_ratio": 0.7780590717299578,
+        "length": 922
+      },
+      "line2": {
+        "y_center": 1426.0,
+        "y_percent": 85.28708133971293,
+        "width_ratio": 0.21350210970464134,
+        "length": 253
+      },
+      "distance": 991.0,
+      "distance_ratio": 0.5927033492822966
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\T-CES 244-2023 构网型储能系统并网测试规范.pdf",
+      "file_name": "T-CES 244-2023 构网型储能系统并网测试规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\T-CES XXX-2023 储能柜通用技术规范.pdf",
+      "file_name": "T-CES XXX-2023 储能柜通用技术规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.222551928783382,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1452.0,
+        "y_percent": 86.17210682492582,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "distance": 1027.0,
+      "distance_ratio": 0.6094955489614243
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\T-CES XXX-2023 电化学储能电站测试技术规范.pdf",
+      "file_name": "T-CES XXX-2023 电化学储能电站测试技术规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1031.0,
+      "distance_ratio": 0.6122327790973872
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\T-CES XXXX-XXXX 构网型电化学储能电站并网性能评价方法.pdf",
+      "file_name": "T-CES XXXX-XXXX 构网型电化学储能电站并网性能评价方法.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.222551928783382,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1452.0,
+        "y_percent": 86.17210682492582,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "distance": 1027.0,
+      "distance_ratio": 0.6094955489614243
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\T-CNESA  XXXX-XXXX 电池储能系统储能协调控制器技术规范.pdf",
+      "file_name": "T-CNESA  XXXX-XXXX 电池储能系统储能协调控制器技术规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 410.0,
+        "y_percent": 24.346793349168646,
+        "width_ratio": 0.7850545759865659,
+        "length": 935
+      },
+      "line2": {
+        "y_center": 1311.0,
+        "y_percent": 77.85035629453681,
+        "width_ratio": 0.7766582703610412,
+        "length": 925
+      },
+      "distance": 901.0,
+      "distance_ratio": 0.5350356294536817
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\T-CNESA XXXX-XXXX 构网型储能变流器技术规范.pdf",
+      "file_name": "T-CNESA XXXX-XXXX 构网型储能变流器技术规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\T-CNESA XXXX-XXXX 电化学储能电站热失控火灾致灾危害综合评价技术规范.pdf",
+      "file_name": "T-CNESA XXXX-XXXX 电化学储能电站热失控火灾致灾危害综合评价技术规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\T-HZESA 001-2021 浙江电化学储能电站并网技术规范.pdf",
+      "file_name": "T-HZESA 001-2021 浙江电化学储能电站并网技术规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1031.0,
+      "distance_ratio": 0.6122327790973872
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\T-UNP XXX-2025 锂离子电池热失控预警方法.pdf",
+      "file_name": "T-UNP XXX-2025 锂离子电池热失控预警方法.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\储能\\T-XXX XXXX-XXXX 电化学储能电站启动验收规程.pdf",
+      "file_name": "T-XXX XXXX-XXXX 电化学储能电站启动验收规程.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    }
+  ]
+}

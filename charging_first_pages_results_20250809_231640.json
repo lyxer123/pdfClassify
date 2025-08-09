@@ -1,0 +1,2232 @@
+{
+  "scan_time": "2025-08-09T23:16:40.394676",
+  "source_directory": "F:\\标准规范要求\\充电",
+  "total_files": 117,
+  "successful_files": 117,
+  "success_rate": 100.0,
+  "files": [
+    {
+      "file_path": "F:\\标准规范要求\\充电\\DB11- XXXX-202X 电动汽车充电基础设施规划设计标准.pdf",
+      "file_name": "DB11- XXXX-202X 电动汽车充电基础设施规划设计标准.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 387.0,
+        "y_percent": 22.980997624703086,
+        "width_ratio": 0.7858942065491183,
+        "length": 936
+      },
+      "line2": {
+        "y_center": 1313.0,
+        "y_percent": 77.96912114014252,
+        "width_ratio": 0.7858942065491183,
+        "length": 936
+      },
+      "distance": 926.0,
+      "distance_ratio": 0.5498812351543944
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\DB13J_T 269-2018  电动汽车充电站及充电桩建设技术标准.pdf",
+      "file_name": "DB13J_T 269-2018  电动汽车充电站及充电桩建设技术标准.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 374.0,
+        "y_percent": 32.49348392701998,
+        "width_ratio": 0.8022670025188917,
+        "length": 637
+      },
+      "line2": {
+        "y_center": 929.0,
+        "y_percent": 80.71242397914857,
+        "width_ratio": 0.818639798488665,
+        "length": 650
+      },
+      "distance": 555.0,
+      "distance_ratio": 0.48218940052128584
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\DB3401-T 289-2023 电动汽车充电站（桩）服务与管理规范.pdf",
+      "file_name": "DB3401-T 289-2023 电动汽车充电站（桩）服务与管理规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\DB4403-T 434-2024 电动汽车集中式公共充电站设计规范.pdf",
+      "file_name": "DB4403-T 434-2024 电动汽车集中式公共充电站设计规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\DB4403-T 621-2025 电动汽车超级充电站（堆）消防安全管理规范.pdf",
+      "file_name": "DB4403-T 621-2025 电动汽车超级充电站（堆）消防安全管理规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\DB61-T 1758-2023 电动汽车储能充电站设计规范.pdf",
+      "file_name": "DB61-T 1758-2023 电动汽车储能充电站设计规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1031.0,
+      "distance_ratio": 0.6122327790973872
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB 38031-2020 电动汽车用动力蓄电池安全要求.pdf",
+      "file_name": "GB 38031-2020 电动汽车用动力蓄电池安全要求.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB 38031-2025 电动汽车用动力蓄电池安全要求.pdf",
+      "file_name": "GB 38031-2025 电动汽车用动力蓄电池安全要求.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 423.0,
+        "y_percent": 25.10385756676558,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.35014836795251,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6124629080118694
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB 39752-2024 电动汽车供电设备安全要求.pdf",
+      "file_name": "GB 39752-2024 电动汽车供电设备安全要求.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 423.0,
+        "y_percent": 25.10385756676558,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.35014836795251,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6124629080118694
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB 44263-2024 电动汽车传导充电系统安全要求.pdf",
+      "file_name": "GB 44263-2024 电动汽车传导充电系统安全要求.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 422.0,
+        "y_percent": 25.05938242280285,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.40142517814728,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1033.0,
+      "distance_ratio": 0.6134204275534442
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB XXXX-XXXX 电动汽车充电桩能效限定值及能效等级 .pdf",
+      "file_name": "GB XXXX-XXXX 电动汽车充电桩能效限定值及能效等级 .pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 18487.1-2023 电动汽车传导充电系统 第1部分：通用要求.pdf",
+      "file_name": "GB-T 18487.1-2023 电动汽车传导充电系统 第1部分：通用要求.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 18487.2-2017 电动汽车传导充电系统 第2部分：非车载传导供电设备电磁兼容要求.pdf",
+      "file_name": "GB-T 18487.2-2017 电动汽车传导充电系统 第2部分：非车载传导供电设备电磁兼容要求.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 18487.4-2025 电动汽车传导充放电系统 第4部分：车辆对外放电要求.pdf",
+      "file_name": "GB-T 18487.4-2025 电动汽车传导充放电系统 第4部分：车辆对外放电要求.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 18487.5-2024 电动汽车传导充电系统 第5部分：用于GBT20234.3的直流.pdf",
+      "file_name": "GB-T 18487.5-2024 电动汽车传导充电系统 第5部分：用于GBT20234.3的直流.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 423.0,
+        "y_percent": 25.10385756676558,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.35014836795251,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6124629080118694
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 19596-2017 电动汽车术语.pdf",
+      "file_name": "GB-T 19596-2017 电动汽车术语.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 20234.1-2023 电动汽车传导充电用连接装置 第1部分：通用要求.pdf",
+      "file_name": "GB-T 20234.1-2023 电动汽车传导充电用连接装置 第1部分：通用要求.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 430.0,
+        "y_percent": 25.534441805225654,
+        "width_ratio": 0.8100840336134454,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1473.0,
+        "y_percent": 87.47030878859857,
+        "width_ratio": 0.6218487394957983,
+        "length": 740
+      },
+      "distance": 1043.0,
+      "distance_ratio": 0.6193586698337292
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 20234.2-2015 电动汽车传导充电用连接装置 第2部分：交流充电接口.pdf",
+      "file_name": "GB-T 20234.2-2015 电动汽车传导充电用连接装置 第2部分：交流充电接口.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 444.0,
+        "y_percent": 26.365795724465556,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1476.0,
+        "y_percent": 87.64845605700712,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 20234.3-2023 电动汽车传导充电用连接装置 第3部分：直流充电接口.pdf",
+      "file_name": "GB-T 20234.3-2023 电动汽车传导充电用连接装置 第3部分：直流充电接口.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 1133.0,
+        "y_percent": 25.290178571428573,
+        "width_ratio": 0.8078134845620668,
+        "length": 2564
+      },
+      "line2": {
+        "y_center": 3885.0,
+        "y_percent": 86.71875,
+        "width_ratio": 0.8078134845620668,
+        "length": 2564
+      },
+      "distance": 2752.0,
+      "distance_ratio": 0.6142857142857143
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 20234.4-2023 电动汽车传导充电用连接装置 第4部分：大功率直流充电接口.pdf",
+      "file_name": "GB-T 20234.4-2023 电动汽车传导充电用连接装置 第4部分：大功率直流充电接口.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 27930-2015 电动汽车非车载传导式充电机与电池管理系统之间的通信协议.pdf",
+      "file_name": "GB-T 27930-2015 电动汽车非车载传导式充电机与电池管理系统之间的通信协议.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 249.0,
+        "y_percent": 15.719696969696969,
+        "width_ratio": 0.7826797385620915,
+        "length": 958
+      },
+      "line2": {
+        "y_center": 918.0,
+        "y_percent": 57.95454545454546,
+        "width_ratio": 0.6053921568627451,
+        "length": 741
+      },
+      "distance": 669.0,
+      "distance_ratio": 0.42234848484848486
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 27930-2023 非车载传导式充电机与电动车之间的数字通信协议.pdf",
+      "file_name": "GB-T 27930-2023 非车载传导式充电机与电动车之间的数字通信协议.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 27930.2-2024 非车载传导式充电机与电动车之间的数字通信. 第2部分：用于GBT20234.3的通信协议.pdf",
+      "file_name": "GB-T 27930.2-2024 非车载传导式充电机与电动车之间的数字通信. 第2部分：用于GBT20234.3的通信协议.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 423.0,
+        "y_percent": 25.10385756676558,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.35014836795251,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6124629080118694
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 28569-2024 电动汽车交流充电桩电能计量.pdf",
+      "file_name": "GB-T 28569-2024 电动汽车交流充电桩电能计量.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 423.0,
+        "y_percent": 25.10385756676558,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.35014836795251,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6124629080118694
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 29318-2024 电动汽车非车载充电机电能计量.pdf",
+      "file_name": "GB-T 29318-2024 电动汽车非车载充电机电能计量.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 423.0,
+        "y_percent": 25.10385756676558,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.35014836795251,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6124629080118694
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 33594-2017 电动汽车充电用电缆.pdf",
+      "file_name": "GB-T 33594-2017 电动汽车充电用电缆.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 34657.2-2017 电动汽车传导充电互操作性测试规范  第2部分：车辆.pdf",
+      "file_name": "GB-T 34657.2-2017 电动汽车传导充电互操作性测试规范  第2部分：车辆.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 175.0,
+        "y_percent": 14.767932489451477,
+        "width_ratio": 0.8055555555555556,
+        "length": 667
+      },
+      "line2": {
+        "y_center": 299.0,
+        "y_percent": 25.23206751054852,
+        "width_ratio": 0.8055555555555556,
+        "length": 667
+      },
+      "distance": 124.0,
+      "distance_ratio": 0.10464135021097046
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 34657－2017 电动汽车传导充电互操作性测试解决方案.pdf",
+      "file_name": "GB-T 34657－2017 电动汽车传导充电互操作性测试解决方案.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 1159.0,
+        "y_percent": 68.7833827893175,
+        "width_ratio": 0.2605042016806723,
+        "length": 310
+      },
+      "line2": {
+        "y_center": 1401.0,
+        "y_percent": 83.1454005934718,
+        "width_ratio": 0.2605042016806723,
+        "length": 310
+      },
+      "distance": 242.0,
+      "distance_ratio": 0.14362017804154303
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 39752-2021 电动汽车供电设备安全要求及试验规范.pdf",
+      "file_name": "GB-T 39752-2021 电动汽车供电设备安全要求及试验规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 43191-2023 电动汽车交流充电桩现场检测仪.pdf",
+      "file_name": "GB-T 43191-2023 电动汽车交流充电桩现场检测仪.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 424.0,
+        "y_percent": 25.17814726840855,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 44638-2024 能源互联网与电动汽车互动规范.pdf",
+      "file_name": "GB-T 44638-2024 能源互联网与电动汽车互动规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 423.0,
+        "y_percent": 25.10385756676558,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "line2": {
+        "y_center": 1455.0,
+        "y_percent": 86.35014836795251,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6124629080118694
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 50966-2024 电动汽车充电站设计标准.pdf",
+      "file_name": "GB-T 50966-2024 电动汽车充电站设计标准.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 352.0,
+        "y_percent": 30.555555555555557,
+        "width_ratio": 0.7329974811083123,
+        "length": 582
+      },
+      "line2": {
+        "y_center": 667.0,
+        "y_percent": 57.89930555555556,
+        "width_ratio": 0.7279596977329975,
+        "length": 578
+      },
+      "distance": 315.0,
+      "distance_ratio": 0.2734375
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\GB-T 50966-2024-电动汽车充电站设计标准.pdf",
+      "file_name": "GB-T 50966-2024-电动汽车充电站设计标准.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 352.0,
+        "y_percent": 30.555555555555557,
+        "width_ratio": 0.7329974811083123,
+        "length": 582
+      },
+      "line2": {
+        "y_center": 667.0,
+        "y_percent": 57.89930555555556,
+        "width_ratio": 0.7279596977329975,
+        "length": 578
+      },
+      "distance": 315.0,
+      "distance_ratio": 0.2734375
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\NB-T 33008.1~33008.2-2018 电动汽车充电设备检验试验规范.pdf",
+      "file_name": "NB-T 33008.1~33008.2-2018 电动汽车充电设备检验试验规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 422.0,
+        "y_percent": 25.044510385756674,
+        "width_ratio": 0.7732997481108312,
+        "length": 921
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.40949554896142,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1034.0,
+      "distance_ratio": 0.6136498516320474
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\T-CIDADS XXXXX—XXXX 家用电动汽车充电桩人机交互评测规范.pdf",
+      "file_name": "T-CIDADS XXXXX—XXXX 家用电动汽车充电桩人机交互评测规范.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\T-GAEPA002-2023 电动汽车超级充电设备与车辆之间的数字通讯协议.pdf",
+      "file_name": "T-GAEPA002-2023 电动汽车超级充电设备与车辆之间的数字通讯协议.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 324.0,
+        "y_percent": 25.673534072900157,
+        "width_ratio": 0.8085106382978723,
+        "length": 722
+      },
+      "line2": {
+        "y_center": 1093.0,
+        "y_percent": 86.60855784469096,
+        "width_ratio": 0.8096304591265397,
+        "length": 723
+      },
+      "distance": 769.0,
+      "distance_ratio": 0.6093502377179081
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\T-QGCML 2083-2023 充电桩数字化运营管理平台.pdf",
+      "file_name": "T-QGCML 2083-2023 充电桩数字化运营管理平台.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8102434928631402,
+        "length": 965
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.1-2021 电动汽车非车载充电机技术规范 第1部分：通用要求.pdf",
+      "file_name": "Q-GDW 10233.1-2021 电动汽车非车载充电机技术规范 第1部分：通用要求.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 393.0,
+        "y_percent": 23.33729216152019,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1063.0,
+      "distance_ratio": 0.6312351543942993
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.10-2021 电动汽车非车载充电机技术规范 第10部分：直流充电设备专用部件.pdf",
+      "file_name": "Q-GDW 10233.10-2021 电动汽车非车载充电机技术规范 第10部分：直流充电设备专用部件.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 391.0,
+        "y_percent": 23.21852731591449,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1065.0,
+      "distance_ratio": 0.6324228028503563
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.11-2021 电动汽车非车载充电机技术规范 第11部分：直流充电设备外观与标识.pdf",
+      "file_name": "Q-GDW 10233.11-2021 电动汽车非车载充电机技术规范 第11部分：直流充电设备外观与标识.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 346.0,
+        "y_percent": 20.54631828978622,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1110.0,
+      "distance_ratio": 0.6591448931116389
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.12-2021 电动汽车非车载充电机技术规范 第12部分：充电控制模块与功率控制模块通信协议.pdf",
+      "file_name": "Q-GDW 10233.12-2021 电动汽车非车载充电机技术规范 第12部分：充电控制模块与功率控制模块通信协议.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 450.0,
+        "y_percent": 26.72209026128266,
+        "width_ratio": 0.6666666666666666,
+        "length": 794
+      },
+      "line2": {
+        "y_center": 1348.0,
+        "y_percent": 80.04750593824228,
+        "width_ratio": 0.6658270361041142,
+        "length": 793
+      },
+      "distance": 898.0,
+      "distance_ratio": 0.5332541567695962
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.13-2021 电动汽车非车载充电机技术规范 第13部分：功率控制模块与充电模块通信协议.pdf",
+      "file_name": "Q-GDW 10233.13-2021 电动汽车非车载充电机技术规范 第13部分：功率控制模块与充电模块通信协议.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 421.0,
+        "y_percent": 25.0,
+        "width_ratio": 0.6658270361041142,
+        "length": 793
+      },
+      "line2": {
+        "y_center": 1348.0,
+        "y_percent": 80.04750593824228,
+        "width_ratio": 0.6658270361041142,
+        "length": 793
+      },
+      "distance": 927.0,
+      "distance_ratio": 0.5504750593824228
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.14-2021 电动汽车非车载充电机技术规范 第14部分：功率控制模块与开关模块通信协议.pdf",
+      "file_name": "Q-GDW 10233.14-2021 电动汽车非车载充电机技术规范 第14部分：功率控制模块与开关模块通信协议.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 395.0,
+        "y_percent": 23.456057007125892,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1061.0,
+      "distance_ratio": 0.6300475059382423
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.15-2021 电动汽车非车载充电机技术规范 第15部分：功率控制模块与环境信息采集模块通信协议.pdf",
+      "file_name": "Q-GDW 10233.15-2021 电动汽车非车载充电机技术规范 第15部分：功率控制模块与环境信息采集模块通信协议.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 396.0,
+        "y_percent": 23.51543942992874,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1060.0,
+      "distance_ratio": 0.6294536817102138
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.16-2021 电动汽车非车载充电机技术规范 第16部分：计费控制单元与充电控制模块通信协议.pdf",
+      "file_name": "Q-GDW 10233.16-2021 电动汽车非车载充电机技术规范 第16部分：计费控制单元与充电控制模块通信协议.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 396.0,
+        "y_percent": 23.51543942992874,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "distance": 1060.0,
+      "distance_ratio": 0.6294536817102138
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.17-2021 电动汽车非车载充电机技术规范 第17部分：计费控制单元与读卡器通信协议.pdf",
+      "file_name": "Q-GDW 10233.17-2021 电动汽车非车载充电机技术规范 第17部分：计费控制单元与读卡器通信协议.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 391.0,
+        "y_percent": 23.21852731591449,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1065.0,
+      "distance_ratio": 0.6324228028503563
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.2-2021 电动汽车非车载充电机技术规范 第2部分：80kW一体式一机一枪充电机.pdf",
+      "file_name": "Q-GDW 10233.2-2021 电动汽车非车载充电机技术规范 第2部分：80kW一体式一机一枪充电机.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 391.0,
+        "y_percent": 23.21852731591449,
+        "width_ratio": 0.8102434928631402,
+        "length": 965
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1065.0,
+      "distance_ratio": 0.6324228028503563
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.3-2021 电动汽车非车载充电机技术规范 第3部分：80kW一体式一机双枪充电机.pdf",
+      "file_name": "Q-GDW 10233.3-2021 电动汽车非车载充电机技术规范 第3部分：80kW一体式一机双枪充电机.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 392.0,
+        "y_percent": 23.27790973871734,
+        "width_ratio": 0.8102434928631402,
+        "length": 965
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1064.0,
+      "distance_ratio": 0.6318289786223278
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.4-2021 电动汽车非车载充电机技术规范 第4部分：160kW一体式一机一枪充电机.pdf",
+      "file_name": "Q-GDW 10233.4-2021 电动汽车非车载充电机技术规范 第4部分：160kW一体式一机一枪充电机.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 393.0,
+        "y_percent": 23.33729216152019,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1063.0,
+      "distance_ratio": 0.6312351543942993
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.5-2021 电动汽车非车载充电机技术规范 第5部分：160kW一体式一机双枪充电机.pdf",
+      "file_name": "Q-GDW 10233.5-2021 电动汽车非车载充电机技术规范 第5部分：160kW一体式一机双枪充电机.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 274.0,
+        "y_percent": 16.270783847980997,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1182.0,
+      "distance_ratio": 0.7019002375296912
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.6-2021 电动汽车非车载充电机技术规范 第6部分：160kW分体式双充接口充电柜.pdf",
+      "file_name": "Q-GDW 10233.6-2021 电动汽车非车载充电机技术规范 第6部分：160kW分体式双充接口充电柜.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 274.0,
+        "y_percent": 16.270783847980997,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1182.0,
+      "distance_ratio": 0.7019002375296912
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.7-2021 电动汽车非车载充电机技术规范 第7部分：240kW分体式四充接口充电柜.pdf",
+      "file_name": "Q-GDW 10233.7-2021 电动汽车非车载充电机技术规范 第7部分：240kW分体式四充接口充电柜.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 383.0,
+        "y_percent": 22.743467933491686,
+        "width_ratio": 0.6540722082283795,
+        "length": 779
+      },
+      "line2": {
+        "y_center": 1339.0,
+        "y_percent": 79.51306413301663,
+        "width_ratio": 0.654911838790932,
+        "length": 780
+      },
+      "distance": 956.0,
+      "distance_ratio": 0.5676959619952494
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.8-2021 电动汽车非车载充电机技术规范 第8部分：250A分体式一桩一枪直流充电桩.pdf",
+      "file_name": "Q-GDW 10233.8-2021 电动汽车非车载充电机技术规范 第8部分：250A分体式一桩一枪直流充电桩.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 389.0,
+        "y_percent": 23.09976247030879,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1067.0,
+      "distance_ratio": 0.6336104513064132
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\国网六统一设备标准(企标)\\Q-GDW 10233.9-2021 电动汽车非车载充电机技术规范 第9部分：250A分体式一桩双枪直流充电桩.pdf",
+      "file_name": "Q-GDW 10233.9-2021 电动汽车非车载充电机技术规范 第9部分：250A分体式一桩双枪直流充电桩.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 391.0,
+        "y_percent": 23.21852731591449,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1456.0,
+        "y_percent": 86.46080760095012,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1065.0,
+      "distance_ratio": 0.6324228028503563
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动汽车充换电设施标准体系2016.pdf",
+      "file_name": "电动汽车充换电设施标准体系2016.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 560.0,
+        "y_percent": 33.2541567695962,
+        "width_ratio": 0.690176322418136,
+        "length": 822
+      },
+      "line2": {
+        "y_center": 808.0,
+        "y_percent": 47.980997624703086,
+        "width_ratio": 0.691855583543241,
+        "length": 824
+      },
+      "distance": 248.0,
+      "distance_ratio": 0.14726840855106887
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动汽车更换用电池箱连接器通用技术要求.pdf",
+      "file_name": "电动汽车更换用电池箱连接器通用技术要求.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.6230058774139379,
+        "length": 742
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.6230058774139379,
+        "length": 742
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\解读国内首个电动汽车换电安全标准.pdf",
+      "file_name": "解读国内首个电动汽车换电安全标准.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 825.0,
+        "y_percent": 48.99049881235155,
+        "width_ratio": 0.6960537363560033,
+        "length": 829
+      },
+      "line2": {
+        "y_center": 1448.0,
+        "y_percent": 85.98574821852732,
+        "width_ratio": 0.6960537363560033,
+        "length": 829
+      },
+      "distance": 623.0,
+      "distance_ratio": 0.36995249406175773
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽中心重卡行业标准\\纯电动商用车车载换电系统互换性第1部分：换电电气接口.pdf",
+      "file_name": "纯电动商用车车载换电系统互换性第1部分：换电电气接口.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽中心重卡行业标准\\纯电动商用车车载换电系统互换性第2部分：换电冷却接口.pdf",
+      "file_name": "纯电动商用车车载换电系统互换性第2部分：换电冷却接口.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽中心重卡行业标准\\纯电动商用车车载换电系统互换性第3部分：换电机构.pdf",
+      "file_name": "纯电动商用车车载换电系统互换性第3部分：换电机构.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽中心重卡行业标准\\纯电动商用车车载换电系统互换性第4部分：换电电池包.pdf",
+      "file_name": "纯电动商用车车载换电系统互换性第4部分：换电电池包.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽中心重卡行业标准\\纯电动商用车车载换电系统互换性第5部分：车辆与电池包的通信.pdf",
+      "file_name": "纯电动商用车车载换电系统互换性第5部分：车辆与电池包的通信.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "line2": {
+        "y_center": 1457.0,
+        "y_percent": 86.52019002375297,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽协重卡换电团体标准\\附件10：《电动中重卡共享换电站建设及换电车辆技术规范 第10 部分：换电车辆换电电池箱技术要求》征求意见稿.pdf.pdf",
+      "file_name": "附件10：《电动中重卡共享换电站建设及换电车辆技术规范 第10 部分：换电车辆换电电池箱技术要求》征求意见稿.pdf.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 436.0,
+        "y_percent": 25.890736342042754,
+        "width_ratio": 0.7900923593618808,
+        "length": 941
+      },
+      "line2": {
+        "y_center": 1459.0,
+        "y_percent": 86.63895486935867,
+        "width_ratio": 0.7716204869857263,
+        "length": 919
+      },
+      "distance": 1023.0,
+      "distance_ratio": 0.6074821852731591
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽协重卡换电团体标准\\附件11：《电动中重卡共享换电站建设及换电车辆技术规范 第11 部分：换电车辆换电底托技术要求》征求意见稿.pdf.pdf",
+      "file_name": "附件11：《电动中重卡共享换电站建设及换电车辆技术规范 第11 部分：换电车辆换电底托技术要求》征求意见稿.pdf.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 436.0,
+        "y_percent": 25.890736342042754,
+        "width_ratio": 0.7900923593618808,
+        "length": 941
+      },
+      "line2": {
+        "y_center": 1459.0,
+        "y_percent": 86.63895486935867,
+        "width_ratio": 0.7716204869857263,
+        "length": 919
+      },
+      "distance": 1023.0,
+      "distance_ratio": 0.6074821852731591
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽协重卡换电团体标准\\附件12：《电动中重卡共享换电站建设及换电车辆技术规范 第12 部分：换电车辆换电连接器技术要求》征求意见稿.pdf.pdf",
+      "file_name": "附件12：《电动中重卡共享换电站建设及换电车辆技术规范 第12 部分：换电车辆换电连接器技术要求》征求意见稿.pdf.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 436.0,
+        "y_percent": 25.890736342042754,
+        "width_ratio": 0.7900923593618808,
+        "length": 941
+      },
+      "line2": {
+        "y_center": 1459.0,
+        "y_percent": 86.63895486935867,
+        "width_ratio": 0.7716204869857263,
+        "length": 919
+      },
+      "distance": 1023.0,
+      "distance_ratio": 0.6074821852731591
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽协重卡换电团体标准\\附件13：《电动中重卡共享换电站建设及换电车辆技术规范 第13 部分：换电车辆换电控制器技术要求》征求意见稿.pdf.pdf",
+      "file_name": "附件13：《电动中重卡共享换电站建设及换电车辆技术规范 第13 部分：换电车辆换电控制器技术要求》征求意见稿.pdf.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 436.0,
+        "y_percent": 25.890736342042754,
+        "width_ratio": 0.7900923593618808,
+        "length": 941
+      },
+      "line2": {
+        "y_center": 1427.0,
+        "y_percent": 84.73871733966746,
+        "width_ratio": 0.7716204869857263,
+        "length": 919
+      },
+      "distance": 991.0,
+      "distance_ratio": 0.588479809976247
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽协重卡换电团体标准\\附件14：《电动中重型卡车共享换电站建设及换电车辆技术规范》编制说明.pdf.pdf",
+      "file_name": "附件14：《电动中重型卡车共享换电站建设及换电车辆技术规范》编制说明.pdf.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 614.0,
+        "y_percent": 36.46080760095012,
+        "width_ratio": 0.6935348446683459,
+        "length": 826
+      },
+      "line2": {
+        "y_center": 1187.0,
+        "y_percent": 70.48693586698337,
+        "width_ratio": 0.6960537363560033,
+        "length": 829
+      },
+      "distance": 573.0,
+      "distance_ratio": 0.34026128266033256
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽协重卡换电团体标准\\附件1：《电动中重卡共享换电站建设及换电车辆技术规范 第1部分：总则》征求意见稿.pdf.pdf",
+      "file_name": "附件1：《电动中重卡共享换电站建设及换电车辆技术规范 第1部分：总则》征求意见稿.pdf.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 436.0,
+        "y_percent": 25.890736342042754,
+        "width_ratio": 0.7900923593618808,
+        "length": 941
+      },
+      "line2": {
+        "y_center": 1459.0,
+        "y_percent": 86.63895486935867,
+        "width_ratio": 0.7716204869857263,
+        "length": 919
+      },
+      "distance": 1023.0,
+      "distance_ratio": 0.6074821852731591
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽协重卡换电团体标准\\附件2：《电动中重卡共享换电站建设及换电车辆技术规范 第2部分：换电系统与装置技术要求》征求意见稿.pdf.pdf",
+      "file_name": "附件2：《电动中重卡共享换电站建设及换电车辆技术规范 第2部分：换电系统与装置技术要求》征求意见稿.pdf.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 551.0,
+        "y_percent": 32.719714964370546,
+        "width_ratio": 0.7900923593618808,
+        "length": 941
+      },
+      "line2": {
+        "y_center": 1551.0,
+        "y_percent": 92.10213776722091,
+        "width_ratio": 0.7716204869857263,
+        "length": 919
+      },
+      "distance": 1000.0,
+      "distance_ratio": 0.5938242280285035
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽协重卡换电团体标准\\附件3：《电动中重卡共享换电站建设及换电车辆技术规范 第3部分：换电电池包通信协议要求》征求意见稿.pdf.pdf",
+      "file_name": "附件3：《电动中重卡共享换电站建设及换电车辆技术规范 第3部分：换电电池包通信协议要求》征求意见稿.pdf.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 453.0,
+        "y_percent": 26.90023752969121,
+        "width_ratio": 0.7900923593618808,
+        "length": 941
+      },
+      "line2": {
+        "y_center": 1421.0,
+        "y_percent": 84.38242280285036,
+        "width_ratio": 0.7716204869857263,
+        "length": 919
+      },
+      "distance": 968.0,
+      "distance_ratio": 0.5748218527315915
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽协重卡换电团体标准\\附件4：《电动中重卡共享换电站建设及换电车辆技术规范 第4部分：车辆识别系统要求》征求意见稿.pdf.pdf",
+      "file_name": "附件4：《电动中重卡共享换电站建设及换电车辆技术规范 第4部分：车辆识别系统要求》征求意见稿.pdf.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 551.0,
+        "y_percent": 32.719714964370546,
+        "width_ratio": 0.7900923593618808,
+        "length": 941
+      },
+      "line2": {
+        "y_center": 1551.0,
+        "y_percent": 92.10213776722091,
+        "width_ratio": 0.7716204869857263,
+        "length": 919
+      },
+      "distance": 1000.0,
+      "distance_ratio": 0.5938242280285035
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽协重卡换电团体标准\\附件5：《电动中重卡共享换电站建设及换电车辆技术规范 第5部分：充电设备、吊装设备、电池仓储系统要求》征求意见稿.pdf.pdf",
+      "file_name": "附件5：《电动中重卡共享换电站建设及换电车辆技术规范 第5部分：充电设备、吊装设备、电池仓储系统要求》征求意见稿.pdf.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 453.0,
+        "y_percent": 26.90023752969121,
+        "width_ratio": 0.7900923593618808,
+        "length": 941
+      },
+      "line2": {
+        "y_center": 1486.0,
+        "y_percent": 88.24228028503563,
+        "width_ratio": 0.7716204869857263,
+        "length": 919
+      },
+      "distance": 1033.0,
+      "distance_ratio": 0.6134204275534442
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽协重卡换电团体标准\\附件6：《电动中重卡共享换电站建设及换电车辆技术规范 第6部分：数据安全管理，风险预警分析技术要求》征求意见稿.pdf.pdf",
+      "file_name": "附件6：《电动中重卡共享换电站建设及换电车辆技术规范 第6部分：数据安全管理，风险预警分析技术要求》征求意见稿.pdf.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 551.0,
+        "y_percent": 32.719714964370546,
+        "width_ratio": 0.7900923593618808,
+        "length": 941
+      },
+      "line2": {
+        "y_center": 958.0,
+        "y_percent": 56.888361045130644,
+        "width_ratio": 0.7707808564231738,
+        "length": 918
+      },
+      "distance": 407.0,
+      "distance_ratio": 0.24168646080760095
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽协重卡换电团体标准\\附件7：《电动中重卡共享换电站建设及换电车辆技术规范 第7部分：安全防护及应急要求》征求意见稿.pdf.pdf",
+      "file_name": "附件7：《电动中重卡共享换电站建设及换电车辆技术规范 第7部分：安全防护及应急要求》征求意见稿.pdf.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 551.0,
+        "y_percent": 32.719714964370546,
+        "width_ratio": 0.7900923593618808,
+        "length": 941
+      },
+      "line2": {
+        "y_center": 1551.0,
+        "y_percent": 92.10213776722091,
+        "width_ratio": 0.7716204869857263,
+        "length": 919
+      },
+      "distance": 1000.0,
+      "distance_ratio": 0.5938242280285035
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽协重卡换电团体标准\\附件8：《电动中重卡共享换电站建设及换电车辆技术规范 第8部分：换电站规划布局要求》征求意见稿.pdf.pdf",
+      "file_name": "附件8：《电动中重卡共享换电站建设及换电车辆技术规范 第8部分：换电站规划布局要求》征求意见稿.pdf.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 551.0,
+        "y_percent": 32.719714964370546,
+        "width_ratio": 0.7900923593618808,
+        "length": 941
+      },
+      "line2": {
+        "y_center": 1551.0,
+        "y_percent": 92.10213776722091,
+        "width_ratio": 0.7716204869857263,
+        "length": 919
+      },
+      "distance": 1000.0,
+      "distance_ratio": 0.5938242280285035
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\中汽协重卡换电团体标准\\附件9：《电动中重卡共享换电站建设及换电车辆技术规范 第9部分：换电站标识、安全运营、设备运输和安装要求》征求意见稿.pdf.pdf",
+      "file_name": "附件9：《电动中重卡共享换电站建设及换电车辆技术规范 第9部分：换电站标识、安全运营、设备运输和安装要求》征求意见稿.pdf.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 551.0,
+        "y_percent": 32.719714964370546,
+        "width_ratio": 0.7900923593618808,
+        "length": 941
+      },
+      "line2": {
+        "y_center": 765.0,
+        "y_percent": 45.427553444180525,
+        "width_ratio": 0.7724601175482787,
+        "length": 920
+      },
+      "distance": 214.0,
+      "distance_ratio": 0.12707838479809977
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《20kV及以下变电所设计规范》GB 50053-2013.pdf",
+      "file_name": "《20kV及以下变电所设计规范》GB 50053-2013.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 529.0,
+        "y_percent": 31.413301662707838,
+        "width_ratio": 0.581024349286314,
+        "length": 692
+      },
+      "line2": {
+        "y_center": 1198.0,
+        "y_percent": 71.14014251781472,
+        "width_ratio": 0.581024349286314,
+        "length": 692
+      },
+      "distance": 669.0,
+      "distance_ratio": 0.3972684085510689
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《3～110kV高压配电装置设计规范》GB 50060-2008.pdf",
+      "file_name": "《3～110kV高压配电装置设计规范》GB 50060-2008.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 373.0,
+        "y_percent": 22.14964370546318,
+        "width_ratio": 0.4139378673383711,
+        "length": 493
+      },
+      "line2": {
+        "y_center": 1355.0,
+        "y_percent": 80.46318289786223,
+        "width_ratio": 0.4802686817800168,
+        "length": 572
+      },
+      "distance": 982.0,
+      "distance_ratio": 0.5831353919239906
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《交流电气装置的接地设计规范》GBT 50065-2011.pdf",
+      "file_name": "《交流电气装置的接地设计规范》GBT 50065-2011.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 362.0,
+        "y_percent": 21.49643705463183,
+        "width_ratio": 0.9311502938706969,
+        "length": 1109
+      },
+      "line2": {
+        "y_center": 1364.0,
+        "y_percent": 80.9976247030879,
+        "width_ratio": 0.9286314021830394,
+        "length": 1106
+      },
+      "distance": 1002.0,
+      "distance_ratio": 0.5950118764845606
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《低压配电设计规范》GB 50054-2011.pdf",
+      "file_name": "《低压配电设计规范》GB 50054-2011.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 364.0,
+        "y_percent": 21.61520190023753,
+        "width_ratio": 0.9336691855583543,
+        "length": 1112
+      },
+      "line2": {
+        "y_center": 1338.0,
+        "y_percent": 79.45368171021377,
+        "width_ratio": 0.9328295549958019,
+        "length": 1111
+      },
+      "distance": 974.0,
+      "distance_ratio": 0.5783847980997625
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《供配电系统设计规范》GB 50052-2009.pdf",
+      "file_name": "《供配电系统设计规范》GB 50052-2009.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 518.0,
+        "y_percent": 30.760095011876487,
+        "width_ratio": 0.345088161209068,
+        "length": 411
+      },
+      "line2": {
+        "y_center": 1197.0,
+        "y_percent": 71.08076009501187,
+        "width_ratio": 0.37363560033585225,
+        "length": 445
+      },
+      "distance": 679.0,
+      "distance_ratio": 0.40320665083135393
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《国家电网电动汽车非车载充电机通信协议》QGDW 1235-2014.pdf",
+      "file_name": "《国家电网电动汽车非车载充电机通信协议》QGDW 1235-2014.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 595.0,
+        "y_percent": 35.33254156769596,
+        "width_ratio": 0.6154492023509656,
+        "length": 733
+      },
+      "distance": 170.0,
+      "distance_ratio": 0.10095011876484561
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《城市电力电缆线路设计技术规定》DLT 5221-2016.pdf",
+      "file_name": "《城市电力电缆线路设计技术规定》DLT 5221-2016.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 412.0,
+        "y_percent": 24.46555819477435,
+        "width_ratio": 0.797649034424853,
+        "length": 950
+      },
+      "line2": {
+        "y_center": 1397.0,
+        "y_percent": 82.95724465558195,
+        "width_ratio": 0.6507136859781696,
+        "length": 775
+      },
+      "distance": 985.0,
+      "distance_ratio": 0.584916864608076
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《建筑照明设计标准》GB 50034-2013.pdf",
+      "file_name": "《建筑照明设计标准》GB 50034-2013.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 378.0,
+        "y_percent": 22.446555819477435,
+        "width_ratio": 0.29974811083123426,
+        "length": 357
+      },
+      "line2": {
+        "y_center": 1363.0,
+        "y_percent": 80.93824228028504,
+        "width_ratio": 0.18639798488664988,
+        "length": 222
+      },
+      "distance": 985.0,
+      "distance_ratio": 0.584916864608076
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《建筑用压型钢板》GB 12755-2008.pdf",
+      "file_name": "《建筑用压型钢板》GB 12755-2008.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 278.0,
+        "y_percent": 16.5083135391924,
+        "width_ratio": 0.8110831234256927,
+        "length": 966
+      },
+      "line2": {
+        "y_center": 1544.0,
+        "y_percent": 91.68646080760095,
+        "width_ratio": 0.5751469353484466,
+        "length": 685
+      },
+      "distance": 1266.0,
+      "distance_ratio": 0.7517814726840855
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电力工程电缆设计标准》GB50217-2018.pdf",
+      "file_name": "《电力工程电缆设计标准》GB50217-2018.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 524.0,
+        "y_percent": 31.116389548693586,
+        "width_ratio": 0.6188077246011755,
+        "length": 737
+      },
+      "line2": {
+        "y_center": 1194.0,
+        "y_percent": 70.90261282660333,
+        "width_ratio": 0.6188077246011755,
+        "length": 737
+      },
+      "distance": 670.0,
+      "distance_ratio": 0.3978622327790974
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电力工程直流电源设备通用技术条件及安全要求》GBT 19826-2014.pdf",
+      "file_name": "《电力工程直流电源设备通用技术条件及安全要求》GBT 19826-2014.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 277.0,
+        "y_percent": 16.44893111638955,
+        "width_ratio": 0.8035264483627204,
+        "length": 957
+      },
+      "line2": {
+        "y_center": 1529.0,
+        "y_percent": 90.7957244655582,
+        "width_ratio": 0.5709487825356843,
+        "length": 680
+      },
+      "distance": 1252.0,
+      "distance_ratio": 0.7434679334916865
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电力用直流电源监控装置》DLT 856-2004.pdf",
+      "file_name": "《电力用直流电源监控装置》DLT 856-2004.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 569.0,
+        "y_percent": 33.788598574821854,
+        "width_ratio": 0.5449202350965575,
+        "length": 649
+      },
+      "line2": {
+        "y_center": 1250.0,
+        "y_percent": 74.22802850356295,
+        "width_ratio": 0.5323257766582704,
+        "length": 634
+      },
+      "distance": 681.0,
+      "distance_ratio": 0.40439429928741094
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电力系统直流电源设备通用技术条件及安全要求》JBT 5777.4-2000.pdf",
+      "file_name": "《电力系统直流电源设备通用技术条件及安全要求》JBT 5777.4-2000.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 599.0,
+        "y_percent": 35.57007125890736,
+        "width_ratio": 0.3534844668345928,
+        "length": 421
+      },
+      "line2": {
+        "y_center": 1290.0,
+        "y_percent": 76.60332541567696,
+        "width_ratio": 0.36272040302267,
+        "length": 432
+      },
+      "distance": 691.0,
+      "distance_ratio": 0.41033254156769594
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车交流供电装置电气接口规范》QGDW 399-2009.pdf",
+      "file_name": "《电动汽车交流供电装置电气接口规范》QGDW 399-2009.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 421.0,
+        "y_percent": 25.0,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1473.0,
+        "y_percent": 87.47030878859857,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1052.0,
+      "distance_ratio": 0.6247030878859857
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车传导充电用连接装置 第1部分通用要求》GBT 20234.1-2015.pdf",
+      "file_name": "《电动汽车传导充电用连接装置 第1部分通用要求》GBT 20234.1-2015.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 445.0,
+        "y_percent": 26.425178147268408,
+        "width_ratio": 0.8102434928631402,
+        "length": 965
+      },
+      "line2": {
+        "y_center": 1479.0,
+        "y_percent": 87.82660332541568,
+        "width_ratio": 0.8102434928631402,
+        "length": 965
+      },
+      "distance": 1034.0,
+      "distance_ratio": 0.6140142517814727
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车传导充电用连接装置 第2部分交流充电接口》GBT 20234.2-2015.pdf",
+      "file_name": "《电动汽车传导充电用连接装置 第2部分交流充电接口》GBT 20234.2-2015.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 436.0,
+        "y_percent": 25.890736342042754,
+        "width_ratio": 0.2258606213266163,
+        "length": 269
+      },
+      "line2": {
+        "y_center": 1491.0,
+        "y_percent": 88.53919239904988,
+        "width_ratio": 0.2611251049538203,
+        "length": 311
+      },
+      "distance": 1055.0,
+      "distance_ratio": 0.6264845605700713
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车传导充电用连接装置 第3部分直流充电接口》GBT 20234.3-2015.pdf",
+      "file_name": "《电动汽车传导充电用连接装置 第3部分直流充电接口》GBT 20234.3-2015.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 430.0,
+        "y_percent": 25.534441805225654,
+        "width_ratio": 0.2174643157010915,
+        "length": 259
+      },
+      "line2": {
+        "y_center": 1480.0,
+        "y_percent": 87.88598574821853,
+        "width_ratio": 0.16204869857262805,
+        "length": 193
+      },
+      "distance": 1050.0,
+      "distance_ratio": 0.6235154394299287
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车充放电计费装置技术规范》QGDW 400-2009.pdf",
+      "file_name": "《电动汽车充放电计费装置技术规范》QGDW 400-2009.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 421.0,
+        "y_percent": 25.0,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1473.0,
+        "y_percent": 87.47030878859857,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1052.0,
+      "distance_ratio": 0.6247030878859857
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车充电接口规范 第1部分：通用要求》QGDW 1234.1-2014.pdf",
+      "file_name": "《电动汽车充电接口规范 第1部分：通用要求》QGDW 1234.1-2014.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1487.0,
+        "y_percent": 88.30166270783847,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "distance": 1062.0,
+      "distance_ratio": 0.6306413301662708
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车充电设施建设技术导则》QGDW 478-2010.pdf",
+      "file_name": "《电动汽车充电设施建设技术导则》QGDW 478-2010.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 443.0,
+        "y_percent": 26.306413301662708,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1453.0,
+        "y_percent": 86.28266033254157,
+        "width_ratio": 0.8085642317380353,
+        "length": 963
+      },
+      "distance": 1010.0,
+      "distance_ratio": 0.5997624703087886
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车动力蓄电池箱用充电机技术条件》NBT 33020-2015.pdf",
+      "file_name": "《电动汽车动力蓄电池箱用充电机技术条件》NBT 33020-2015.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 432.0,
+        "y_percent": 25.653206650831358,
+        "width_ratio": 0.8043660789252729,
+        "length": 958
+      },
+      "line2": {
+        "y_center": 1466.0,
+        "y_percent": 87.05463182897863,
+        "width_ratio": 0.8035264483627204,
+        "length": 957
+      },
+      "distance": 1034.0,
+      "distance_ratio": 0.6140142517814727
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车快换电池箱架通用技术要求》GBT 33341-2016.pdf",
+      "file_name": "《电动汽车快换电池箱架通用技术要求》GBT 33341-2016.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 266.0,
+        "y_percent": 15.795724465558195,
+        "width_ratio": 0.8060453400503779,
+        "length": 960
+      },
+      "line2": {
+        "y_center": 444.0,
+        "y_percent": 26.365795724465556,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "distance": 178.0,
+      "distance_ratio": 0.10570071258907364
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车快换电池箱通信协议》GBT 32895-2016.pdf",
+      "file_name": "《电动汽车快换电池箱通信协议》GBT 32895-2016.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 266.0,
+        "y_percent": 15.795724465558195,
+        "width_ratio": 0.8060453400503779,
+        "length": 960
+      },
+      "line2": {
+        "y_center": 444.0,
+        "y_percent": 26.365795724465556,
+        "width_ratio": 0.8060453400503779,
+        "length": 960
+      },
+      "distance": 178.0,
+      "distance_ratio": 0.10570071258907364
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车术语》GBT 19596-2017.pdf",
+      "file_name": "《电动汽车术语》GBT 19596-2017.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 258.0,
+        "y_percent": 15.320665083135394,
+        "width_ratio": 0.8035264483627204,
+        "length": 957
+      },
+      "line2": {
+        "y_center": 1541.0,
+        "y_percent": 91.5083135391924,
+        "width_ratio": 0.5684298908480269,
+        "length": 677
+      },
+      "distance": 1283.0,
+      "distance_ratio": 0.7618764845605701
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车模块化充电仓技术要求》NBT 33027-2016.pdf",
+      "file_name": "《电动汽车模块化充电仓技术要求》NBT 33027-2016.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 416.0,
+        "y_percent": 24.70308788598575,
+        "width_ratio": 0.8110831234256927,
+        "length": 966
+      },
+      "line2": {
+        "y_center": 1453.0,
+        "y_percent": 86.28266033254157,
+        "width_ratio": 0.2804366078925273,
+        "length": 334
+      },
+      "distance": 1037.0,
+      "distance_ratio": 0.6157957244655582
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车模块化电池仓技术要求》NBT 33026-2016.pdf",
+      "file_name": "《电动汽车模块化电池仓技术要求》NBT 33026-2016.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 423.0,
+        "y_percent": 25.1187648456057,
+        "width_ratio": 0.8102434928631402,
+        "length": 965
+      },
+      "line2": {
+        "y_center": 1458.0,
+        "y_percent": 86.57957244655582,
+        "width_ratio": 0.30982367758186397,
+        "length": 369
+      },
+      "distance": 1035.0,
+      "distance_ratio": 0.6146080760095012
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车用锂离子蓄电池》QCT 743-2016.pdf",
+      "file_name": "《电动汽车用锂离子蓄电池》QCT 743-2016.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 460.0,
+        "y_percent": 27.315914489311165,
+        "width_ratio": 0.5356842989084802,
+        "length": 638
+      },
+      "line2": {
+        "y_center": 1273.0,
+        "y_percent": 75.59382422802851,
+        "width_ratio": 0.45927791771620485,
+        "length": 547
+      },
+      "distance": 813.0,
+      "distance_ratio": 0.4827790973871734
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车电池动力仓总成通信协议》GBT 32896-2016.pdf",
+      "file_name": "《电动汽车电池动力仓总成通信协议》GBT 32896-2016.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 445.0,
+        "y_percent": 26.425178147268408,
+        "width_ratio": 0.8102434928631402,
+        "length": 965
+      },
+      "line2": {
+        "y_center": 1479.0,
+        "y_percent": 87.82660332541568,
+        "width_ratio": 0.8102434928631402,
+        "length": 965
+      },
+      "distance": 1034.0,
+      "distance_ratio": 0.6140142517814727
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车电池更换用电池箱电联接器通用技术要求》GBT 32879-2016.pdf",
+      "file_name": "《电动汽车电池更换用电池箱电联接器通用技术要求》GBT 32879-2016.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 422.0,
+        "y_percent": 25.05938242280285,
+        "width_ratio": 0.46767422334172964,
+        "length": 557
+      },
+      "line2": {
+        "y_center": 1462.0,
+        "y_percent": 86.81710213776722,
+        "width_ratio": 0.3064651553316541,
+        "length": 365
+      },
+      "distance": 1040.0,
+      "distance_ratio": 0.6175771971496437
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车电池更换站设计规范》GBT 51077-2015.pdf",
+      "file_name": "《电动汽车电池更换站设计规范》GBT 51077-2015.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 531.0,
+        "y_percent": 31.532066508313537,
+        "width_ratio": 0.6272040302267002,
+        "length": 747
+      },
+      "line2": {
+        "y_center": 1206.0,
+        "y_percent": 71.61520190023754,
+        "width_ratio": 0.6272040302267002,
+        "length": 747
+      },
+      "distance": 675.0,
+      "distance_ratio": 0.4008313539192399
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车电池更换站通用技术要求》GBT 29772-2013.pdf",
+      "file_name": "《电动汽车电池更换站通用技术要求》GBT 29772-2013.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 432.0,
+        "y_percent": 25.653206650831358,
+        "width_ratio": 0.5046179680940386,
+        "length": 601
+      },
+      "line2": {
+        "y_center": 1466.0,
+        "y_percent": 87.05463182897863,
+        "width_ratio": 0.26028547439126787,
+        "length": 310
+      },
+      "distance": 1034.0,
+      "distance_ratio": 0.6140142517814727
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车电池箱更换设备通用技术要求》NBT 33006-2013.pdf",
+      "file_name": "《电动汽车电池箱更换设备通用技术要求》NBT 33006-2013.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 478.0,
+        "y_percent": 28.38479809976247,
+        "width_ratio": 0.3853904282115869,
+        "length": 459
+      },
+      "line2": {
+        "y_center": 1425.0,
+        "y_percent": 84.61995249406175,
+        "width_ratio": 0.16792611251049538,
+        "length": 200
+      },
+      "distance": 947.0,
+      "distance_ratio": 0.5623515439429929
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车非车载传导式充电机与电池管理系统之间的通信协议》GBT 27930-2015.pdf",
+      "file_name": "《电动汽车非车载传导式充电机与电池管理系统之间的通信协议》GBT 27930-2015.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 236.0,
+        "y_percent": 14.014251781472684,
+        "width_ratio": 0.8480268681780017,
+        "length": 1010
+      },
+      "line2": {
+        "y_center": 899.0,
+        "y_percent": 53.38479809976246,
+        "width_ratio": 0.6230058774139379,
+        "length": 742
+      },
+      "distance": 663.0,
+      "distance_ratio": 0.39370546318289784
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车非车载充放电装置电气接口规范》QGDW 398-2009.pdf",
+      "file_name": "《电动汽车非车载充放电装置电气接口规范》QGDW 398-2009.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 421.0,
+        "y_percent": 25.0,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 1453.0,
+        "y_percent": 86.28266033254157,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "distance": 1032.0,
+      "distance_ratio": 0.6128266033254157
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车非车载充放电装置通用技术要求》QGDW 397-2009.pdf",
+      "file_name": "《电动汽车非车载充放电装置通用技术要求》QGDW 397-2009.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8110831234256927,
+        "length": 966
+      },
+      "line2": {
+        "y_center": 1459.0,
+        "y_percent": 86.63895486935867,
+        "width_ratio": 0.8110831234256927,
+        "length": 966
+      },
+      "distance": 1034.0,
+      "distance_ratio": 0.6140142517814727
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电动汽车非车载充电机通用要求》QGDW1233-2014.pdf",
+      "file_name": "《电动汽车非车载充电机通用要求》QGDW1233-2014.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 425.0,
+        "y_percent": 25.237529691211403,
+        "width_ratio": 0.8094038623005877,
+        "length": 964
+      },
+      "line2": {
+        "y_center": 596.0,
+        "y_percent": 35.39192399049881,
+        "width_ratio": 0.5978169605373636,
+        "length": 712
+      },
+      "distance": 171.0,
+      "distance_ratio": 0.10154394299287411
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电磁兼容 限值 对额定电流大于16A的设备在低压供电系统中产生的谐波电流的限制》GBZ 17625.6-2003.pdf",
+      "file_name": "《电磁兼容 限值 对额定电流大于16A的设备在低压供电系统中产生的谐波电流的限制》GBZ 17625.6-2003.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 276.0,
+        "y_percent": 16.389548693586697,
+        "width_ratio": 0.8211586901763224,
+        "length": 978
+      },
+      "line2": {
+        "y_center": 832.0,
+        "y_percent": 49.4061757719715,
+        "width_ratio": 0.7942905121746432,
+        "length": 946
+      },
+      "distance": 556.0,
+      "distance_ratio": 0.33016627078384797
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电能计量装置技术管理规程》DLT 448-2016.pdf",
+      "file_name": "《电能计量装置技术管理规程》DLT 448-2016.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 555.0,
+        "y_percent": 32.957244655581945,
+        "width_ratio": 0.5692695214105793,
+        "length": 678
+      },
+      "line2": {
+        "y_center": 1219.0,
+        "y_percent": 72.38717339667458,
+        "width_ratio": 0.5726280436607892,
+        "length": 682
+      },
+      "distance": 664.0,
+      "distance_ratio": 0.39429928741092635
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《电能质量 公用电网谐波》GBT 14549-1993.pdf",
+      "file_name": "《电能质量 公用电网谐波》GBT 14549-1993.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 229.0,
+        "y_percent": 13.598574821852733,
+        "width_ratio": 0.8119227539882452,
+        "length": 967
+      },
+      "line2": {
+        "y_center": 406.0,
+        "y_percent": 24.109263657957243,
+        "width_ratio": 0.7732997481108312,
+        "length": 921
+      },
+      "distance": 177.0,
+      "distance_ratio": 0.10510688836104513
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《磁兼容 限值 对每相额定电流≤16A且无条件接入的设备在公用低压供电系统中产生的电压变化、电压波动和闪烁的限制》GB 17625.2-2007.pdf",
+      "file_name": "《磁兼容 限值 对每相额定电流≤16A且无条件接入的设备在公用低压供电系统中产生的电压变化、电压波动和闪烁的限制》GB 17625.2-2007.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 431.0,
+        "y_percent": 25.593824228028506,
+        "width_ratio": 0.6834592779177162,
+        "length": 814
+      },
+      "line2": {
+        "y_center": 1462.0,
+        "y_percent": 86.81710213776722,
+        "width_ratio": 0.6675062972292192,
+        "length": 795
+      },
+      "distance": 1031.0,
+      "distance_ratio": 0.6122327790973872
+    },
+    {
+      "file_path": "F:\\标准规范要求\\充电\\换电标准\\电动车换电相关标准PDF\\《钢结构防火涂料》GB 14907-2018.pdf",
+      "file_name": "《钢结构防火涂料》GB 14907-2018.pdf",
+      "has_feature": true,
+      "line1": {
+        "y_center": 268.0,
+        "y_percent": 15.914489311163896,
+        "width_ratio": 0.8068849706129303,
+        "length": 961
+      },
+      "line2": {
+        "y_center": 1478.0,
+        "y_percent": 87.76722090261283,
+        "width_ratio": 0.8077246011754828,
+        "length": 962
+      },
+      "distance": 1210.0,
+      "distance_ratio": 0.7185273159144893
+    }
+  ]
+}
