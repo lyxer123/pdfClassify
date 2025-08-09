@@ -1,6 +1,6 @@
 {
   "version": "2.0.0",
-  "deployment_date": "2025-08-09T08:16:05.862957",
+  "deployment_date": "2025-08-09T10:00:30.472983",
   "python_version": "3.12.10",
   "environment": {
     "input_directory": "./input_pdfs",
@@ -12,7 +12,7 @@
     "timeout_seconds": 15,
     "max_pages_per_pdf": 5,
     "dpi_resolution": 300,
-    "validation_threshold": 70
+    "validation_threshold": 50
   },
   "ocr_settings": {
     "language": "chi_sim",

@@ -453,52 +453,72 @@ class PDFProcessor:
         validation_score = 0
         max_score = 0
         
-        # 1. 关键词验证 (权重: 40%) - 最重要的特征
-        max_score += 40
-        keywords = features.get('keywords', {})
-        if keywords.get('upper_has_standard', False):
-            validation_score += 25  # "标准"是最关键的特征
-        if keywords.get('lower_has_publish', False):
-            validation_score += 15  # "发布"是重要特征
-        
-        # 2. 横线结构验证 (权重: 25%) - 标准文档特有的双横线
-        max_score += 25
-        lines = features.get('lines', {})
-        if lines.get('first_line_valid', False):
-            validation_score += 12
-        if lines.get('second_line_valid', False):
-            validation_score += 13
-        
-        # 3. 颜色特征验证 (权重: 20%) - 白底黑字是基本要求
-        max_score += 20
+        # 1. 颜色特征验证 (权重: 35%) - 提高权重，白底黑字是最基本的特征
+        max_score += 35
         white_ratio = features.get('white_ratio', 0)
         black_ratio = features.get('black_ratio', 0)
-        if white_ratio > 0.85:
-            validation_score += 12
-        if black_ratio > 0.005:
-            validation_score += 8
+        if white_ratio > 0.75:  # 降低白色要求
+            validation_score += 20
+        elif white_ratio > 0.60:
+            validation_score += 15
+        elif white_ratio > 0.45:
+            validation_score += 10
+            
+        if black_ratio > 0.003:  # 降低黑色要求
+            validation_score += 10
+        elif black_ratio > 0.001:
+            validation_score += 5
         
-        # 4. 区域结构验证 (权重: 15%) - 三区划分
-        max_score += 15
+        # 2. 区域结构验证 (权重: 30%) - 提高权重，三区划分是重要特征
+        max_score += 30
         regions = features.get('regions', {})
         proportions = features.get('proportions', {})
         
         if len(regions) >= 3:
-            validation_score += 8
+            validation_score += 15
+        elif len(regions) >= 2:
+            validation_score += 10
+            
+        # 验证区域比例是否符合标准文档要求 (降低要求)
+        if proportions.get('upper_whitespace', 0) > 15:  # 上部有一定留白
+            validation_score += 5
+        if proportions.get('middle_whitespace', 0) > 30:  # 中部有较多留白
+            validation_score += 5
+        if proportions.get('lower_whitespace', 0) > 10:  # 下部有一定留白
+            validation_score += 5
         
-        # 验证区域比例是否符合标准文档要求
-        if proportions.get('upper_whitespace', 0) > 20:  # 上部有一定留白
-            validation_score += 3
-        if proportions.get('middle_whitespace', 0) > 40:  # 中部有较多留白
-            validation_score += 2
-        if proportions.get('lower_whitespace', 0) > 15:  # 下部有一定留白
-            validation_score += 2
+        # 3. 关键词验证 (权重: 20%) - 降低权重，因为OCR可能不准确
+        max_score += 20
+        keywords = features.get('keywords', {})
+        if keywords.get('upper_has_standard', False):
+            validation_score += 12  # "标准"是重要特征
+        if keywords.get('lower_has_publish', False):
+            validation_score += 8   # "发布"是重要特征
+        
+        # 4. 横线结构验证 (权重: 15%) - 降低权重，因为线检测可能不准确
+        max_score += 15
+        lines = features.get('lines', {})
+        if lines.get('first_line_valid', False):
+            validation_score += 8
+        if lines.get('second_line_valid', False):
+            validation_score += 7
         
         # 计算匹配度
         match_percentage = (validation_score / max_score) * 100 if max_score > 0 else 0
         
-        # 设置验证阈值为80%，确保只有真正的标准文档通过
-        return match_percentage >= 80
+        # 降低验证阈值为50%，适应真实标准文档的多样性
+        threshold = 50
+        is_valid = match_percentage >= threshold
+        
+        # 详细日志输出
+        self.logger.debug(f"特征验证详情 (阈值: {threshold}%):")
+        self.logger.debug(f"  颜色特征 (35%): 白色{white_ratio:.1%} 黑色{black_ratio:.3%}")
+        self.logger.debug(f"  区域结构 (30%): {len(regions)}个区域")
+        self.logger.debug(f"  关键词 (20%): 标准{'✓' if keywords.get('upper_has_standard', False) else '✗'} 发布{'✓' if keywords.get('lower_has_publish', False) else '✗'}")
+        self.logger.debug(f"  横线结构 (15%): 第一线{'✓' if lines.get('first_line_valid', False) else '✗'} 第二线{'✓' if lines.get('second_line_valid', False) else '✗'}")
+        self.logger.debug(f"  总匹配度: {match_percentage:.1f}% -> {'通过' if is_valid else '不通过'}")
+        
+        return is_valid
     
 
     
