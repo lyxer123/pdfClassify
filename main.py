@@ -51,6 +51,11 @@ def parse_arguments():
         action='store_true',
         help='详细输出模式'
     )
+    parser.add_argument(
+        '--recursive',
+        action='store_true',
+        help='递归搜索子目录中的PDF文件'
+    )
     
     return parser.parse_args()
 
@@ -119,16 +124,29 @@ def main():
         sys.exit(1)
     
     # 统计PDF文件数量
-    pdf_files = [f for f in os.listdir(args.input_dir) if f.lower().endswith('.pdf')]
+    if args.recursive:
+        pdf_files = []
+        for root, dirs, files in os.walk(args.input_dir):
+            for file in files:
+                if file.lower().endswith('.pdf'):
+                    pdf_files.append(os.path.join(root, file))
+    else:
+        pdf_files = [f for f in os.listdir(args.input_dir) if f.lower().endswith('.pdf')]
+    
     if not pdf_files:
-        logger.warning(f"在目录 {args.input_dir} 中未找到PDF文件")
+        search_type = "递归搜索" if args.recursive else "搜索"
+        logger.warning(f"{search_type}目录 {args.input_dir} 中未找到PDF文件")
         return
     
     logger.info(f"找到 {len(pdf_files)} 个PDF文件")
     
     # 批量处理
-    logger.info("开始批量处理PDF文件...")
-    results = processor.batch_process(args.input_dir, args.output_dir)
+    if args.recursive:
+        logger.info(f"开始递归搜索并处理 {args.input_dir} 目录下的所有PDF文件...")
+    else:
+        logger.info("开始批量处理PDF文件...")
+    
+    results = processor.batch_process(args.input_dir, args.output_dir, recursive=args.recursive)
     
     # 输出结果统计
     logger.info("=" * 50)

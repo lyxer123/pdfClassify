@@ -52,6 +52,36 @@ def create_directories():
         os.makedirs(dir_name, exist_ok=True)
         print(f"✅ 创建目录: {dir_name}")
 
+def check_pdf_backends():
+    """检查PDF处理后端"""
+    print("\n🔧 检查PDF处理后端...")
+    
+    backends = []
+    
+    # 检查pdf2image和poppler
+    try:
+        from pdf2image import convert_from_path
+        print("✅ pdf2image 可用")
+        backends.append("pdf2image")
+    except ImportError:
+        print("❌ pdf2image 未安装")
+    
+    # 检查PyMuPDF
+    try:
+        import fitz
+        print("✅ PyMuPDF 可用")
+        backends.append("PyMuPDF")
+    except ImportError:
+        print("❌ PyMuPDF 未安装")
+    
+    if not backends:
+        print("❌ 没有可用的PDF处理后端")
+        print("请安装: pip install PyMuPDF 或安装poppler")
+        return False
+    else:
+        print(f"✅ 可用的PDF后端: {', '.join(backends)}")
+        return True
+
 def test_installation():
     """测试安装"""
     print("\n🔧 测试安装...")
@@ -87,6 +117,9 @@ def main():
     
     # 检查Tesseract
     check_tesseract()
+    
+    # 检查PDF后端
+    check_pdf_backends()
     
     # 创建目录
     create_directories()

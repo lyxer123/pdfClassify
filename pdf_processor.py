@@ -7,11 +7,31 @@ PDF处理器和特征提取器
 import cv2
 import numpy as np
 import pytesseract
-from pdf2image import convert_from_path
 import os
 import logging
 from typing import Dict
 import time
+
+# 尝试导入多种PDF处理库
+PDF_BACKEND = None
+try:
+    from pdf2image import convert_from_path
+    PDF_BACKEND = 'pdf2image'
+except ImportError:
+    pass
+
+try:
+    import fitz  # PyMuPDF
+    if PDF_BACKEND is None:
+        PDF_BACKEND = 'pymupdf'
+except ImportError:
+    pass
+
+try:
+    from PIL import Image
+    import io
+except ImportError:
+    pass
 
 class PDFProcessor:
     """PDF处理器类"""
@@ -44,7 +64,7 @@ class PDFProcessor:
     
     def _setup_logger(self) -> logging.Logger:
         logger = logging.getLogger('PDFProcessor')
-        logger.setLevel(logging.INFO)
+        logger.setLevel(logging.DEBUG)  # 启用debug级别
         if not logger.handlers:
             handler = logging.StreamHandler()
             formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -66,45 +86,79 @@ class PDFProcessor:
         return color_pixels / total_pixels
     
     def _locate_regions(self, image: np.ndarray, hsv: np.ndarray) -> Dict:
-        """定位三区域（上中下）"""
+        """定位三区域（上中下）- 适配真实PDF文档"""
         regions = {}
-        blue_mask = cv2.inRange(hsv, self.color_ranges['blue']['lower'], self.color_ranges['blue']['upper'])
-        blue_contours, _ = cv2.findContours(blue_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        height, width = image.shape[:2]
         
-        blue_boxes = []
-        for contour in blue_contours:
-            if cv2.contourArea(contour) > 100:
-                x, y, w, h = cv2.boundingRect(contour)
-                blue_boxes.append((y, x, w, h))
+        # 对于真实PDF文档，没有蓝色标注框，我们根据内容分布来划分区域
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         
-        blue_boxes.sort(key=lambda x: x[0])
+        # 使用水平投影来找到文本区域
+        horizontal_projection = np.sum(gray < 200, axis=1)  # 统计每行的非白色像素
         
-        if len(blue_boxes) >= 3:
-            regions['upper'] = {'y': blue_boxes[0][0], 'height': blue_boxes[0][3]}
-            regions['middle'] = {'y': blue_boxes[1][0], 'height': blue_boxes[1][3]}
-            regions['lower'] = {'y': blue_boxes[2][0], 'height': blue_boxes[2][3]}
+        # 找到有内容的行
+        content_lines = np.where(horizontal_projection > width * 0.1)[0]  # 至少10%的像素是内容
+        
+        if len(content_lines) > 0:
+            # 按页面高度的比例划分上中下三个区域
+            regions['upper'] = {
+                'y': 0, 
+                'height': int(height * 0.25)  # 上部25%
+            }
+            regions['middle'] = {
+                'y': int(height * 0.25), 
+                'height': int(height * 0.5)   # 中部50%
+            }
+            regions['lower'] = {
+                'y': int(height * 0.75), 
+                'height': int(height * 0.25)  # 下部25%
+            }
         
         return regions
     
     def _locate_key_boxes(self, image: np.ndarray, hsv: np.ndarray) -> Dict:
-        """定位6个关键框（1-6号）"""
+        """定位关键区域 - 适配真实PDF文档"""
         key_boxes = {}
-        red_mask1 = cv2.inRange(hsv, self.color_ranges['red']['lower1'], self.color_ranges['red']['upper1'])
-        red_mask2 = cv2.inRange(hsv, self.color_ranges['red']['lower2'], self.color_ranges['red']['upper2'])
-        red_mask = cv2.bitwise_or(red_mask1, red_mask2)
+        height, width = image.shape[:2]
         
-        red_contours, _ = cv2.findContours(red_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # 对于真实PDF，我们根据文档结构模拟6个关键区域
+        # 这些区域基于标准文档的典型布局
         
-        red_boxes = []
-        for contour in red_contours:
-            if cv2.contourArea(contour) > 50:
-                x, y, w, h = cv2.boundingRect(contour)
-                red_boxes.append((x, y, w, h))
+        # 1号框：右上角区域（通常是logo或机构信息）
+        key_boxes['box_1'] = {
+            'x': int(width * 0.7), 'y': 0, 
+            'width': int(width * 0.3), 'height': int(height * 0.15)
+        }
         
-        if len(red_boxes) >= 6:
-            red_boxes.sort(key=lambda x: (x[1], x[0]))
-            for i, (x, y, w, h) in enumerate(red_boxes[:6]):
-                key_boxes[f'box_{i+1}'] = {'x': x, 'y': y, 'width': w, 'height': h}
+        # 2号框：上部标题区域  
+        key_boxes['box_2'] = {
+            'x': 0, 'y': int(height * 0.15),
+            'width': width, 'height': int(height * 0.1)
+        }
+        
+        # 3号框：标准编号区域
+        key_boxes['box_3'] = {
+            'x': int(width * 0.5), 'y': int(height * 0.25),
+            'width': int(width * 0.5), 'height': int(height * 0.1)
+        }
+        
+        # 4号框：标准名称区域（中英文）
+        key_boxes['box_4'] = {
+            'x': int(width * 0.1), 'y': int(height * 0.35),
+            'width': int(width * 0.8), 'height': int(height * 0.3)
+        }
+        
+        # 5号框：发布实施日期区域
+        key_boxes['box_5'] = {
+            'x': 0, 'y': int(height * 0.75),
+            'width': width, 'height': int(height * 0.1)
+        }
+        
+        # 6号框：发布单位区域
+        key_boxes['box_6'] = {
+            'x': int(width * 0.2), 'y': int(height * 0.85),
+            'width': int(width * 0.6), 'height': int(height * 0.15)
+        }
         
         return key_boxes
     
@@ -157,35 +211,97 @@ class PDFProcessor:
         return keywords
     
     def _detect_lines(self, image: np.ndarray, regions: Dict) -> Dict:
-        """检测横线"""
+        """检测横线 - 标准文档的关键特征"""
         lines = {}
+        height, width = image.shape[:2]
+        
+        # 转换为灰度图
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        edges = cv2.Canny(gray, 50, 150, apertureSize=3)
-        detected_lines = cv2.HoughLines(edges, 1, np.pi/180, threshold=100)
+        
+        # 使用更精确的边缘检测参数
+        edges = cv2.Canny(gray, 30, 100, apertureSize=3)
+        
+        # 检测直线
+        detected_lines = cv2.HoughLines(edges, 1, np.pi/180, threshold=max(50, width//10))
+        
+        horizontal_lines = []
         
         if detected_lines is not None:
-            horizontal_lines = []
-            height, width = image.shape[:2]
-            
             for line in detected_lines:
                 rho, theta = line[0]
-                if abs(theta) < 0.1 or abs(theta - np.pi) < 0.1:
-                    horizontal_lines.append((rho, theta))
+                # 更严格的水平线判断
+                if abs(theta) < 0.05 or abs(theta - np.pi) < 0.05:
+                    horizontal_lines.append((abs(rho), theta))
+        
+        # 按位置排序
+        horizontal_lines.sort(key=lambda x: x[0])
+        
+        # 查找符合标准文档要求的两条主要横线
+        valid_lines = []
+        for rho, theta in horizontal_lines:
+            # 计算线条长度（通过端点检测）
+            line_length = self._calculate_line_length(edges, rho, theta, width)
             
-            horizontal_lines.sort(key=lambda x: x[0])
+            # 只保留足够长的线条（至少占页面宽度的70%）
+            if line_length > width * 0.7:
+                valid_lines.append((rho, theta, line_length))
+        
+        # 验证是否有足够的横线
+        if len(valid_lines) >= 2:
+            # 第一条横线应该在上部区域底部附近
+            first_line_y = valid_lines[0][0]
+            expected_first_y = height * 0.3  # 约在页面30%位置
             
-            if len(horizontal_lines) >= 2:
-                lines['first_line'] = horizontal_lines[0]
-                lines['second_line'] = horizontal_lines[1]
-                
-                if 'upper' in regions and 'lower' in regions:
-                    first_line_y = horizontal_lines[0][0]
-                    second_line_y = horizontal_lines[1][0]
-                    
-                    lines['first_line_valid'] = abs(first_line_y - (regions['upper']['y'] + regions['upper']['height'])) < height * 0.05
-                    lines['second_line_valid'] = abs(second_line_y - regions['lower']['y']) < height * 0.05
+            # 第二条横线应该在下部区域顶部附近  
+            second_line_y = valid_lines[1][0]
+            expected_second_y = height * 0.75  # 约在页面75%位置
+            
+            # 验证位置是否合理
+            lines['first_line_valid'] = abs(first_line_y - expected_first_y) < height * 0.15
+            lines['second_line_valid'] = abs(second_line_y - expected_second_y) < height * 0.15
+            
+            lines['first_line'] = valid_lines[0]
+            lines['second_line'] = valid_lines[1]
+        else:
+            lines['first_line_valid'] = False
+            lines['second_line_valid'] = False
         
         return lines
+    
+    def _calculate_line_length(self, edges: np.ndarray, rho: float, theta: float, max_width: int) -> float:
+        """计算线条的实际长度"""
+        height, width = edges.shape
+        
+        # 计算线条的端点
+        a = np.cos(theta)
+        b = np.sin(theta)
+        x0 = a * rho
+        y0 = b * rho
+        
+        # 找到线条与图像边界的交点
+        x1 = int(x0 + max_width * (-b))
+        y1 = int(y0 + max_width * (a))
+        x2 = int(x0 - max_width * (-b))
+        y2 = int(y0 - max_width * (a))
+        
+        # 约束到图像范围内
+        x1 = max(0, min(width-1, x1))
+        x2 = max(0, min(width-1, x2))
+        y1 = max(0, min(height-1, y1))
+        y2 = max(0, min(height-1, y2))
+        
+        # 沿着线条检测实际的像素点
+        line_pixels = 0
+        steps = abs(x2 - x1) + abs(y2 - y1)
+        
+        if steps > 0:
+            for i in range(steps):
+                x = int(x1 + (x2 - x1) * i / steps)
+                y = int(y1 + (y2 - y1) * i / steps)
+                if 0 <= x < width and 0 <= y < height and edges[y, x] > 0:
+                    line_pixels += 1
+        
+        return line_pixels
     
     def _calculate_proportions(self, image: np.ndarray, regions: Dict) -> Dict:
         """计算区域比例"""
@@ -252,12 +368,13 @@ class PDFProcessor:
         
         return constraints
     
-    def _extract_features(self, image: np.ndarray) -> Dict:
+    def _extract_features(self, image: np.ndarray, filename: str = '') -> Dict:
         """提取图像特征"""
         features = {}
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         height, width = image.shape[:2]
         
+        features['filename'] = filename
         features['white_ratio'] = self._get_color_ratio(hsv, 'white')
         features['black_ratio'] = self._get_color_ratio(hsv, 'black')
         features['regions'] = self._locate_regions(image, hsv)
@@ -270,70 +387,120 @@ class PDFProcessor:
         
         return features
     
+    def _convert_pdf_to_images(self, pdf_path: str, max_pages: int = 5):
+        """
+        将PDF转换为图像，支持多种后端
+        
+        Args:
+            pdf_path: PDF文件路径
+            max_pages: 最大页数
+            
+        Returns:
+            图像列表
+        """
+        images = []
+        
+        # 先尝试PyMuPDF（更稳定）
+        try:
+            import fitz
+            self.logger.debug(f"使用PyMuPDF处理: {pdf_path}")
+            doc = fitz.open(pdf_path)
+            
+            for page_num in range(min(max_pages, len(doc))):
+                page = doc.load_page(page_num)
+                # 设置缩放比例，相当于300 DPI
+                mat = fitz.Matrix(2.0, 2.0)
+                pix = page.get_pixmap(matrix=mat)
+                
+                # 转换为numpy数组
+                img_data = pix.samples
+                img_array = np.frombuffer(img_data, dtype=np.uint8)
+                img_array = img_array.reshape(pix.height, pix.width, pix.n)
+                
+                # 转换颜色空间
+                if pix.n == 4:  # RGBA
+                    opencv_image = cv2.cvtColor(img_array, cv2.COLOR_RGBA2BGR)
+                elif pix.n == 3:  # RGB
+                    opencv_image = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
+                else:  # 灰度图
+                    opencv_image = cv2.cvtColor(img_array, cv2.COLOR_GRAY2BGR)
+                
+                images.append(opencv_image)
+            
+            doc.close()
+            self.logger.debug(f"PyMuPDF成功转换了{len(images)}页")
+            return images
+            
+        except Exception as e:
+            self.logger.warning(f"PyMuPDF失败: {e}")
+        
+        # 备用：尝试pdf2image
+        if PDF_BACKEND == 'pdf2image':
+            try:
+                self.logger.debug(f"使用pdf2image处理: {pdf_path}")
+                images = convert_from_path(pdf_path, dpi=300, first_page=1, last_page=max_pages)
+                opencv_images = [cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR) for img in images]
+                self.logger.debug(f"pdf2image成功转换了{len(opencv_images)}页")
+                return opencv_images
+            except Exception as e:
+                self.logger.warning(f"pdf2image也失败: {e}")
+        
+        # 如果所有方法都失败
+        raise Exception(f"无法转换PDF文件: {pdf_path}，请检查文件是否损坏或PDF处理库安装")
+    
     def _validate_features(self, features: Dict) -> bool:
-        """验证特征是否符合模板要求"""
+        """验证特征是否符合模板要求 - 基于页面内容特征"""
         validation_score = 0
         max_score = 0
         
-        # 1. 颜色特征验证 (权重: 20%)
+        # 1. 关键词验证 (权重: 40%) - 最重要的特征
+        max_score += 40
+        keywords = features.get('keywords', {})
+        if keywords.get('upper_has_standard', False):
+            validation_score += 25  # "标准"是最关键的特征
+        if keywords.get('lower_has_publish', False):
+            validation_score += 15  # "发布"是重要特征
+        
+        # 2. 横线结构验证 (权重: 25%) - 标准文档特有的双横线
+        max_score += 25
+        lines = features.get('lines', {})
+        if lines.get('first_line_valid', False):
+            validation_score += 12
+        if lines.get('second_line_valid', False):
+            validation_score += 13
+        
+        # 3. 颜色特征验证 (权重: 20%) - 白底黑字是基本要求
         max_score += 20
         white_ratio = features.get('white_ratio', 0)
         black_ratio = features.get('black_ratio', 0)
-        if white_ratio > 0.85:  # 降低白色背景要求到85%
-            validation_score += 10
-        if black_ratio > 0.005:  # 降低黑色文字要求到0.5%
-            validation_score += 10
+        if white_ratio > 0.85:
+            validation_score += 12
+        if black_ratio > 0.005:
+            validation_score += 8
         
-        # 2. 区域检测验证 (权重: 15%)
+        # 4. 区域结构验证 (权重: 15%) - 三区划分
         max_score += 15
         regions = features.get('regions', {})
+        proportions = features.get('proportions', {})
+        
         if len(regions) >= 3:
-            validation_score += 15
-        elif len(regions) >= 2:
-            validation_score += 10
+            validation_score += 8
         
-        # 3. 关键框检测验证 (权重: 15%)
-        max_score += 15
-        key_boxes = features.get('key_boxes', {})
-        box_count = len(key_boxes)
-        if box_count >= 6:
-            validation_score += 15
-        elif box_count >= 4:
-            validation_score += 10
-        elif box_count >= 2:
-            validation_score += 5
-        
-        # 4. 关键词验证 (权重: 20%)
-        max_score += 20
-        keywords = features.get('keywords', {})
-        if keywords.get('upper_has_standard', False):
-            validation_score += 10
-        if keywords.get('lower_has_publish', False):
-            validation_score += 10
-        
-        # 5. 位置关系验证 (权重: 15%)
-        max_score += 15
-        positions = features.get('positions', {})
-        position_score = 0
-        if positions.get('box1_right_aligned', False):
-            position_score += 5
-        if positions.get('box3_right_aligned', False):
-            position_score += 5
-        if positions.get('box6_centered', False):
-            position_score += 5
-        validation_score += position_score
-        
-        # 6. 内容约束验证 (权重: 15%)
-        max_score += 15
-        content_constraints = features.get('content_constraints', {})
-        if content_constraints.get('box4_multiple_lines', False):
-            validation_score += 15
+        # 验证区域比例是否符合标准文档要求
+        if proportions.get('upper_whitespace', 0) > 20:  # 上部有一定留白
+            validation_score += 3
+        if proportions.get('middle_whitespace', 0) > 40:  # 中部有较多留白
+            validation_score += 2
+        if proportions.get('lower_whitespace', 0) > 15:  # 下部有一定留白
+            validation_score += 2
         
         # 计算匹配度
         match_percentage = (validation_score / max_score) * 100 if max_score > 0 else 0
         
-        # 降低验证阈值到70%
-        return match_percentage >= 70
+        # 设置验证阈值为80%，确保只有真正的标准文档通过
+        return match_percentage >= 80
+    
+
     
     def process_pdf(self, pdf_path: str, timeout: int = 15) -> Dict:
         """处理单个PDF文件"""
@@ -351,15 +518,19 @@ class PDFProcessor:
                 result['reason'] = '处理超时'
                 return result
             
-            images = convert_from_path(pdf_path, dpi=300, first_page=1, last_page=5)
+            # 使用新的PDF转换方法
+            images = self._convert_pdf_to_images(pdf_path, max_pages=5)
             
-            for page_num, image in enumerate(images):
+            for page_num, opencv_image in enumerate(images):
                 if time.time() - start_time > timeout:
                     result['reason'] = '处理超时'
                     return result
                 
-                opencv_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-                features = self._extract_features(opencv_image)
+                filename = os.path.basename(pdf_path)
+                features = self._extract_features(opencv_image, filename)
+                
+                # 保存最后一次特征用于调试
+                self._last_features = features
                 
                 if self._validate_features(features):
                     result['success'] = True
@@ -377,7 +548,7 @@ class PDFProcessor:
         result['processing_time'] = time.time() - start_time
         return result
     
-    def batch_process(self, input_dir: str, output_dir: str = "jc") -> Dict:
+    def batch_process(self, input_dir: str, output_dir: str = "jc", recursive: bool = False) -> Dict:
         """批量处理PDF文件"""
         results = {
             'total_files': 0,
@@ -389,30 +560,65 @@ class PDFProcessor:
         
         os.makedirs(output_dir, exist_ok=True)
         
-        for filename in os.listdir(input_dir):
-            if filename.lower().endswith('.pdf'):
-                pdf_path = os.path.join(input_dir, filename)
-                results['total_files'] += 1
-                
-                self.logger.info(f"处理文件: {filename}")
-                
-                result = self.process_pdf(pdf_path)
-                
-                if result['success']:
-                    output_path = os.path.join(output_dir, filename)
-                    try:
-                        import shutil
-                        shutil.copy2(pdf_path, output_path)
-                        results['successful_files'] += 1
-                        results['successful_paths'].append(pdf_path)
-                        self.logger.info(f"文件 {filename} 匹配成功，已复制到 {output_dir}")
-                    except Exception as e:
-                        self.logger.error(f"复制文件 {filename} 失败: {str(e)}")
-                        results['failed_files'] += 1
-                        results['failed_reasons'][filename] = f"复制失败: {str(e)}"
-                else:
+        # 获取PDF文件列表
+        pdf_files = self._find_pdf_files(input_dir, recursive)
+        
+        for pdf_path in pdf_files:
+            filename = os.path.basename(pdf_path)
+            results['total_files'] += 1
+            
+            self.logger.info(f"处理文件: {pdf_path}")
+            
+            result = self.process_pdf(pdf_path)
+            
+            if result['success']:
+                # 生成唯一的输出文件名（防止重名）
+                output_filename = self._generate_unique_filename(output_dir, filename)
+                output_path = os.path.join(output_dir, output_filename)
+                try:
+                    import shutil
+                    shutil.copy2(pdf_path, output_path)
+                    results['successful_files'] += 1
+                    results['successful_paths'].append(pdf_path)
+                    self.logger.info(f"✓ {pdf_path} 匹配成功，已复制到 {output_dir}/{output_filename}")
+                except Exception as e:
+                    self.logger.error(f"复制文件 {filename} 失败: {str(e)}")
                     results['failed_files'] += 1
-                    results['failed_reasons'][filename] = result['reason']
-                    self.logger.info(f"文件 {filename} 不匹配: {result['reason']}")
+                    results['failed_reasons'][pdf_path] = f"复制失败: {str(e)}"
+            else:
+                results['failed_files'] += 1
+                results['failed_reasons'][pdf_path] = result['reason']
+                self.logger.info(f"✗ {pdf_path} 不匹配: {result['reason']}")
         
         return results
+    
+    def _find_pdf_files(self, root_dir: str, recursive: bool = False) -> list:
+        """查找PDF文件"""
+        pdf_files = []
+        
+        if recursive:
+            # 递归搜索所有子目录
+            for root, dirs, files in os.walk(root_dir):
+                for file in files:
+                    if file.lower().endswith('.pdf'):
+                        pdf_files.append(os.path.join(root, file))
+        else:
+            # 只搜索当前目录
+            if os.path.exists(root_dir):
+                for filename in os.listdir(root_dir):
+                    if filename.lower().endswith('.pdf'):
+                        pdf_files.append(os.path.join(root_dir, filename))
+        
+        return pdf_files
+    
+    def _generate_unique_filename(self, output_dir: str, filename: str) -> str:
+        """生成唯一的文件名"""
+        base_name, ext = os.path.splitext(filename)
+        counter = 1
+        new_filename = filename
+        
+        while os.path.exists(os.path.join(output_dir, new_filename)):
+            new_filename = f"{base_name}_{counter}{ext}"
+            counter += 1
+        
+        return new_filename
