@@ -1,412 +1,408 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-PDF标准文档分类系统主程序
-基于mb81/82/83特征的标准文档智能识别
-支持递归搜索、最多3页检索、四步逐次判断
+PDF特征提取工具
+功能：分析PDF文件的页面颜色特征，检测是否符合标准（白色背景+黑色文字）
 """
 
 import os
 import sys
+import json
 import argparse
-import logging
-from pdf_processor import PDFProcessor
+import io
+from datetime import datetime
+from pathlib import Path
 import cv2
+import numpy as np
+from PIL import Image
+import fitz  # PyMuPDF
+import logging
 
-def setup_logging():
-    """设置日志配置"""
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.StreamHandler(),
-            logging.FileHandler('pdf_classify.log', encoding='utf-8')
-        ]
-    )
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('pdf_classify.log', encoding='utf-8'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
-def parse_arguments():
-    """解析命令行参数"""
-    parser = argparse.ArgumentParser(description='PDF标准文档分类系统')
-    parser.add_argument(
-        'input_dir',
-        nargs='?',
-        default='.',
-        help='输入目录路径（默认为当前目录）'
-    )
-    parser.add_argument(
-        '--output-dir',
-        default='jc',
-        help='输出目录路径（默认为jc）'
-    )
-    parser.add_argument(
-        '--template',
-        default='templates/mb81.png',
-        help='模板图片路径（默认为templates/mb81.png）'
-    )
-    parser.add_argument(
-        '--timeout',
-        type=int,
-        default=30,
-        help='单PDF处理超时时间（秒，默认为30）'
-    )
-    parser.add_argument(
-        '--max-pages',
-        type=int,
-        default=3,
-        help='每个PDF文件最多检索页数（默认为3）'
-    )
-    parser.add_argument(
-        '--folder',
-        type=str,
-        help='指定硬盘文件夹路径进行递归搜索'
-    )
-    parser.add_argument(
-        '--verbose',
-        action='store_true',
-        help='详细输出模式'
-    )
-    parser.add_argument(
-        '--recursive',
-        action='store_true',
-        help='递归搜索子目录中的PDF文件'
-    )
-    parser.add_argument(
-        '--demo',
-        action='store_true',
-        help='运行演示模式，展示系统功能'
-    )
+
+class PDFFeatureExtractor:
+    """PDF特征提取器"""
     
-    return parser.parse_args()
-
-def check_dependencies():
-    """检查依赖项"""
-    try:
-        import cv2
-        import numpy
-        import pytesseract
-        from pdf2image import convert_from_path
-        print("✓ 所有依赖项已安装")
-        return True
-    except ImportError as e:
-        print(f"✗ 缺少依赖项: {e}")
-        print("请运行: pip install -r requirements.txt")
-        return False
-
-def check_tesseract():
-    """检查Tesseract OCR"""
-    try:
-        import pytesseract
-        # 测试Tesseract是否可用
-        pytesseract.get_tesseract_version()
-        print("✓ Tesseract OCR 可用")
-        return True
-    except Exception as e:
-        print(f"✗ Tesseract OCR 不可用: {e}")
-        print("请安装Tesseract OCR和中文语言包")
-        return False
-
-def demo_template_analysis():
-    """演示模板分析功能"""
-    print("\n" + "="*60)
-    print("【演示1】模板特征分析")
-    print("="*60)
+    def __init__(self, template_path="templates/mb.png", data_dir="data"):
+        """
+        初始化特征提取器
+        
+        Args:
+            template_path: 标准模板图片路径
+            data_dir: 特征数据保存目录
+        """
+        self.template_path = template_path
+        self.data_dir = Path(data_dir)
+        self.data_dir.mkdir(exist_ok=True)
+        
+        # 颜色特征阈值配置（基于104个标准PDF分析结果优化）
+        self.color_thresholds = {
+            'white_bg_min': 200,      # 白色背景最小RGB值
+            'black_text_max': 80,     # 黑色文字最大RGB值
+            'bg_ratio_min': 0.95,     # 背景色占比最小值（基于标准PDF 5%分位数: 95.2%）
+            'text_ratio_min': 0.011,  # 文字色占比最小值（基于标准PDF 5%分位数: 1.2%）
+            'contrast_min': 29,       # 最小对比度（基于标准PDF 5%分位数: 29.5）
+            'brightness_min': 246     # 最小亮度（基于标准PDF 5%分位数: 246.2）
+        }
     
-    template_path = "templates/mb81.png"
-    if not os.path.exists(template_path):
-        template_path = "mb81.png"
-        if not os.path.exists(template_path):
-            print(f"❌ 模板文件 mb81.png 不存在（已检查templates目录和当前目录）")
+    def pdf_to_images(self, pdf_path, max_pages=5):
+        """
+        将PDF页面转换为图片
+        
+        Args:
+            pdf_path: PDF文件路径
+            max_pages: 最大页数
+            
+        Returns:
+            list: 图片数组列表
+        """
+        try:
+            doc = fitz.open(pdf_path)
+            images = []
+            
+            pages_to_convert = min(len(doc), max_pages)
+            logger.info(f"正在转换PDF '{pdf_path}' 的前 {pages_to_convert} 页")
+            
+            for page_num in range(pages_to_convert):
+                page = doc.load_page(page_num)
+                # 设置较高的分辨率以获得更好的图像质量
+                mat = fitz.Matrix(2.0, 2.0)  # 2倍放大
+                pix = page.get_pixmap(matrix=mat)
+                
+                # 转换为PIL图像
+                img_data = pix.tobytes("ppm")
+                img = Image.open(io.BytesIO(img_data))
+                
+                # 转换为numpy数组
+                img_array = np.array(img)
+                images.append(img_array)
+                
+                logger.info(f"已转换第 {page_num + 1} 页，图像尺寸: {img_array.shape}")
+            
+            doc.close()
+            return images
+            
+        except Exception as e:
+            logger.error(f"PDF转换失败 '{pdf_path}': {str(e)}")
+            return []
+    
+    def analyze_color_features(self, image):
+        """
+        分析图像的颜色特征
+        
+        Args:
+            image: 图像数组 (numpy array)
+            
+        Returns:
+            dict: 颜色特征分析结果
+        """
+        try:
+            # 转换为RGB（如果是BGR）
+            if len(image.shape) == 3 and image.shape[2] == 3:
+                # 假设输入是RGB格式
+                rgb_image = image
+            else:
+                rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            
+            height, width = rgb_image.shape[:2]
+            total_pixels = height * width
+            
+            # 计算各颜色通道的平均值
+            mean_colors = np.mean(rgb_image.reshape(-1, 3), axis=0)
+            
+            # 分析白色背景像素
+            white_mask = np.all(rgb_image >= self.color_thresholds['white_bg_min'], axis=2)
+            white_pixels = np.sum(white_mask)
+            white_ratio = white_pixels / total_pixels
+            
+            # 分析黑色文字像素
+            black_mask = np.all(rgb_image <= self.color_thresholds['black_text_max'], axis=2)
+            black_pixels = np.sum(black_mask)
+            black_ratio = black_pixels / total_pixels
+            
+            # 分析灰度分布
+            gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)
+            hist = cv2.calcHist([gray_image], [0], None, [256], [0, 256])
+            
+            # 计算对比度（标准差）
+            contrast = np.std(gray_image)
+            
+            features = {
+                'mean_rgb': mean_colors.tolist(),
+                'white_bg_ratio': float(white_ratio),
+                'black_text_ratio': float(black_ratio),
+                'contrast': float(contrast),
+                'image_size': [width, height],
+                'total_pixels': total_pixels,
+                'histogram': hist.flatten().tolist()
+            }
+            
+            return features
+            
+        except Exception as e:
+            logger.error(f"颜色特征分析失败: {str(e)}")
+            return None
+    
+    def check_standard_compliance(self, features):
+        """
+        检查是否符合标准特征（白色背景+黑色文字）
+        
+        Args:
+            features: 颜色特征字典
+            
+        Returns:
+            bool: 是否符合标准
+        """
+        if not features:
             return False
-    
-    # 初始化处理器
-    processor = PDFProcessor(template_path=template_path)
-    
-    # 加载模板图像
-    template_image = cv2.imread(template_path)
-    print(f"📄 模板图像尺寸: {template_image.shape[1]}×{template_image.shape[0]} 像素")
-    
-    # 提取特征
-    features = processor._extract_features(template_image)
-    
-    # 显示新的四步检查结果
-    print(f"\n🔍 四步检查结果:")
-    
-    # 第一步：页面颜色
-    step1 = features.get('step1_colors', {})
-    step1_status = '✓' if step1.get('valid', False) else '❌'
-    print(f"   第一步 (页面颜色): {step1_status}")
-    if step1.get('details'):
-        details = step1['details']
-        print(f"     白背景: {details.get('white_ratio', 0)*100:.1f}%, 黑字: {details.get('black_ratio', 0)*100:.1f}%")
-    
-    # 第二步：横线检测
-    step2 = features.get('step2_lines', {})
-    step2_status = '✓' if step2.get('valid', False) else '❌'
-    print(f"   第二步 (横线检测): {step2_status}")
-    if step2.get('details'):
-        details = step2['details']
-        print(f"     检测横线数: {details.get('total_lines', 0)}, 距离比例: {details.get('distance_ratio', 0)*100:.1f}%")
-    
-    # 第三步：三区划分
-    step3 = features.get('step3_regions', {})
-    step3_status = '✓' if step3.get('valid', False) else '❌'
-    print(f"   第三步 (三区划分): {step3_status}")
-    if step3.get('ratios'):
-        ratios = step3['ratios']
-        print(f"     上部: {ratios.get('upper_ratio', 0)*100:.1f}%, 中部: {ratios.get('middle_ratio', 0)*100:.1f}%, 下部: {ratios.get('lower_ratio', 0)*100:.1f}%")
-    
-    # 第四步：局部细节
-    step4 = features.get('step4_details', {})
-    step4_status = '✓' if step4.get('valid', False) else '❌'
-    print(f"   第四步 (局部细节): {step4_status}")
-    if step4.get('details'):
-        details = step4['details']
-        for region_name, region_detail in details.items():
-            if region_detail.get('found_items'):
-                print(f"     {region_name}: {', '.join(region_detail['found_items'])}")
-    
-    # 模板验证
-    is_valid = processor._validate_features(features)
-    print(f"\n🔍 模板验证结果: {'✅ 通过' if is_valid else '❌ 不通过'}")
-    
-    return True
-
-def demo_feature_visualization():
-    """演示特征可视化功能"""
-    print("\n" + "="*60)
-    print("【演示2】特征可视化")
-    print("="*60)
-    
-    # 检查是否有test_features.py
-    if os.path.exists('test_features.py'):
-        print("🎨 运行特征可视化...")
-        os.system('python test_features.py')
         
-        if os.path.exists('feature_visualization.png'):
-            print("✅ 特征可视化图像已生成: feature_visualization.png")
-        else:
-            print("❌ 特征可视化生成失败")
-    else:
-        print("❌ test_features.py 文件不存在")
-
-def demo_batch_processing(test_dir="input_pdfs", output_dir="jc"):
-    """演示批量处理功能"""
-    print("\n" + "="*60)
-    print("【演示3】批量处理功能")
-    print("="*60)
-    
-    # 检查测试目录
-    if not os.path.exists(test_dir):
-        print(f"📁 创建测试目录: {test_dir}")
-        os.makedirs(test_dir, exist_ok=True)
-    
-    # 统计PDF文件
-    pdf_files = [f for f in os.listdir(test_dir) if f.lower().endswith('.pdf')]
-    print(f"📄 在 {test_dir} 目录中找到 {len(pdf_files)} 个PDF文件")
-    
-    if len(pdf_files) == 0:
-        print("💡 提示: 将PDF文件放入 input_pdfs 目录来测试批量处理功能")
-        print("   示例: python main.py input_pdfs")
-        return
-    
-    # 初始化处理器
-    processor = PDFProcessor()
-    
-    # 执行批量处理
-    print("🔄 开始批量处理...")
-    results = processor.batch_process(test_dir, output_dir)
-    
-    # 显示结果
-    print(f"\n📊 处理结果:")
-    print(f"   总文件数: {results['total_files']}")
-    print(f"   成功匹配: {results['successful_files']}")
-    print(f"   匹配失败: {results['failed_files']}")
-    
-    if results['total_files'] > 0:
-        success_rate = results['successful_files'] / results['total_files'] * 100
-        print(f"   成功率: {success_rate:.1f}%")
-    
-    # 显示成功文件
-    if results['successful_paths']:
-        print(f"\n✅ 成功匹配的文件:")
-        for path in results['successful_paths']:
-            print(f"   📄 {os.path.basename(path)}")
-    
-    # 显示失败原因
-    if results['failed_reasons']:
-        print(f"\n❌ 失败文件及原因:")
-        for filename, reason in results['failed_reasons'].items():
-            print(f"   📄 {filename}: {reason}")
-
-def run_demo_mode():
-    """运行演示模式"""
-    print("🚀 PDF标准文档分类系统演示")
-    print("基于mb81/82/83特征的标准文档智能识别")
-    print("支持四步逐次判断：颜色→横线→三区→细节")
-    print("="*60)
-    
-    # 检查依赖
-    try:
-        import cv2, numpy, pytesseract
-        from pdf2image import convert_from_path
-        print("✅ 所有依赖项已正确安装")
-    except ImportError as e:
-        print(f"❌ 缺少依赖项: {e}")
-        print("请运行: pip install -r requirements.txt")
-        return
-    
-    # 创建测试环境
-    print("创建测试环境...")
-    test_dirs = ['input_pdfs', 'jc', 'templates', 'data']
-    for dir_name in test_dirs:
-        os.makedirs(dir_name, exist_ok=True)
-        print(f"✓ 创建目录: {dir_name}")
-    
-    # 运行演示
-    try:
-        # 演示1: 模板分析
-        if demo_template_analysis():
-            # 演示2: 特征可视化
-            demo_feature_visualization()
-            
-            # 演示3: 批量处理
-            demo_batch_processing()
-            
-            # 显示使用示例
-            print("\n" + "="*60)
-            print("【使用示例】")
-            print("="*60)
-            
-            print("💻 命令行使用:")
-            print("   # 处理当前目录的PDF文件")
-            print("   python main.py")
-            print("")
-            print("   # 处理指定目录的PDF文件")
-            print("   python main.py /path/to/pdf/files")
-            print("")
-            print("   # 指定输出目录")
-            print("   python main.py --output-dir classified_pdfs")
-            print("")
-            print("   # 使用自定义模板")
-            print("   python main.py --template my_template.png")
-            print("")
-            print("   # 设置处理超时时间")
-            print("   python main.py --timeout 30")
-            print("")
-            print("   # 运行演示模式")
-            print("   python main.py --demo")
+        # 检查白色背景比例
+        white_bg_ok = features['white_bg_ratio'] >= self.color_thresholds['bg_ratio_min']
         
-    except Exception as e:
-        print(f"❌ 演示过程中发生错误: {e}")
-        print("请检查环境配置和依赖项安装")
+        # 检查黑色文字比例
+        black_text_ok = features['black_text_ratio'] >= self.color_thresholds['text_ratio_min']
+        
+        # 检查整体亮度（RGB均值）
+        mean_rgb = features['mean_rgb']
+        avg_brightness = sum(mean_rgb) / len(mean_rgb)
+        brightness_ok = avg_brightness >= self.color_thresholds['brightness_min']
+        
+        # 检查对比度（确保有足够的对比度）
+        contrast_ok = features['contrast'] >= self.color_thresholds['contrast_min']
+        
+        compliance = white_bg_ok and black_text_ok and brightness_ok and contrast_ok
+        
+        logger.info(f"标准符合性检查:")
+        logger.info(f"  白色背景比例: {features['white_bg_ratio']:.3f} (>= {self.color_thresholds['bg_ratio_min']}) - {'✓' if white_bg_ok else '✗'}")
+        logger.info(f"  黑色文字比例: {features['black_text_ratio']:.3f} (>= {self.color_thresholds['text_ratio_min']}) - {'✓' if black_text_ok else '✗'}")
+        logger.info(f"  整体亮度: {avg_brightness:.1f} (>= {self.color_thresholds['brightness_min']}) - {'✓' if brightness_ok else '✗'}")
+        logger.info(f"  对比度: {features['contrast']:.1f} (>= {self.color_thresholds['contrast_min']}) - {'✓' if contrast_ok else '✗'}")
+        logger.info(f"  最终结果: {'符合标准' if compliance else '不符合标准'}")
+        
+        return compliance
     
-    print("\n🎯 演示完成！")
-    print("如需处理实际PDF文件，请使用: python main.py [输入目录]")
+    def process_pdf_file(self, pdf_path, max_pages=5):
+        """
+        处理单个PDF文件
+        
+        Args:
+            pdf_path: PDF文件路径
+            max_pages: 最大处理页数
+            
+        Returns:
+            dict: 处理结果
+        """
+        pdf_path = Path(pdf_path)
+        logger.info(f"开始处理PDF文件: {pdf_path}")
+        
+        # 转换PDF页面为图片
+        images = self.pdf_to_images(pdf_path, max_pages)
+        if not images:
+            return {
+                'file_path': str(pdf_path),
+                'success': False,
+                'error': 'PDF转换失败',
+                'compliance': False
+            }
+        
+        # 分析每页的特征
+        page_results = []
+        overall_compliance = True
+        
+        for i, image in enumerate(images):
+            logger.info(f"分析第 {i+1} 页特征...")
+            features = self.analyze_color_features(image)
+            
+            if features:
+                compliance = self.check_standard_compliance(features)
+                page_results.append({
+                    'page_number': i + 1,
+                    'features': features,
+                    'compliance': compliance
+                })
+                
+                # 如果任何一页不符合标准，整体就不符合
+                if not compliance:
+                    overall_compliance = False
+            else:
+                page_results.append({
+                    'page_number': i + 1,
+                    'features': None,
+                    'compliance': False
+                })
+                overall_compliance = False
+        
+        result = {
+            'file_path': str(pdf_path),
+            'file_name': pdf_path.name,
+            'success': True,
+            'pages_analyzed': len(page_results),
+            'page_results': page_results,
+            'overall_compliance': overall_compliance,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        logger.info(f"PDF '{pdf_path.name}' 处理完成，整体符合性: {'是' if overall_compliance else '否'}")
+        return result
+    
+    def process_pdf_folder(self, folder_path, max_pages=5):
+        """
+        处理文件夹中的所有PDF文件
+        
+        Args:
+            folder_path: PDF文件夹路径
+            max_pages: 每个PDF最大处理页数
+            
+        Returns:
+            dict: 处理结果汇总
+        """
+        folder_path = Path(folder_path)
+        logger.info(f"开始处理PDF文件夹: {folder_path}")
+        
+        if not folder_path.exists():
+            logger.error(f"文件夹不存在: {folder_path}")
+            return None
+        
+        # 查找所有PDF文件（避免重复）
+        pdf_files_lower = list(folder_path.glob("*.pdf"))
+        pdf_files_upper = list(folder_path.glob("*.PDF"))
+        # 使用集合去重，避免在不区分大小写的文件系统中重复
+        pdf_files = list(set(pdf_files_lower + pdf_files_upper))
+        if not pdf_files:
+            logger.warning(f"文件夹中未找到PDF文件: {folder_path}")
+            return {
+                'folder_path': str(folder_path),
+                'total_files': 0,
+                'results': [],
+                'summary': {'compliant': 0, 'non_compliant': 0, 'errors': 0}
+            }
+        
+        logger.info(f"找到 {len(pdf_files)} 个PDF文件")
+        
+        # 处理每个PDF文件
+        results = []
+        summary = {'compliant': 0, 'non_compliant': 0, 'errors': 0}
+        
+        for pdf_file in pdf_files:
+            try:
+                result = self.process_pdf_file(pdf_file, max_pages)
+                results.append(result)
+                
+                if result['success']:
+                    if result['overall_compliance']:
+                        summary['compliant'] += 1
+                    else:
+                        summary['non_compliant'] += 1
+                else:
+                    summary['errors'] += 1
+                    
+            except Exception as e:
+                logger.error(f"处理PDF文件时出错 '{pdf_file}': {str(e)}")
+                results.append({
+                    'file_path': str(pdf_file),
+                    'file_name': pdf_file.name,
+                    'success': False,
+                    'error': str(e),
+                    'compliance': False
+                })
+                summary['errors'] += 1
+        
+        # 汇总结果
+        folder_result = {
+            'folder_path': str(folder_path),
+            'total_files': len(pdf_files),
+            'results': results,
+            'summary': summary,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        logger.info(f"文件夹处理完成:")
+        logger.info(f"  总文件数: {len(pdf_files)}")
+        logger.info(f"  符合标准: {summary['compliant']}")
+        logger.info(f"  不符合标准: {summary['non_compliant']}")
+        logger.info(f"  处理错误: {summary['errors']}")
+        
+        return folder_result
+    
+    def save_results(self, results, output_name=None):
+        """
+        保存结果到data文件夹
+        
+        Args:
+            results: 处理结果
+            output_name: 输出文件名（可选）
+        """
+        if not results:
+            logger.error("没有结果可保存")
+            return
+        
+        if output_name is None:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            output_name = f"pdf_feature_analysis_{timestamp}.json"
+        
+        output_path = self.data_dir / output_name
+        
+        try:
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(results, f, ensure_ascii=False, indent=2)
+            
+            logger.info(f"结果已保存到: {output_path}")
+            
+        except Exception as e:
+            logger.error(f"保存结果失败: {str(e)}")
+
 
 def main():
     """主函数"""
-    # 设置日志
-    setup_logging()
-    logger = logging.getLogger(__name__)
+    parser = argparse.ArgumentParser(description='PDF特征提取工具')
+    parser.add_argument('input_path', help='输入PDF文件或文件夹路径')
+    parser.add_argument('--max-pages', type=int, default=5, help='每个PDF最大处理页数（默认：5）')
+    parser.add_argument('--template', default='templates/mb.png', help='标准模板图片路径')
+    parser.add_argument('--output', help='输出文件名（可选）')
+    parser.add_argument('--data-dir', default='data', help='数据保存目录')
     
-    # 解析参数
-    args = parse_arguments()
+    args = parser.parse_args()
     
-    # 如果是演示模式，直接运行演示
-    if args.demo:
-        run_demo_mode()
-        return
+    # 创建特征提取器
+    extractor = PDFFeatureExtractor(
+        template_path=args.template,
+        data_dir=args.data_dir
+    )
     
-    # 检查依赖项
-    if not check_dependencies():
-        sys.exit(1)
+    input_path = Path(args.input_path)
     
-    if not check_tesseract():
-        sys.exit(1)
-    
-    # 检查输入目录
-    if not os.path.exists(args.input_dir):
-        logger.error(f"输入目录不存在: {args.input_dir}")
-        sys.exit(1)
-    
-    # 检查模板文件
-    if not os.path.exists(args.template):
-        logger.error(f"模板文件不存在: {args.template}")
-        sys.exit(1)
-    
-    # 创建输出目录
-    os.makedirs(args.output_dir, exist_ok=True)
-    
-    # 初始化PDF处理器
-    try:
-        processor = PDFProcessor(template_path=args.template)
-        logger.info(f"PDF处理器初始化成功 - 使用模板: {args.template}")
-        logger.info(f"最多检索页数: {args.max_pages}, 超时时间: {args.timeout}秒")
-    except Exception as e:
-        logger.error(f"PDF处理器初始化失败: {e}")
-        sys.exit(1)
-    
-    # 处理指定文件夹参数
-    target_dir = args.folder if args.folder else args.input_dir
-    
-    # 检查目标目录
-    if not os.path.exists(target_dir):
-        logger.error(f"目标目录不存在: {target_dir}")
-        sys.exit(1)
-    
-    # 统计PDF文件数量
-    if args.recursive or args.folder:
-        pdf_files = []
-        for root, dirs, files in os.walk(target_dir):
-            for file in files:
-                if file.lower().endswith('.pdf'):
-                    pdf_files.append(os.path.join(root, file))
-        logger.info(f"递归搜索目录: {target_dir}")
+    # 处理输入
+    if input_path.is_file() and input_path.suffix.lower() == '.pdf':
+        # 处理单个PDF文件
+        logger.info("处理模式: 单个PDF文件")
+        results = extractor.process_pdf_file(input_path, args.max_pages)
+    elif input_path.is_dir():
+        # 处理PDF文件夹
+        logger.info("处理模式: PDF文件夹")
+        results = extractor.process_pdf_folder(input_path, args.max_pages)
     else:
-        pdf_files = []
-        for filename in os.listdir(target_dir):
-            if filename.lower().endswith('.pdf'):
-                pdf_files.append(os.path.join(target_dir, filename))
-        logger.info(f"搜索目录: {target_dir}")
+        logger.error(f"无效的输入路径: {input_path}")
+        return 1
     
-    if not pdf_files:
-        search_type = "递归搜索" if (args.recursive or args.folder) else "搜索"
-        logger.warning(f"{search_type}目录 {target_dir} 中未找到PDF文件")
-        return
-    
-    logger.info(f"找到 {len(pdf_files)} 个PDF文件")
-    
-    # 批量处理
-    if args.recursive or args.folder:
-        logger.info(f"开始递归搜索并处理 {target_dir} 目录下的所有PDF文件...")
+    # 保存结果
+    if results:
+        extractor.save_results(results, args.output)
+        return 0
     else:
-        logger.info("开始批量处理PDF文件...")
-    
-    results = processor.batch_process(target_dir, args.output_dir, recursive=(args.recursive or args.folder is not None))
-    
-    # 输出结果统计
-    logger.info("=" * 50)
-    logger.info("处理结果统计:")
-    logger.info(f"总文件数: {results['total_files']}")
-    logger.info(f"成功匹配: {results['successful_files']}")
-    logger.info(f"匹配失败: {results['failed_files']}")
-    logger.info(f"成功率: {results['successful_files']/results['total_files']*100:.1f}%" if results['total_files'] > 0 else "成功率: 0%")
-    
-    # 输出成功文件列表
-    if results['successful_paths']:
-        logger.info("\n成功匹配的文件:")
-        for path in results['successful_paths']:
-            logger.info(f"  ✓ {os.path.basename(path)}")
-    
-    # 输出失败原因
-    if results['failed_reasons']:
-        logger.info("\n失败原因:")
-        for filename, reason in results['failed_reasons'].items():
-            logger.info(f"  ✗ {filename}: {reason}")
-    
-    logger.info("=" * 50)
-    logger.info(f"处理完成！匹配成功的文件已复制到 {args.output_dir} 目录")
-    logger.info(f"本次处理使用了新的四步逐次判断方法：颜色→横线→三区→细节")
+        logger.error("处理失败，没有生成结果")
+        return 1
+
 
 if __name__ == "__main__":
-    main()
-
+    import io
+    sys.exit(main())
