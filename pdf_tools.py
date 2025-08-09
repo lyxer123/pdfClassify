@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 PDF标准文档分类系统 - 工具集合
-包含单文件测试、批量清理、监控等功能
+基于mb81/82/83特征的标准文档智能识别
+包含单文件测试、四步检查分析、批量清理、监控等功能
 """
 
 import os
@@ -75,84 +76,54 @@ def test_single_pdf(pdf_path, verbose=True):
         return None
 
 def _print_feature_analysis(features):
-    """打印特征分析结果"""
-    print(f"\n特征信息:")
-    print(f"  白色背景: {features.get('white_ratio', 0)*100:.1f}%")
-    print(f"  黑色文字: {features.get('black_ratio', 0)*100:.1f}%")
-    print(f"  检测区域: {len(features.get('regions', {}))}")
-    print(f"  检测框数: {len(features.get('key_boxes', {}))}")
+    """打印新的四步特征分析结果"""
+    print(f"\n🔍 四步检查结果:")
     
-    keywords = features.get('keywords', {})
-    print(f"  关键词: 标准={'✓' if keywords.get('upper_has_standard') else '✗'} "
-          f"发布={'✓' if keywords.get('lower_has_publish') else '✗'}")
+    # 第一步：页面颜色
+    step1 = features.get('step1_colors', {})
+    step1_status = '✓' if step1.get('valid', False) else '✗'
+    print(f"  第一步 (页面颜色): {step1_status}")
+    if step1.get('details'):
+        details = step1['details']
+        print(f"    白背景: {details.get('white_ratio', 0)*100:.1f}%, 黑字: {details.get('black_ratio', 0)*100:.1f}%")
+        print(f"    原因: {step1.get('reason', '未知')}")
     
-    # 详细分析匹配度
-    print(f"\n匹配度分析:")
-    validation_score = 0
-    max_score = 0
+    # 第二步：横线检测
+    step2 = features.get('step2_lines', {})
+    step2_status = '✓' if step2.get('valid', False) else '✗'
+    print(f"  第二步 (横线检测): {step2_status}")
+    if step2.get('details'):
+        details = step2['details']
+        print(f"    检测横线数: {details.get('total_lines', 0)}, 距离比例: {details.get('distance_ratio', 0)*100:.1f}%")
+        print(f"    原因: {step2.get('reason', '未知')}")
     
-    # 颜色特征 (35%)
-    max_score += 35
-    white_ratio = features.get('white_ratio', 0)
-    black_ratio = features.get('black_ratio', 0)
-    color_score = 0
-    if white_ratio > 0.75:
-        color_score += 20
-    elif white_ratio > 0.60:
-        color_score += 15
-    elif white_ratio > 0.45:
-        color_score += 10
+    # 第三步：三区划分
+    step3 = features.get('step3_regions', {})
+    step3_status = '✓' if step3.get('valid', False) else '✗'
+    print(f"  第三步 (三区划分): {step3_status}")
+    if step3.get('ratios'):
+        ratios = step3['ratios']
+        print(f"    上部: {ratios.get('upper_ratio', 0)*100:.1f}%, 中部: {ratios.get('middle_ratio', 0)*100:.1f}%, 下部: {ratios.get('lower_ratio', 0)*100:.1f}%")
+        print(f"    原因: {step3.get('reason', '未知')}")
     
-    if black_ratio > 0.003:
-        color_score += 10
-    elif black_ratio > 0.001:
-        color_score += 5
+    # 第四步：局部细节
+    step4 = features.get('step4_details', {})
+    step4_status = '✓' if step4.get('valid', False) else '✗'
+    print(f"  第四步 (局部细节): {step4_status}")
+    if step4.get('details'):
+        details = step4['details']
+        for region_name, region_detail in details.items():
+            if region_detail.get('found_items'):
+                print(f"    {region_name}: {', '.join(region_detail['found_items'])}")
+        print(f"    原因: {step4.get('reason', '未知')}")
     
-    validation_score += color_score
-    print(f"  颜色特征 ({color_score}/35): 白底{white_ratio*100:.1f}% 黑字{black_ratio*100:.1f}%")
-    
-    # 区域检测 (30%)
-    max_score += 30
-    regions = features.get('regions', {})
-    region_score = 15 if len(regions) >= 3 else (10 if len(regions) >= 2 else 0)
-    
-    # 验证区域比例
-    proportions = features.get('proportions', {})
-    if proportions.get('upper_whitespace', 0) > 15:
-        region_score += 5
-    if proportions.get('middle_whitespace', 0) > 30:
-        region_score += 5
-    if proportions.get('lower_whitespace', 0) > 10:
-        region_score += 5
-    
-    validation_score += region_score
-    print(f"  区域检测 ({region_score}/30): 检测到{len(regions)}/3个区域")
-    
-    # 关键词验证 (20%)
-    max_score += 20
-    keyword_score = 0
-    if keywords.get('upper_has_standard', False):
-        keyword_score += 12
-    if keywords.get('lower_has_publish', False):
-        keyword_score += 8
-    validation_score += keyword_score
-    print(f"  关键词验证 ({keyword_score}/20): 标准{'✓' if keywords.get('upper_has_standard', False) else '✗'} 发布{'✓' if keywords.get('lower_has_publish', False) else '✗'}")
-    
-    # 横线结构验证 (15%)
-    max_score += 15
-    lines = features.get('lines', {})
-    line_score = 0
-    if lines.get('first_line_valid', False):
-        line_score += 8
-    if lines.get('second_line_valid', False):
-        line_score += 7
-    validation_score += line_score
-    print(f"  横线结构 ({line_score}/15): 第一线{'✓' if lines.get('first_line_valid', False) else '✗'} 第二线{'✓' if lines.get('second_line_valid', False) else '✗'}")
-    
-    # 总体匹配度
-    match_percentage = (validation_score / max_score) * 100 if max_score > 0 else 0
-    print(f"  总体匹配度: {validation_score}/{max_score} = {match_percentage:.1f}%")
-    print(f"  验证阈值: 50% {'(通过)' if match_percentage >= 50 else '(不通过)'}")
+    # 总体结果
+    final_result = features.get('final_result', False)
+    if final_result:
+        print(f"\n✅ 总体验证: 通过 - {features.get('success_reason', '')}")
+    else:
+        print(f"\n❌ 总体验证: 失败 - {features.get('failure_reason', '未知原因')}")
+
 
 def clean_misclassified_files(target_dirs=None, misclassified_files=None):
     """
@@ -1014,72 +985,84 @@ def test_features_extraction():
     print("\n正在提取特征...")
     features = processor._extract_features(template_image)
     
-    # 详细显示特征信息
+    # 详细显示新的四步特征信息
     print("="*60)
-    print("特征提取分析结果")
+    print("新的四步特征提取分析结果")
     print("="*60)
     
-    # 颜色特征
-    print("\n【颜色特征】")
-    print(f"白色背景占比: {features.get('white_ratio', 0):.3f} ({features.get('white_ratio', 0)*100:.1f}%)")
-    print(f"黑色文字占比: {features.get('black_ratio', 0):.3f} ({features.get('black_ratio', 0)*100:.1f}%)")
+    # 使用新的四步特征分析
+    _print_feature_analysis(features)
     
-    # 区域信息
-    print("\n【区域信息】")
-    regions = features.get('regions', {})
-    for region_name, region_info in regions.items():
-        print(f"{region_name}: y={region_info['y']}, height={region_info['height']}")
+    # 详细的四步分析
+    print("\n【详细四步分析】")
     
-    # 关键框信息
-    print("\n【关键框信息】")
-    key_boxes = features.get('key_boxes', {})
-    for box_name, box_info in key_boxes.items():
-        print(f"{box_name}: x={box_info['x']}, y={box_info['y']}, w={box_info['w']}, h={box_info['h']}")
+    # 第一步详细信息
+    step1 = features.get('step1_colors', {})
+    print(f"第一步 (页面颜色检查): {'✓ 通过' if step1.get('valid', False) else '✗ 失败'}")
+    print(f"原因: {step1.get('reason', '未知')}")
+    if step1.get('details'):
+        details = step1['details']
+        print(f"白色背景占比: {details.get('white_ratio', 0)*100:.1f}%")
+        print(f"黑色文字占比: {details.get('black_ratio', 0)*100:.1f}%")
+        print(f"红色标注占比: {details.get('red_ratio', 0)*100:.1f}%")
     
-    # 关键词验证
-    print("\n【关键词验证】")
-    keywords = features.get('keywords', {})
-    for keyword, found in keywords.items():
-        print(f"{keyword}: {'✓' if found else '✗'}")
+    # 第二步详细信息
+    step2 = features.get('step2_lines', {})
+    print(f"\n第二步 (2条黑色长横线检测): {'✓ 通过' if step2.get('valid', False) else '✗ 失败'}")
+    print(f"原因: {step2.get('reason', '未知')}")
+    if step2.get('details'):
+        details = step2['details']
+        print(f"检测到的横线数: {details.get('total_lines', 0)}")
+        if details.get('line1_length') and details.get('line2_length'):
+            print(f"第一条线长度: {details['line1_length']:.0f}px")
+            print(f"第二条线长度: {details['line2_length']:.0f}px")
+            print(f"两横线间距占比: {details.get('distance_ratio', 0)*100:.1f}%")
     
-    # 线条检测
-    print("\n【线条检测】")
-    lines = features.get('lines', {})
-    for line_name, valid in lines.items():
-        print(f"{line_name}: {'✓' if valid else '✗'}")
+    # 第三步详细信息
+    step3 = features.get('step3_regions', {})
+    print(f"\n第三步 (三个部分划分): {'✓ 通过' if step3.get('valid', False) else '✗ 失败'}")
+    print(f"原因: {step3.get('reason', '未知')}")
+    if step3.get('regions'):
+        regions = step3['regions']
+        for region_name, region_info in regions.items():
+            print(f"{region_name}部: y={region_info['y']}, 高度={region_info['height']}px")
+    if step3.get('ratios'):
+        ratios = step3['ratios']
+        print(f"上部高度占比: {ratios.get('upper_ratio', 0)*100:.1f}%")
+        print(f"中部高度占比: {ratios.get('middle_ratio', 0)*100:.1f}%")
+        print(f"下部高度占比: {ratios.get('lower_ratio', 0)*100:.1f}%")
     
-    # 区域比例
-    print("\n【区域比例】")
-    ratios = features.get('region_ratios', {})
-    for ratio_name, ratio_value in ratios.items():
-        print(f"{ratio_name}: {ratio_value*100:.1f}%")
+    # 第四步详细信息
+    step4 = features.get('step4_details', {})
+    print(f"\n第四步 (每个部分局部细节): {'✓ 通过' if step4.get('valid', False) else '✗ 失败'}")
+    print(f"原因: {step4.get('reason', '未知')}")
+    if step4.get('details'):
+        details = step4['details']
+        for region_name, region_detail in details.items():
+            print(f"\n{region_name}部检查:")
+            print(f"  状态: {'✓ 通过' if region_detail.get('valid', False) else '✗ 失败'}")
+            print(f"  原因: {region_detail.get('reason', '未知')}")
+            if region_detail.get('found_items'):
+                print(f"  找到的项目: {', '.join(region_detail['found_items'])}")
     
-    # 位置关系
-    print("\n【位置关系】")
-    positions = features.get('position_checks', {})
-    for pos_name, valid in positions.items():
-        print(f"{pos_name}: {'✓' if valid else '✗'}")
+    # 总体验证
+    print(f"\n【总体验证结果】")
+    final_result = features.get('final_result', False)
+    if final_result:
+        print(f"总体验证: ✓ 通过")
+        print(f"成功原因: {features.get('success_reason', '所有四步检查均通过')}")
+    else:
+        print(f"总体验证: ✗ 失败")
+        print(f"失败原因: {features.get('failure_reason', '未知原因')}")
     
-    # 内容约束
-    print("\n【内容约束】")
-    constraints = features.get('content_constraints', {})
-    for constraint_name, valid in constraints.items():
-        print(f"{constraint_name}: {'✓' if valid else '✗'}")
-    
-    # 模板验证
-    print("\n【模板验证】")
-    is_valid = processor._validate_features(features)
-    print(f"模板特征验证: {'✓ 通过' if is_valid else '✗ 失败'}")
-    
-    # 详细匹配度分析
-    validation_result = processor._calculate_match_score(features)
-    if validation_result:
-        print(f"\n【详细匹配度分析】")
-        for category, score in validation_result.items():
-            if category != 'total_score':
-                print(f"{category}: {score}")
-        print(f"\n总体匹配度: {validation_result.get('total_score', 0)}")
-        print(f"验证阈值: 70% ({'通过' if validation_result.get('total_score', 0) >= 70 else '失败'})")
+    # 显示新的验证逻辑说明
+    print("\n【验证逻辑说明】")
+    print("新的验证方法采用四步逐次判断：")
+    print("1. 页面颜色检查：白底黑字，排除红色标注")
+    print("2. 2条黑色长横线：横线数量=2，间距>=65%，长度>=70%")
+    print("3. 三个部分划分：上部<=30%，中部>=50%，下部<=30%")
+    print("4. 局部细节检查：上部有标准，中部有发布+实施，下部有发布")
+    print("必须四步全部通过才被认定为标准文件。")
     
     # 生成可视化结果
     print("\n正在生成可视化结果...")
@@ -1091,7 +1074,9 @@ def test_features_extraction():
 def main():
     """主函数 - 命令行工具"""
     if len(sys.argv) < 2:
-        print("PDF工具集使用方法:")
+        print("🚀 PDF标准文档分类系统 - 工具集 (mb81/82/83版本)")
+        print("="*60)
+        print("使用方法:")
         print("  python pdf_tools.py test <PDF文件路径>          # 测试单个PDF")
         print("  python pdf_tools.py clean                       # 清理误判文件")
         print("  python pdf_tools.py scan <驱动器路径>           # 递归扫描驱动器")
@@ -1101,7 +1086,8 @@ def main():
         print("  python pdf_tools.py examples                    # 运行使用示例")
         print("  python pdf_tools.py install-service             # 安装系统服务")
         print("  python pdf_tools.py setup                       # 环境检查和安装")
-        print("  python pdf_tools.py test-features               # 测试特征提取")
+        print("  python pdf_tools.py test-features               # 测试新的四步特征提取")
+        print("\n新特性: 四步逐次判断 - 颜色→横线→三区→细节")
         return
     
     command = sys.argv[1].lower()

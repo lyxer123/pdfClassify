@@ -34,32 +34,40 @@ except ImportError:
     pass
 
 class PDFProcessor:
-    """PDF处理器类"""
+    """PDF处理器类 - 基于mb81/82/83特征的标准文档识别"""
     
-    def __init__(self, template_path: str = "mb6.png"):
+    def __init__(self, template_path: str = "templates/mb81.png"):
         self.template_path = template_path
         self.logger = self._setup_logger()
         
-        # 颜色范围定义
+        # 颜色范围定义（HSV色彩空间）
         self.color_ranges = {
-            'blue': {
-                'lower': np.array([100, 50, 50]),
-                'upper': np.array([130, 255, 255])
+            'white': {
+                'lower': np.array([0, 0, 200]),    # 更严格的白色定义
+                'upper': np.array([180, 25, 255])
+            },
+            'black': {
+                'lower': np.array([0, 0, 0]),      # 黑色文字
+                'upper': np.array([180, 255, 50])
             },
             'red': {
-                'lower1': np.array([0, 50, 50]),
+                'lower1': np.array([0, 50, 50]),   # 红色标注（排除）
                 'upper1': np.array([10, 255, 255]),
                 'lower2': np.array([170, 50, 50]),
                 'upper2': np.array([180, 255, 255])
-            },
-            'white': {
-                'lower': np.array([0, 0, 230]),
-                'upper': np.array([180, 30, 255])
-            },
-            'black': {
-                'lower': np.array([0, 0, 0]),
-                'upper': np.array([180, 255, 30])
             }
+        }
+        
+        # 判断阈值配置
+        self.thresholds = {
+            'white_bg_min': 0.70,          # 白色背景最低占比
+            'black_text_min': 0.005,       # 黑色文字最低占比
+            'line_distance_min': 0.65,     # 两横线间距最小占比
+            'line_width_min': 0.70,        # 横线宽度最小占比
+            'upper_height_max': 0.30,      # 上部最大高度占比
+            'middle_height_min': 0.50,     # 中部最小高度占比
+            'lower_height_max': 0.30,      # 下部最大高度占比
+            'logo_x_min': 0.40             # logo X位置最小占比
         }
     
     def _setup_logger(self) -> logging.Logger:
@@ -73,7 +81,7 @@ class PDFProcessor:
         return logger
     
     def _get_color_ratio(self, hsv: np.ndarray, color: str) -> float:
-        """获取指定颜色占比"""
+        """获取指定颜色占比（排除红色标注）"""
         if color == 'red':
             mask1 = cv2.inRange(hsv, self.color_ranges['red']['lower1'], self.color_ranges['red']['upper1'])
             mask2 = cv2.inRange(hsv, self.color_ranges['red']['lower2'], self.color_ranges['red']['upper2'])
@@ -85,190 +93,497 @@ class PDFProcessor:
         color_pixels = cv2.countNonZero(mask)
         return color_pixels / total_pixels
     
-    def _locate_regions(self, image: np.ndarray, hsv: np.ndarray) -> Dict:
-        """定位三区域（上中下）- 适配真实PDF文档"""
-        regions = {}
-        height, width = image.shape[:2]
+    def _get_red_annotation_mask(self, hsv: np.ndarray) -> np.ndarray:
+        """获取红色标注区域的掩码（包括红框和红色数字）"""
+        # 红色在HSV空间有两个范围（0-10度和170-180度）
+        mask1 = cv2.inRange(hsv, self.color_ranges['red']['lower1'], self.color_ranges['red']['upper1'])
+        mask2 = cv2.inRange(hsv, self.color_ranges['red']['lower2'], self.color_ranges['red']['upper2'])
+        red_mask = cv2.bitwise_or(mask1, mask2)
         
-        # 对于真实PDF文档，没有蓝色标注框，我们根据内容分布来划分区域
+        # 使用形态学操作连接红色区域，更好地识别红框和数字
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel)
+        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel)
+        
+        return red_mask
+    
+    def _calculate_white_black_ratio_excluding_red(self, hsv: np.ndarray, non_red_mask: np.ndarray) -> tuple:
+        """在排除红色区域后计算白底黑字占比"""
+        # 获取白色和黑色的掩码
+        white_mask = cv2.inRange(hsv, self.color_ranges['white']['lower'], self.color_ranges['white']['upper'])
+        black_mask = cv2.inRange(hsv, self.color_ranges['black']['lower'], self.color_ranges['black']['upper'])
+        
+        # 应用非红色掩码，排除红色区域
+        white_mask_filtered = cv2.bitwise_and(white_mask, non_red_mask)
+        black_mask_filtered = cv2.bitwise_and(black_mask, non_red_mask)
+        
+        # 计算非红色区域的总像素数
+        non_red_pixels = cv2.countNonZero(non_red_mask)
+        
+        if non_red_pixels == 0:
+            return 0.0, 0.0
+        
+        # 计算排除红色后的白底黑字占比
+        white_pixels = cv2.countNonZero(white_mask_filtered)
+        black_pixels = cv2.countNonZero(black_mask_filtered)
+        
+        white_ratio = white_pixels / non_red_pixels
+        black_ratio = black_pixels / non_red_pixels
+        
+        return white_ratio, black_ratio
+    
+    def _check_page_colors(self, image: np.ndarray) -> Dict:
+        """检查页面整体颜色和字体颜色（第一步判断）
+        页面背景为白色，字体为黑色（需要排除画的红框和标注的红色数字）
+        """
+        result = {'valid': False, 'reason': '', 'details': {}}
+        
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        
+        # 1. 先识别红色区域（红框和红色数字）
+        red_mask = self._get_red_annotation_mask(hsv)
+        
+        # 2. 创建排除红色区域的掩码
+        non_red_mask = cv2.bitwise_not(red_mask)
+        
+        # 3. 在排除红色区域后计算白底黑字占比
+        white_ratio, black_ratio = self._calculate_white_black_ratio_excluding_red(hsv, non_red_mask)
+        red_ratio = cv2.countNonZero(red_mask) / (hsv.shape[0] * hsv.shape[1])
+        
+        result['details'] = {
+            'white_ratio': white_ratio,
+            'black_ratio': black_ratio,
+            'red_ratio': red_ratio,
+            'red_excluded': True  # 标记已排除红色区域
+        }
+        
+        # 验证白底黑字特征（已排除红色干扰）
+        if white_ratio < self.thresholds['white_bg_min']:
+            result['reason'] = f'排除红色标注后，白色背景占比不足：{white_ratio:.1%} < {self.thresholds["white_bg_min"]:.1%}'
+            return result
+        
+        if black_ratio < self.thresholds['black_text_min']:
+            result['reason'] = f'排除红色标注后，黑色文字占比不足：{black_ratio:.1%} < {self.thresholds["black_text_min"]:.1%}'
+            return result
+        
+        result['valid'] = True
+        result['reason'] = f'页面颜色符合要求（已排除{red_ratio:.1%}红色标注）：白底{white_ratio:.1%}，黑字{black_ratio:.1%}'
+        return result
+    
+    def _detect_horizontal_lines(self, image: np.ndarray) -> Dict:
+        """检测2条黑色长横线（第二步判断）
+        黑色长横线定义：
+        - 左右长度一般>=70%页面宽度
+        - 两横线相等长度
+        - 高度一般就几个像素
+        - 两横线间距离>=65%页面高度
+        """
+        result = {'valid': False, 'reason': '', 'lines': [], 'details': {}}
+        
+        height, width = image.shape[:2]
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         
-        # 使用水平投影来找到文本区域
-        horizontal_projection = np.sum(gray < 200, axis=1)  # 统计每行的非白色像素
-        
-        # 找到有内容的行
-        content_lines = np.where(horizontal_projection > width * 0.1)[0]  # 至少10%的像素是内容
-        
-        if len(content_lines) > 0:
-            # 按页面高度的比例划分上中下三个区域
-            regions['upper'] = {
-                'y': 0, 
-                'height': int(height * 0.25)  # 上部25%
-            }
-            regions['middle'] = {
-                'y': int(height * 0.25), 
-                'height': int(height * 0.5)   # 中部50%
-            }
-            regions['lower'] = {
-                'y': int(height * 0.75), 
-                'height': int(height * 0.25)  # 下部25%
-            }
-        
-        return regions
-    
-    def _locate_key_boxes(self, image: np.ndarray, hsv: np.ndarray) -> Dict:
-        """定位关键区域 - 适配真实PDF文档"""
-        key_boxes = {}
-        height, width = image.shape[:2]
-        
-        # 对于真实PDF，我们根据文档结构模拟6个关键区域
-        # 这些区域基于标准文档的典型布局
-        
-        # 1号框：右上角区域（通常是logo或机构信息）
-        key_boxes['box_1'] = {
-            'x': int(width * 0.7), 'y': 0, 
-            'width': int(width * 0.3), 'height': int(height * 0.15)
-        }
-        
-        # 2号框：上部标题区域  
-        key_boxes['box_2'] = {
-            'x': 0, 'y': int(height * 0.15),
-            'width': width, 'height': int(height * 0.1)
-        }
-        
-        # 3号框：标准编号区域
-        key_boxes['box_3'] = {
-            'x': int(width * 0.5), 'y': int(height * 0.25),
-            'width': int(width * 0.5), 'height': int(height * 0.1)
-        }
-        
-        # 4号框：标准名称区域（中英文）
-        key_boxes['box_4'] = {
-            'x': int(width * 0.1), 'y': int(height * 0.35),
-            'width': int(width * 0.8), 'height': int(height * 0.3)
-        }
-        
-        # 5号框：发布实施日期区域
-        key_boxes['box_5'] = {
-            'x': 0, 'y': int(height * 0.75),
-            'width': width, 'height': int(height * 0.1)
-        }
-        
-        # 6号框：发布单位区域
-        key_boxes['box_6'] = {
-            'x': int(width * 0.2), 'y': int(height * 0.85),
-            'width': int(width * 0.6), 'height': int(height * 0.15)
-        }
-        
-        return key_boxes
-    
-    def _verify_keywords(self, image: np.ndarray, regions: Dict) -> Dict:
-        """验证关键文字"""
-        keywords = {}
-        
-        # 多种OCR配置尝试
-        configs = [
-            '--psm 6 -l chi_sim',
-            '--psm 7 -l chi_sim',
-            '--psm 8 -l chi_sim',
-            '--psm 13 -l chi_sim'
-        ]
-        
-        if 'upper' in regions:
-            upper_region = image[regions['upper']['y']:regions['upper']['y']+regions['upper']['height'], :]
-            # 图像预处理增强OCR识别
-            upper_gray = cv2.cvtColor(upper_region, cv2.COLOR_BGR2GRAY)
-            upper_enhanced = cv2.adaptiveThreshold(upper_gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-            
-            standard_found = False
-            for config in configs:
-                try:
-                    upper_text = pytesseract.image_to_string(upper_enhanced, config=config)
-                    if '标准' in upper_text or 'standard' in upper_text.lower():
-                        standard_found = True
-                        break
-                except:
-                    continue
-            keywords['upper_has_standard'] = standard_found
-        
-        if 'lower' in regions:
-            lower_region = image[regions['lower']['y']:regions['lower']['y']+regions['lower']['height'], :]
-            # 图像预处理增强OCR识别
-            lower_gray = cv2.cvtColor(lower_region, cv2.COLOR_BGR2GRAY)
-            lower_enhanced = cv2.adaptiveThreshold(lower_gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-            
-            publish_found = False
-            for config in configs:
-                try:
-                    lower_text = pytesseract.image_to_string(lower_enhanced, config=config)
-                    if '发布' in lower_text or 'publish' in lower_text.lower():
-                        publish_found = True
-                        break
-                except:
-                    continue
-            keywords['lower_has_publish'] = publish_found
-        
-        return keywords
-    
-    def _detect_lines(self, image: np.ndarray, regions: Dict) -> Dict:
-        """检测横线 - 标准文档的关键特征"""
-        lines = {}
-        height, width = image.shape[:2]
-        
-        # 转换为灰度图
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        
-        # 使用更精确的边缘检测参数
+        # 更严格的边缘检测，以检测细线条
         edges = cv2.Canny(gray, 30, 100, apertureSize=3)
         
-        # 检测直线
-        detected_lines = cv2.HoughLines(edges, 1, np.pi/180, threshold=max(50, width//10))
+        # 霍夫直线检测 - 针对细线条调整参数
+        lines = cv2.HoughLines(edges, 1, np.pi/180, threshold=max(width//6, 100))
         
         horizontal_lines = []
-        
-        if detected_lines is not None:
-            for line in detected_lines:
+        if lines is not None:
+            for line in lines:
                 rho, theta = line[0]
-                # 更严格的水平线判断
-                if abs(theta) < 0.05 or abs(theta - np.pi) < 0.05:
-                    horizontal_lines.append((abs(rho), theta))
+                # 更严格的水平线判断（角度误差小于2度）
+                if abs(theta) < np.pi/90 or abs(theta - np.pi) < np.pi/90:
+                    # 计算线条在图像中的y坐标
+                    y_pos = abs(rho * np.sin(theta))
+                    # 验证线条长度（至少是页面宽度的70%）
+                    line_length = self._calculate_line_length(edges, rho, theta)
+                    if line_length >= width * self.thresholds['line_width_min']:
+                        # 检查线条高度（应该是几个像素）
+                        line_thickness = self._calculate_line_thickness(edges, rho, theta)
+                        if line_thickness <= 5:  # 高度不超过5个像素
+                            horizontal_lines.append({
+                                'y': y_pos,
+                                'length': line_length,
+                                'thickness': line_thickness,
+                                'rho': rho,
+                                'theta': theta
+                            })
         
-        # 按位置排序
-        horizontal_lines.sort(key=lambda x: x[0])
+        # 按y坐标排序
+        horizontal_lines.sort(key=lambda x: x['y'])
         
-        # 查找符合标准文档要求的两条主要横线
-        valid_lines = []
-        for rho, theta in horizontal_lines:
-            # 计算线条长度（通过端点检测）
-            line_length = self._calculate_line_length(edges, rho, theta, width)
-            
-            # 只保留足够长的线条（至少占页面宽度的70%）
-            if line_length > width * 0.7:
-                valid_lines.append((rho, theta, line_length))
+        result['details']['total_lines'] = len(horizontal_lines)
+        result['lines'] = horizontal_lines
         
-        # 验证是否有足够的横线
-        if len(valid_lines) >= 2:
-            # 第一条横线应该在上部区域底部附近
-            first_line_y = valid_lines[0][0]
-            expected_first_y = height * 0.3  # 约在页面30%位置
+        # 如果检测到的横线太多，选择最重要的两条
+        if len(horizontal_lines) == 0:
+            result['reason'] = '未检测到符合要求的横线'
+            return result
+        elif len(horizontal_lines) == 1:
+            result['reason'] = '只检测到1条横线，要求2条'
+            return result
+        elif len(horizontal_lines) > 2:
+            # 保存原始检测到的横线数量
+            original_count = len(horizontal_lines)
             
-            # 第二条横线应该在下部区域顶部附近  
-            second_line_y = valid_lines[1][0]
-            expected_second_y = height * 0.75  # 约在页面75%位置
+            # 选择间距最大的两条线（最可能是主要分割线）
+            max_distance = 0
+            best_pair = None
+            for i in range(len(horizontal_lines)):
+                for j in range(i+1, len(horizontal_lines)):
+                    distance = abs(horizontal_lines[j]['y'] - horizontal_lines[i]['y'])
+                    if distance > max_distance:
+                        max_distance = distance
+                        best_pair = (i, j)
             
-            # 验证位置是否合理
-            lines['first_line_valid'] = abs(first_line_y - expected_first_y) < height * 0.15
-            lines['second_line_valid'] = abs(second_line_y - expected_second_y) < height * 0.15
-            
-            lines['first_line'] = valid_lines[0]
-            lines['second_line'] = valid_lines[1]
-        else:
-            lines['first_line_valid'] = False
-            lines['second_line_valid'] = False
+            if best_pair and max_distance > height * 0.2:  # 降低要求到20%的间距
+                selected_lines = [horizontal_lines[best_pair[0]], horizontal_lines[best_pair[1]]]
+                selected_lines.sort(key=lambda x: x['y'])  # 重新按y坐标排序
+                horizontal_lines = selected_lines
+                self.logger.debug(f"从{original_count}条线中选择了间距最大的两条：y={horizontal_lines[0]['y']:.0f}, y={horizontal_lines[1]['y']:.0f}")
+            else:
+                # 如果找不到合适的线对，尝试选择最长的两条线
+                lines_by_length = sorted(horizontal_lines, key=lambda x: x['length'], reverse=True)
+                if len(lines_by_length) >= 2:
+                    top_two = lines_by_length[:2]
+                    top_two.sort(key=lambda x: x['y'])  # 按y坐标排序
+                    distance = abs(top_two[1]['y'] - top_two[0]['y'])
+                    if distance > height * 0.15:  # 至少15%的间距
+                        horizontal_lines = top_two
+                        self.logger.debug(f"选择了最长的两条线：长度={horizontal_lines[0]['length']:.0f}, {horizontal_lines[1]['length']:.0f}")
+                    else:
+                        result['reason'] = f'检测到{original_count}条横线，但无法找到合适的两条主线（间距或长度不足）'
+                        return result
+                else:
+                    result['reason'] = f'检测到{original_count}条横线，但无法找到合适的两条主线'
+                    return result
         
-        return lines
+        # 现在应该有恰好2条横线
+        if len(horizontal_lines) != 2:
+            result['reason'] = f'处理后仍有{len(horizontal_lines)}条横线，要求恰好2条'
+            return result
+        
+        # 验证两条横线间距（必须>=65%页面高度）
+        line1_y, line2_y = horizontal_lines[0]['y'], horizontal_lines[1]['y']
+        line_distance = abs(line2_y - line1_y)
+        distance_ratio = line_distance / height
+        
+        if distance_ratio < self.thresholds['line_distance_min']:
+            result['reason'] = f'两横线间距不足：{distance_ratio:.1%} < {self.thresholds["line_distance_min"]:.1%}'
+            return result
+        
+        # 验证横线长度是否相等（允许5%误差）
+        len1, len2 = horizontal_lines[0]['length'], horizontal_lines[1]['length']
+        length_diff_ratio = abs(len1 - len2) / max(len1, len2)
+        if length_diff_ratio > 0.05:
+            result['reason'] = f'两横线长度差异过大：{len1:.0f}px vs {len2:.0f}px（差异{length_diff_ratio:.1%}）'
+            return result
+        
+        # 验证线条高度（应该都是几个像素）
+        thick1, thick2 = horizontal_lines[0]['thickness'], horizontal_lines[1]['thickness']
+        if thick1 > 5 or thick2 > 5:
+            result['reason'] = f'横线高度过大：{thick1:.0f}px, {thick2:.0f}px（应<=5px）'
+            return result
+        
+        result['valid'] = True
+        result['reason'] = f'检测到2条符合要求的横线，间距{distance_ratio:.1%}'
+        result['details'].update({
+            'line1_y': line1_y,
+            'line2_y': line2_y,
+            'distance_ratio': distance_ratio,
+            'line1_length': len1,
+            'line2_length': len2
+        })
+        
+        return result
     
-    def _calculate_line_length(self, edges: np.ndarray, rho: float, theta: float, max_width: int) -> float:
+    def _divide_three_regions(self, image: np.ndarray, lines_info: Dict) -> Dict:
+        """基于横线划分三个部分（第三步判断）"""
+        result = {'valid': False, 'reason': '', 'regions': {}}
+        
+        if not lines_info['valid'] or len(lines_info['lines']) != 2:
+            result['reason'] = '横线检测未通过，无法划分区域'
+            return result
+        
+        height, width = image.shape[:2]
+        line1_y = lines_info['lines'][0]['y']
+        line2_y = lines_info['lines'][1]['y']
+        
+        # 定义三个区域
+        regions = {
+            'upper': {'y': 0, 'height': int(line1_y), 'name': '上部'},
+            'middle': {'y': int(line1_y), 'height': int(line2_y - line1_y), 'name': '中部'},
+            'lower': {'y': int(line2_y), 'height': int(height - line2_y), 'name': '下部'}
+        }
+        
+        # 验证各区域高度比例
+        upper_ratio = regions['upper']['height'] / height
+        middle_ratio = regions['middle']['height'] / height
+        lower_ratio = regions['lower']['height'] / height
+        
+        # 检查上部高度（<=30%页面高度）
+        if upper_ratio > self.thresholds['upper_height_max']:
+            result['reason'] = f'上部高度超标：{upper_ratio:.1%} > {self.thresholds["upper_height_max"]:.1%}页面高度'
+            return result
+        
+        # 检查中部高度（>=50%页面高度）
+        if middle_ratio < self.thresholds['middle_height_min']:
+            result['reason'] = f'中部高度不足：{middle_ratio:.1%} < {self.thresholds["middle_height_min"]:.1%}页面高度'
+            return result
+        
+        # 检查下部高度（<=30%页面高度）
+        if lower_ratio > self.thresholds['lower_height_max']:
+            result['reason'] = f'下部高度超标：{lower_ratio:.1%} > {self.thresholds["lower_height_max"]:.1%}页面高度'
+            return result
+        
+        # 验证留白比例
+        whitespace_check = self._check_region_whitespace(image, regions)
+        if not whitespace_check['valid']:
+            result['reason'] = whitespace_check['reason']
+            return result
+        
+        result['valid'] = True
+        result['reason'] = f'三区域划分合理：上{upper_ratio:.1%}页面高度，中{middle_ratio:.1%}页面高度，下{lower_ratio:.1%}页面高度'
+        result['regions'] = regions
+        result['ratios'] = {
+            'upper_ratio': upper_ratio,
+            'middle_ratio': middle_ratio,
+            'lower_ratio': lower_ratio
+        }
+        
+        return result
+    
+    def _check_region_whitespace(self, image: np.ndarray, regions: Dict) -> Dict:
+        """检查各区域留白比例"""
+        result = {'valid': True, 'reason': '', 'whitespace_ratios': {}}
+        
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        
+        for region_name, region_info in regions.items():
+            y_start = region_info['y']
+            y_end = y_start + region_info['height']
+            region_image = gray[y_start:y_end, :]
+            
+            # 计算白色像素比例（阈值200以上认为是白色）
+            white_pixels = np.sum(region_image > 200)
+            total_pixels = region_image.shape[0] * region_image.shape[1]
+            whitespace_ratio = white_pixels / total_pixels if total_pixels > 0 else 0
+            
+            result['whitespace_ratios'][region_name] = whitespace_ratio
+            
+            # 根据区域要求验证留白
+            if region_name == 'upper' and whitespace_ratio < 0.30:
+                result['valid'] = False
+                result['reason'] = f'上部留白不足：{whitespace_ratio:.1%} < 30%'
+                break
+            elif region_name == 'middle' and whitespace_ratio < 0.50:
+                result['valid'] = False
+                result['reason'] = f'中部留白不足：{whitespace_ratio:.1%} < 50%'
+                break
+            elif region_name == 'lower' and whitespace_ratio < 0.30:
+                result['valid'] = False
+                result['reason'] = f'下部留白不足：{whitespace_ratio:.1%} < 30%'
+                break
+        
+        return result
+    
+
+    
+    def _check_local_details(self, image: np.ndarray, regions: Dict) -> Dict:
+        """检查每个部分局部细节（第四步判断）"""
+        result = {'valid': False, 'reason': '', 'details': {}}
+        
+        if not regions:
+            result['reason'] = '区域信息缺失'
+            return result
+        
+        # OCR配置
+        ocr_configs = [
+            '--psm 6 -l chi_sim+eng',
+            '--psm 7 -l chi_sim+eng',
+            '--psm 8 -l chi_sim+eng',
+            '--psm 13 -l chi_sim+eng'
+        ]
+        
+        height, width = image.shape[:2]
+        checks_passed = []
+        
+        # 检查上部细节（标准logo、标准分类、标准号）
+        upper_check = self._check_upper_details(image, regions['upper'], ocr_configs, width)
+        result['details']['upper'] = upper_check
+        if upper_check['valid']:
+            checks_passed.append('上部检查通过')
+        
+        # 检查中部细节（发布、实施）
+        middle_check = self._check_middle_details(image, regions['middle'], ocr_configs)
+        result['details']['middle'] = middle_check
+        if middle_check['valid']:
+            checks_passed.append('中部检查通过')
+        
+        # 检查下部细节（发布）
+        lower_check = self._check_lower_details(image, regions['lower'], ocr_configs)
+        result['details']['lower'] = lower_check
+        if lower_check['valid']:
+            checks_passed.append('下部检查通过')
+        
+        # 所有三个部分都必须通过
+        if len(checks_passed) == 3:
+            result['valid'] = True
+            result['reason'] = '所有区域局部细节检查通过'
+        else:
+            failed_parts = []
+            if not upper_check['valid']:
+                failed_parts.append(f"上部: {upper_check['reason']}")
+            if not middle_check['valid']:
+                failed_parts.append(f"中部: {middle_check['reason']}")
+            if not lower_check['valid']:
+                failed_parts.append(f"下部: {lower_check['reason']}")
+            result['reason'] = '局部细节检查失败: ' + '; '.join(failed_parts)
+        
+        return result
+    
+    def _check_upper_details(self, image: np.ndarray, upper_region: Dict, ocr_configs: list, page_width: int) -> Dict:
+        """检查上部细节：只需要找到"标准"二字"""
+        result = {'valid': False, 'reason': '', 'found_items': []}
+        
+        y_start = upper_region['y']
+        y_end = y_start + upper_region['height']
+        region_image = image[y_start:y_end, :]
+        
+        # 图像预处理
+        gray = cv2.cvtColor(region_image, cv2.COLOR_BGR2GRAY)
+        enhanced = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        
+        # OCR检测"标准"二字（这是唯一的要求）
+        standard_found = False
+        for config in ocr_configs:
+            try:
+                text = pytesseract.image_to_string(enhanced, config=config)
+                if '标准' in text:
+                    standard_found = True
+                    result['found_items'].append('标准')
+                    break
+            except:
+                continue
+        
+        
+        # 只需要找到"标准"二字
+        if standard_found:
+            result['valid'] = True
+            result['reason'] = "上部找到必需的'标准'关键词"
+        else:
+            result['reason'] = "上部未找到'标准'关键词"
+        
+        return result
+    
+    def _check_middle_details(self, image: np.ndarray, middle_region: Dict, ocr_configs: list) -> Dict:
+        """检查中部细节：只需要找到"发布"二字"""
+        result = {'valid': False, 'reason': '', 'found_items': []}
+        
+        y_start = middle_region['y']
+        y_end = y_start + middle_region['height']
+        region_image = image[y_start:y_end, :]
+        
+        # 图像预处理
+        gray = cv2.cvtColor(region_image, cv2.COLOR_BGR2GRAY)
+        enhanced = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        
+        # OCR检测"发布"二字（这是唯一的要求）
+        publish_found = False
+        
+        for config in ocr_configs:
+            try:
+                text = pytesseract.image_to_string(enhanced, config=config)
+                if '发布' in text:
+                    publish_found = True
+                    result['found_items'].append('发布')
+                    break
+            except:
+                continue
+        
+        
+        # 只需要找到"发布"二字
+        if publish_found:
+            result['valid'] = True
+            result['reason'] = "中部找到必需的'发布'关键词"
+        else:
+            result['reason'] = "中部未找到'发布'关键词"
+        
+        return result
+    
+    def _check_lower_details(self, image: np.ndarray, lower_region: Dict, ocr_configs: list) -> Dict:
+        """检查下部细节：只需要找到“发布”二字"""
+        result = {'valid': False, 'reason': '', 'found_items': []}
+        
+        y_start = lower_region['y']
+        y_end = y_start + lower_region['height']
+        region_image = image[y_start:y_end, :]
+        
+        # 图像预处理
+        gray = cv2.cvtColor(region_image, cv2.COLOR_BGR2GRAY)
+        enhanced = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        
+        # OCR检测“发布”二字
+        publish_found = False
+        for config in ocr_configs:
+            try:
+                text = pytesseract.image_to_string(enhanced, config=config)
+                if '发布' in text:
+                    publish_found = True
+                    result['found_items'].append('发布')
+                    break
+            except:
+                continue
+        
+        
+        if publish_found:
+            result['valid'] = True
+            result['reason'] = "下部找到必需的'发布'关键词"
+        else:
+            result['reason'] = "下部未找到'发布'关键词"
+        
+        return result
+    
+    def _detect_logo_position(self, region_image: np.ndarray, page_width: int) -> bool:
+        """检测logo位置是否在x>=40%的位置"""
+        # 简化检测：寻找右侧区域是否有图案/文字集中
+        gray = cv2.cvtColor(region_image, cv2.COLOR_BGR2GRAY)
+        
+        # 分析右半部分（x >= 40%）的内容密度
+        right_start = int(page_width * self.thresholds['logo_x_min'])
+        right_region = gray[:, right_start:]
+        
+        if right_region.size == 0:
+            return False
+        
+        # 计算非白色像素密度
+        non_white_pixels = np.sum(right_region < 200)
+        total_pixels = right_region.shape[0] * right_region.shape[1]
+        density = non_white_pixels / total_pixels if total_pixels > 0 else 0
+        
+        # 如果右侧区域有一定的内容密度，认为可能有logo
+        return density > 0.02
+    
+    def _detect_standard_number(self, enhanced_image: np.ndarray, ocr_configs: list) -> bool:
+        """检测标准号格式：横杠+年份(19xx或20xx)"""
+        import re
+        
+        for config in ocr_configs:
+            try:
+                text = pytesseract.image_to_string(enhanced, config=config)
+                # 查找格式：横杠后跟19xx或20xx年份
+                pattern = r'[-—–]\s*(19|20)\d{2}'
+                if re.search(pattern, text):
+                    return True
+            except:
+                continue
+        
+        return False
+    
+    
+    def _calculate_line_length(self, edges: np.ndarray, rho: float, theta: float) -> float:
         """计算线条的实际长度"""
         height, width = edges.shape
         
@@ -279,115 +594,105 @@ class PDFProcessor:
         y0 = b * rho
         
         # 找到线条与图像边界的交点
-        x1 = int(x0 + max_width * (-b))
-        y1 = int(y0 + max_width * (a))
-        x2 = int(x0 - max_width * (-b))
-        y2 = int(y0 - max_width * (a))
+        if abs(b) > 0.001:  # 不是垂直线
+            # 与左右边界的交点
+            y_left = y0 - x0 * a / b
+            y_right = y0 + (width - x0) * a / b
         
         # 约束到图像范围内
-        x1 = max(0, min(width-1, x1))
-        x2 = max(0, min(width-1, x2))
-        y1 = max(0, min(height-1, y1))
-        y2 = max(0, min(height-1, y2))
-        
-        # 沿着线条检测实际的像素点
-        line_pixels = 0
-        steps = abs(x2 - x1) + abs(y2 - y1)
-        
-        if steps > 0:
-            for i in range(steps):
-                x = int(x1 + (x2 - x1) * i / steps)
-                y = int(y1 + (y2 - y1) * i / steps)
-                if 0 <= x < width and 0 <= y < height and edges[y, x] > 0:
-                    line_pixels += 1
-        
-        return line_pixels
-    
-    def _calculate_proportions(self, image: np.ndarray, regions: Dict) -> Dict:
-        """计算区域比例"""
-        proportions = {}
-        height, width = image.shape[:2]
-        
-        if 'upper' in regions:
-            upper_height = regions['upper']['height']
-            proportions['upper_whitespace'] = (upper_height / height) * 100
-        
-        if 'middle' in regions:
-            middle_height = regions['middle']['height']
-            proportions['middle_whitespace'] = (middle_height / height) * 100
-        
-        if 'lower' in regions:
-            lower_height = regions['lower']['height']
-            proportions['lower_whitespace'] = (lower_height / height) * 100
-        
-        return proportions
-    
-    def _calculate_positions(self, image: np.ndarray, key_boxes: Dict) -> Dict:
-        """计算位置关系"""
-        positions = {}
-        height, width = image.shape[:2]
-        
-        if 'box_1' in key_boxes:
-            box1_x = key_boxes['box_1']['x'] + key_boxes['box_1']['width']
-            positions['box1_right_aligned'] = (box1_x / width) > 0.85
-        
-        if 'box_3' in key_boxes:
-            box3_x = key_boxes['box_3']['x'] + key_boxes['box_3']['width']
-            positions['box3_right_aligned'] = (box3_x / width) > 0.80
-        
-        if 'box_6' in key_boxes:
-            box6_center = key_boxes['box_6']['x'] + key_boxes['box_6']['width'] / 2
-            center_error = abs(box6_center - width / 2) / width
-            positions['box6_centered'] = center_error < 0.05
-        
-        return positions
-    
-    def _check_content_constraints(self, image: np.ndarray, key_boxes: Dict) -> Dict:
-        """检查内容约束"""
-        constraints = {}
-        
-        if 'box_4' in key_boxes:
-            box4_region = image[
-                key_boxes['box_4']['y']:key_boxes['box_4']['y']+key_boxes['box_4']['height'],
-                key_boxes['box_4']['x']:key_boxes['box_4']['x']+key_boxes['box_4']['width']
-            ]
+            x_start = 0 if 0 <= y_left <= height else (width if 0 <= y_right <= height else None)
+            x_end = width if 0 <= y_right <= height else (0 if 0 <= y_left <= height else None)
             
-            gray = cv2.cvtColor(box4_region, cv2.COLOR_BGR2GRAY)
-            _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-            
-            horizontal_projection = np.sum(binary, axis=1)
-            lines = np.where(horizontal_projection > np.max(horizontal_projection) * 0.1)[0]
-            
-            if len(lines) > 0:
-                line_count = 1
-                for i in range(1, len(lines)):
-                    if lines[i] - lines[i-1] > 5:
-                        line_count += 1
-                
-                constraints['box4_multiple_lines'] = line_count >= 2
+            if x_start is not None and x_end is not None:
+                return abs(x_end - x_start)
         
-        return constraints
+        return width  # 默认返回图像宽度
+    
+    def _calculate_line_thickness(self, edges: np.ndarray, rho: float, theta: float) -> float:
+        """计算线条的高度（厚度）"""
+        height, width = edges.shape
+        
+        # 计算线条的中心点
+        a = np.cos(theta)
+        b = np.sin(theta)
+        x0 = a * rho
+        y0 = b * rho
+        
+        # 在线条中心附近检查垂直方向的厚度
+        center_x = int(x0)
+        center_y = int(y0)
+        
+        if 0 <= center_x < width and 0 <= center_y < height:
+            # 在垂直方向上检查线条厚度
+            thickness = 0
+            for dy in range(-10, 11):  # 检查上下10个像素
+                y = center_y + dy
+                if 0 <= y < height and edges[y, center_x] > 0:
+                    thickness += 1
+            return thickness
+        
+        return 1  # 默认厚度
+    
+
+    
+
+    
+
     
     def _extract_features(self, image: np.ndarray, filename: str = '') -> Dict:
-        """提取图像特征"""
-        features = {}
-        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        height, width = image.shape[:2]
+        """按照新的四步法提取图像特征"""
+        features = {
+            'filename': filename,
+            'step1_colors': {},
+            'step2_lines': {},
+            'step3_regions': {},
+            'step4_details': {},
+            'final_result': False
+        }
         
-        features['filename'] = filename
-        features['white_ratio'] = self._get_color_ratio(hsv, 'white')
-        features['black_ratio'] = self._get_color_ratio(hsv, 'black')
-        features['regions'] = self._locate_regions(image, hsv)
-        features['key_boxes'] = self._locate_key_boxes(image, hsv)
-        features['keywords'] = self._verify_keywords(image, features['regions'])
-        features['lines'] = self._detect_lines(image, features['regions'])
-        features['proportions'] = self._calculate_proportions(image, features['regions'])
-        features['positions'] = self._calculate_positions(image, features['key_boxes'])
-        features['content_constraints'] = self._check_content_constraints(image, features['key_boxes'])
+        # 第一步：页面整体颜色和字体颜色
+        step1_result = self._check_page_colors(image)
+        features['step1_colors'] = step1_result
+        
+        if not step1_result['valid']:
+            features['final_result'] = False
+            features['failure_reason'] = f"第一步失败: {step1_result['reason']}"
+            return features
+        
+        # 第二步：2条黑色长横线
+        step2_result = self._detect_horizontal_lines(image)
+        features['step2_lines'] = step2_result
+        
+        if not step2_result['valid']:
+            features['final_result'] = False
+            features['failure_reason'] = f"第二步失败: {step2_result['reason']}"
+            return features
+        
+        # 第三步：三个部分（基于横线划分）
+        step3_result = self._divide_three_regions(image, step2_result)
+        features['step3_regions'] = step3_result
+        
+        if not step3_result['valid']:
+            features['final_result'] = False
+            features['failure_reason'] = f"第三步失败: {step3_result['reason']}"
+            return features
+        
+        # 第四步：每个部分局部细节
+        step4_result = self._check_local_details(image, step3_result['regions'])
+        features['step4_details'] = step4_result
+        
+        if not step4_result['valid']:
+            features['final_result'] = False
+            features['failure_reason'] = f"第四步失败: {step4_result['reason']}"
+            return features
+        
+        # 所有步骤都通过
+        features['final_result'] = True
+        features['success_reason'] = '所有四步检查均通过，确认为标准文件'
         
         return features
     
-    def _convert_pdf_to_images(self, pdf_path: str, max_pages: int = 5):
+    def _convert_pdf_to_images(self, pdf_path: str, max_pages: int = 3):
         """
         将PDF转换为图像，支持多种后端
         
@@ -449,74 +754,20 @@ class PDFProcessor:
         raise Exception(f"无法转换PDF文件: {pdf_path}，请检查文件是否损坏或PDF处理库安装")
     
     def _validate_features(self, features: Dict) -> bool:
-        """验证特征是否符合模板要求 - 基于页面内容特征"""
-        validation_score = 0
-        max_score = 0
-        
-        # 1. 颜色特征验证 (权重: 35%) - 提高权重，白底黑字是最基本的特征
-        max_score += 35
-        white_ratio = features.get('white_ratio', 0)
-        black_ratio = features.get('black_ratio', 0)
-        if white_ratio > 0.75:  # 降低白色要求
-            validation_score += 20
-        elif white_ratio > 0.60:
-            validation_score += 15
-        elif white_ratio > 0.45:
-            validation_score += 10
-            
-        if black_ratio > 0.003:  # 降低黑色要求
-            validation_score += 10
-        elif black_ratio > 0.001:
-            validation_score += 5
-        
-        # 2. 区域结构验证 (权重: 30%) - 提高权重，三区划分是重要特征
-        max_score += 30
-        regions = features.get('regions', {})
-        proportions = features.get('proportions', {})
-        
-        if len(regions) >= 3:
-            validation_score += 15
-        elif len(regions) >= 2:
-            validation_score += 10
-            
-        # 验证区域比例是否符合标准文档要求 (降低要求)
-        if proportions.get('upper_whitespace', 0) > 15:  # 上部有一定留白
-            validation_score += 5
-        if proportions.get('middle_whitespace', 0) > 30:  # 中部有较多留白
-            validation_score += 5
-        if proportions.get('lower_whitespace', 0) > 10:  # 下部有一定留白
-            validation_score += 5
-        
-        # 3. 关键词验证 (权重: 20%) - 降低权重，因为OCR可能不准确
-        max_score += 20
-        keywords = features.get('keywords', {})
-        if keywords.get('upper_has_standard', False):
-            validation_score += 12  # "标准"是重要特征
-        if keywords.get('lower_has_publish', False):
-            validation_score += 8   # "发布"是重要特征
-        
-        # 4. 横线结构验证 (权重: 15%) - 降低权重，因为线检测可能不准确
-        max_score += 15
-        lines = features.get('lines', {})
-        if lines.get('first_line_valid', False):
-            validation_score += 8
-        if lines.get('second_line_valid', False):
-            validation_score += 7
-        
-        # 计算匹配度
-        match_percentage = (validation_score / max_score) * 100 if max_score > 0 else 0
-        
-        # 降低验证阈值为50%，适应真实标准文档的多样性
-        threshold = 50
-        is_valid = match_percentage >= threshold
+        """基于新的四步法验证特征 - 严格按照逐步判断"""
+        # 新的验证逻辑：必须四步全部通过
+        is_valid = features.get('final_result', False)
         
         # 详细日志输出
-        self.logger.debug(f"特征验证详情 (阈值: {threshold}%):")
-        self.logger.debug(f"  颜色特征 (35%): 白色{white_ratio:.1%} 黑色{black_ratio:.3%}")
-        self.logger.debug(f"  区域结构 (30%): {len(regions)}个区域")
-        self.logger.debug(f"  关键词 (20%): 标准{'✓' if keywords.get('upper_has_standard', False) else '✗'} 发布{'✓' if keywords.get('lower_has_publish', False) else '✗'}")
-        self.logger.debug(f"  横线结构 (15%): 第一线{'✓' if lines.get('first_line_valid', False) else '✗'} 第二线{'✓' if lines.get('second_line_valid', False) else '✗'}")
-        self.logger.debug(f"  总匹配度: {match_percentage:.1f}% -> {'通过' if is_valid else '不通过'}")
+        if is_valid:
+            self.logger.info("✅ 标准文件验证通过 - 所有四步检查均通过")
+            self.logger.info(f"   第一步: {features['step1_colors']['reason']}")
+            self.logger.info(f"   第二步: {features['step2_lines']['reason']}")
+            self.logger.info(f"   第三步: {features['step3_regions']['reason']}")
+            self.logger.info(f"   第四步: {features['step4_details']['reason']}")
+        else:
+            failure_reason = features.get('failure_reason', '未知原因')
+            self.logger.info(f"❌ 标准文件验证失败: {failure_reason}")
         
         return is_valid
     
@@ -538,8 +789,8 @@ class PDFProcessor:
                 result['reason'] = '处理超时'
                 return result
             
-            # 使用新的PDF转换方法
-            images = self._convert_pdf_to_images(pdf_path, max_pages=5)
+            # 使用新的PDF转换方法（最多检索前3页）
+            images = self._convert_pdf_to_images(pdf_path, max_pages=3)
             
             for page_num, opencv_image in enumerate(images):
                 if time.time() - start_time > timeout:
