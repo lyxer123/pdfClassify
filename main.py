@@ -45,15 +45,15 @@ class PDFFeatureExtractor:
         self.data_dir = Path(data_dir)
         self.data_dir.mkdir(exist_ok=True)
         
-        # 颜色特征阈值配置（基于104个标准PDF分析结果优化）
+        # 颜色特征阈值配置（基于真实标准PDF反馈优化）
         self.color_thresholds = {
             'white_bg_min': 200,      # 白色背景最小RGB值
             'black_text_max': 80,     # 黑色文字最大RGB值
-            'bg_ratio_min': 0.95,     # 背景色占比最小值（基于标准PDF 5%分位数: 95.2%）
-            'text_ratio_min': 0.011,  # 文字色占比最小值（基于标准PDF 5%分位数: 1.2%）
-            'contrast_min': 29,       # 最小对比度（基于标准PDF 5%分位数: 29.5）
-            'brightness_min': 246,    # 最小亮度（基于标准PDF 5%分位数: 246.2）
-            'colored_text_max': 0.05  # 彩色文字最大允许比例（5%）
+            'bg_ratio_min': 0.95,     # 背景色占比最小值（保持95%）
+            'text_ratio_min': 0.001,  # 文字色占比最小值（降低到0.1%）
+            'contrast_min': 26,       # 最小对比度（降低到26）
+            'brightness_min': 244,    # 最小亮度（降低到244）
+            'colored_text_max': 0.05  # 彩色文字最大允许比例（保持5%）
         }
     
     def pdf_to_images(self, pdf_path, max_pages=5):
@@ -169,35 +169,42 @@ class PDFFeatureExtractor:
         Returns:
             int: 彩色文字像素数量
         """
-        # 排除白色背景
-        non_white_mask = np.any(rgb_image < self.color_thresholds['white_bg_min'], axis=2)
-        
-        # 排除黑色文字
-        non_black_mask = np.any(rgb_image > self.color_thresholds['black_text_max'], axis=2)
-        
-        # 彩色文字 = 非白色背景 且 非黑色文字
-        colored_mask = non_white_mask & non_black_mask
-        
-        # 进一步检测明显的彩色（RGB通道差异较大）
         r, g, b = rgb_image[:, :, 0], rgb_image[:, :, 1], rgb_image[:, :, 2]
         
+        # 排除白色背景（RGB都很高）
+        white_mask = (r >= self.color_thresholds['white_bg_min']) & \
+                     (g >= self.color_thresholds['white_bg_min']) & \
+                     (b >= self.color_thresholds['white_bg_min'])
+        
+        # 排除黑色/灰色文字（RGB都很低且相近）
+        max_rgb = np.maximum(np.maximum(r, g), b)
+        min_rgb = np.minimum(np.minimum(r, g), b)
+        
+        # 黑色/灰色：最大RGB值小于阈值，且RGB通道差异小
+        grayscale_mask = (max_rgb <= self.color_thresholds['black_text_max'] + 50) & \
+                        (max_rgb - min_rgb <= 20)  # RGB通道差异小于20认为是灰度
+        
+        # 检测明显的彩色文字
+        colored_text_pixels = 0
+        
         # 检测红色文字（红色分量明显大于绿色和蓝色）
-        red_text_mask = (r > g + 30) & (r > b + 30) & (r > 100)
+        red_text_mask = (r > g + 50) & (r > b + 50) & (r > 120) & ~white_mask
+        colored_text_pixels += np.sum(red_text_mask)
         
         # 检测蓝色文字（蓝色分量明显大于红色和绿色）
-        blue_text_mask = (b > r + 30) & (b > g + 30) & (b > 100)
+        blue_text_mask = (b > r + 50) & (b > g + 50) & (b > 120) & ~white_mask
+        colored_text_pixels += np.sum(blue_text_mask)
         
         # 检测绿色文字（绿色分量明显大于红色和蓝色）
-        green_text_mask = (g > r + 30) & (g > b + 30) & (g > 100)
+        green_text_mask = (g > r + 50) & (g > b + 50) & (g > 120) & ~white_mask
+        colored_text_pixels += np.sum(green_text_mask)
         
-        # 检测其他明显的彩色（RGB通道标准差较大）
-        rgb_std = np.std(rgb_image, axis=2)
-        high_variance_mask = (rgb_std > 15) & non_white_mask & non_black_mask
+        # 检测其他明显的彩色（RGB通道差异很大且不是白色背景）
+        rgb_range = max_rgb - min_rgb
+        high_variance_mask = (rgb_range > 60) & ~white_mask & ~grayscale_mask & (max_rgb > 100)
+        colored_text_pixels += np.sum(high_variance_mask)
         
-        # 综合所有彩色文字检测结果
-        all_colored_mask = colored_mask | red_text_mask | blue_text_mask | green_text_mask | high_variance_mask
-        
-        return np.sum(all_colored_mask)
+        return colored_text_pixels
     
     def check_standard_compliance(self, features):
         """
