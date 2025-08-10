@@ -4,8 +4,29 @@
 简单测试脚本 - 验证基本功能
 """
 
-# 导入测试包配置
-from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
+import os
+import sys
+from pathlib import Path
+
+# 添加项目根目录到Python路径
+def setup_paths():
+    """设置路径，确保能够导入项目模块"""
+    current_file = Path(__file__)
+    project_root = current_file.parent.parent.parent
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+    return project_root
+
+# 设置路径
+PROJECT_ROOT = setup_paths()
+
+# 尝试导入测试包配置，如果失败则使用本地配置
+try:
+    from tests import TEMPLATES_DIR, DATA_DIR
+except ImportError:
+    # 如果无法导入tests包，使用本地路径
+    TEMPLATES_DIR = PROJECT_ROOT / "templates"
+    DATA_DIR = PROJECT_ROOT / "data"
 
 def test_imports():
     """测试导入功能"""
