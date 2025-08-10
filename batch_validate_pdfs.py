@@ -119,18 +119,18 @@ class PDFBatchValidator:
         try:
             logger.info(f"正在验证: {pdf_path.name}")
             
-            # 转换PDF页面为图片
-            images = self.extractor.pdf_to_images(pdf_path, max_pages=3)
+            # 转换PDF页面为图片（只检测首页）
+            images = self.extractor.pdf_to_images(pdf_path, max_pages=1)
             if not images:
                 logger.error(f"PDF转换失败: {pdf_path.name}")
                 return False, "PDF转换失败"
             
-            # 分析每页的特征
+            # 分析首页特征
             page_results = []
             overall_compliance = True
             
             for i, image in enumerate(images):
-                logger.info(f"  分析第 {i+1} 页特征...")
+                logger.info(f"  分析首页特征...")
                 
                 # 第一特征：颜色特征分析
                 color_features = self.extractor.analyze_color_features(image)
@@ -157,7 +157,7 @@ class PDFBatchValidator:
                     overall_compliance = False
                 
                 # 输出详细检测结果
-                logger.info(f"  第 {i+1} 页检测结果:")
+                logger.info(f"  首页检测结果:")
                 logger.info(f"    颜色特征: {'✓' if color_features else '✗'}")
                 if second_feature:
                     logger.info(f"    第二特征: {'✓' if second_feature['has_second_feature'] else '✗'}")
@@ -168,13 +168,13 @@ class PDFBatchValidator:
             if not page_results:
                 return False, "所有页面分析失败"
             
-            # 检查是否所有页面都符合标准
+            # 检查首页是否符合标准
             if overall_compliance:
-                logger.info(f"✓ {pdf_path.name}: 所有页面都符合标准")
+                logger.info(f"✓ {pdf_path.name}: 首页符合标准")
                 return True, "符合标准"
             else:
-                logger.info(f"✗ {pdf_path.name}: 部分页面不符合标准")
-                return False, "部分页面不符合标准"
+                logger.info(f"✗ {pdf_path.name}: 首页不符合标准")
+                return False, "首页不符合标准"
                 
         except Exception as e:
             logger.error(f"验证文件时出错 {pdf_path.name}: {str(e)}")
@@ -324,6 +324,7 @@ def main():
     logger.info(f"源文件夹: {source_folder}")
     logger.info(f"目标文件夹: {target_folder}")
     logger.info(f"将使用第一特征（颜色特征）和第二特征（两条长黑线）进行验证")
+    logger.info(f"注意：只检测每个PDF的首页")
     
     # 创建验证器并处理文件夹
     validator = PDFBatchValidator(source_folder, target_folder)
