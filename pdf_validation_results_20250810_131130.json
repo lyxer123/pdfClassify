@@ -1,0 +1,28 @@
+{
+  "timestamp": "2025-08-10T13:11:30.500572",
+  "source_folder": "I:\\1T硬盘D",
+  "target_folder": "jc",
+  "statistics": {
+    "total_files": 2,
+    "compliant_files": 0,
+    "non_compliant_files": 2,
+    "error_files": 0,
+    "copied_files": 0
+  },
+  "results": [
+    {
+      "file_name": "国网车网人资〔2024〕32号　国网智慧车联网技术有限公司关于刘永相岗位聘任的通知.pdf",
+      "file_path": "I:\\1T硬盘D\\国网车网人资〔2024〕32号　国网智慧车联网技术有限公司关于刘永相岗位聘任的通知.pdf",
+      "is_compliant": false,
+      "reason": "不符合标准",
+      "copied": false
+    },
+    {
+      "file_name": "苏创总工程师分工.pdf",
+      "file_path": "I:\\1T硬盘D\\苏创总工程师分工.pdf",
+      "is_compliant": false,
+      "reason": "不符合标准",
+      "copied": false
+    }
+  ]
+}

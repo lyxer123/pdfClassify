@@ -1,0 +1,22 @@
+{
+  "scan_time": "2025-08-10T08:28:41.305783",
+  "source_directory": "I:\\正在工作目录-重庆电科院",
+  "target_directory": "jc",
+  "statistics": {
+    "total_pdfs": 3044,
+    "first_feature_passed": 807,
+    "second_feature_passed": 804,
+    "copied_files": 804,
+    "errors": 755
+  },
+  "files": [
+    {
+      "file_path": "I:\\正在工作目录-重庆电科院\\结题单.pdf",
+      "file_name": "结题单.pdf",
+      "success": true,
+      "first_feature": true,
+      "second_feature": true,
+      "copied": true,
+      "target_path": "jc\\结题单.pdf",
+      "first_feature_details": {
+        "passed": 

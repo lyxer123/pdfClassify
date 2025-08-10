@@ -364,26 +364,38 @@ class PDFFeatureExtractor:
     
     def _enhance_lines_morphology(self, black_mask, width):
         """
-        使用形态学操作增强线条检测
+        使用改进的形态学操作增强线条检测
+        更智能地识别真正的横线，避免误连接文字
         """
-        # 第一轮：使用大的水平核连接远距离的线段
-        horizontal_kernel1 = cv2.getStructuringElement(cv2.MORPH_RECT, (width // 8, 1))
+        height = black_mask.shape[0]
+        
+        # 第一轮：使用细长的水平核连接近距离的线段（适合真正的横线）
+        # 核的高度限制为3像素，避免连接过粗的文字行
+        horizontal_kernel1 = cv2.getStructuringElement(cv2.MORPH_RECT, (width // 10, 3))
         enhanced_mask1 = cv2.morphologyEx(black_mask.astype(np.uint8), cv2.MORPH_CLOSE, horizontal_kernel1)
         
-        # 第二轮：使用中等核进一步连接
-        horizontal_kernel2 = cv2.getStructuringElement(cv2.MORPH_RECT, (50, 3))
+        # 第二轮：使用更细的核进一步连接，但保持线条细度
+        horizontal_kernel2 = cv2.getStructuringElement(cv2.MORPH_RECT, (width // 20, 1))
         enhanced_mask2 = cv2.morphologyEx(enhanced_mask1, cv2.MORPH_CLOSE, horizontal_kernel2)
         
-        # 第三轮：最终清理
-        horizontal_kernel3 = cv2.getStructuringElement(cv2.MORPH_RECT, (20, 1))
-        final_mask = cv2.morphologyEx(enhanced_mask2, cv2.MORPH_CLOSE, horizontal_kernel3)
+        # 第三轮：清理和细化，移除过粗的区域
+        # 使用开运算移除小的噪点
+        cleanup_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 1))
+        cleaned_mask = cv2.morphologyEx(enhanced_mask2, cv2.MORPH_OPEN, cleanup_kernel)
         
-        logger.debug(f"形态学增强后黑色像素数量: {np.sum(final_mask)}")
+        # 最终细化：确保线条不会过粗
+        thin_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 3))
+        final_mask = cv2.morphologyEx(cleaned_mask, cv2.MORPH_ERODE, thin_kernel)
+        
+        logger.debug(f"改进形态学增强后黑色像素数量: {np.sum(final_mask)}")
+        logger.debug(f"原始黑色像素数量: {np.sum(black_mask)}")
+        
         return final_mask
     
     def _detect_lines_from_mask(self, mask, width, height):
         """
         从给定的掩码中检测长横线
+        增加线条宽度验证，确保检测到的是细线而不是粗文字行
         """
         potential_lines = []
         
@@ -412,17 +424,27 @@ class PDFFeatureExtractor:
                 max_segment_length = max(end - start + 1 for start, end in segments)
                 max_segment_ratio = max_segment_length / width
                 
-                # 记录可能的长横线（最长线段>=15%宽度）
-                if max_segment_ratio >= 0.15:
+                # 记录可能的长横线（最长线段>=70%宽度，避免误识别长行文字）
+                if max_segment_ratio >= 0.70:
                     max_segment = max(segments, key=lambda x: x[1] - x[0])
-                    potential_lines.append({
-                        'coords': (max_segment[0], y, max_segment[1], y),
-                        'length': max_segment_length,
-                        'y_center': float(y),
-                        'angle': 0,
-                        'width_ratio': max_segment_ratio,
-                        'y_percent': y / height * 100
-                    })
+                    
+                    # 新增：验证线条宽度，确保是细线而不是粗文字行
+                    line_width = self._measure_line_width(mask, max_segment[0], max_segment[1], y, width, height)
+                    
+                    # 线条宽度应该小于页面高度的2%，避免误识别文字行
+                    if line_width <= height * 0.02:
+                        potential_lines.append({
+                            'coords': (max_segment[0], y, max_segment[1], y),
+                            'length': max_segment_length,
+                            'y_center': float(y),
+                            'angle': 0,
+                            'width_ratio': max_segment_ratio,
+                            'y_percent': y / height * 100,
+                            'line_width': line_width  # 新增：记录线条宽度
+                        })
+                        logger.debug(f"检测到细线: y={y}, 长度={max_segment_length:.0f}({max_segment_ratio:.1%}), 宽度={line_width:.1f}")
+                    else:
+                        logger.debug(f"忽略粗线: y={y}, 长度={max_segment_length:.0f}({max_segment_ratio:.1%}), 宽度={line_width:.1f} (超过阈值{height*0.02:.1f})")
         
         logger.debug(f"发现 {len(potential_lines)} 条潜在长横线")
         
@@ -434,7 +456,7 @@ class PDFFeatureExtractor:
         
         # 寻找两条最主要且相距足够远的线条
         main_lines = []
-        min_distance = height * 0.1  # 最小间距为10%高度
+        min_distance = height * 0.45  # 最小间距为45%高度
         
         for line in potential_lines:
             # 检查与已选线条的距离
@@ -445,13 +467,102 @@ class PDFFeatureExtractor:
                     break
             
             if not too_close:
+                # 新增：计算线条质量评分
+                quality_score = self._calculate_line_quality(line, width, height)
+                line['quality_score'] = quality_score
+                
                 main_lines.append(line)
-                logger.debug(f"选择长横线: y={line['y_center']:.0f}({line['y_percent']:.1f}%), 长度={line['length']}({line['width_ratio']:.1%})")
+                logger.debug(f"选择长横线: y={line['y_center']:.0f}({line['y_percent']:.1f}%), 长度={line['length']}({line['width_ratio']:.1%}), 质量评分={quality_score:.2f}")
                 if len(main_lines) == 2:
                     break
         
         logger.debug(f"最终选择 {len(main_lines)} 条主要长横线")
         return main_lines
+    
+    def _measure_line_width(self, mask, x1, x2, y, width, height):
+        """
+        测量线条在垂直方向上的宽度
+        
+        Args:
+            mask: 黑色像素掩码
+            x1, x2: 线条的起始和结束x坐标
+            y: 线条的y坐标
+            width, height: 图像尺寸
+            
+        Returns:
+            float: 线条的垂直宽度（像素）
+        """
+        # 在y坐标附近搜索垂直方向上的连续黑色像素
+        line_center = y
+        search_range = max(5, height // 100)  # 搜索范围，最小5像素
+        
+        # 向上搜索
+        top_y = line_center
+        for dy in range(1, search_range + 1):
+            test_y = line_center - dy
+            if test_y < 0:
+                break
+            
+            # 检查这一行在x1到x2范围内是否有足够的黑色像素
+            if x2 >= x1:
+                black_pixels = np.sum(mask[test_y, x1:x2+1])
+                if black_pixels < (x2 - x1 + 1) * 0.3:  # 如果黑色像素少于30%，认为不是线条的一部分
+                    break
+                top_y = test_y
+            else:
+                break
+        
+        # 向下搜索
+        bottom_y = line_center
+        for dy in range(1, search_range + 1):
+            test_y = line_center + dy
+            if test_y >= height:
+                break
+            
+            # 检查这一行在x1到x2范围内是否有足够的黑色像素
+            if x2 >= x1:
+                black_pixels = np.sum(mask[test_y, x1:x2+1])
+                if black_pixels < (x2 - x1 + 1) * 0.3:  # 如果黑色像素少于30%，认为不是线条的一部分
+                    break
+                bottom_y = test_y
+            else:
+                break
+        
+        # 计算线条宽度
+        line_width = bottom_y - top_y + 1
+        return line_width
+    
+    def _calculate_line_quality(self, line, width, height):
+        """
+        计算线条质量评分
+        
+        Args:
+            line: 线条信息字典
+            width, height: 图像尺寸
+            
+        Returns:
+            float: 质量评分 (0-1，越高越好)
+        """
+        # 长度评分：线条越长越好
+        length_score = min(line['width_ratio'] / 0.9, 1.0)  # 90%宽度为满分
+        
+        # 宽度评分：线条越细越好
+        max_expected_width = height * 0.02  # 期望的最大宽度
+        width_score = max(0, 1.0 - line['line_width'] / max_expected_width)
+        
+        # 位置评分：避免边缘位置
+        y_percent = line['y_percent']
+        if y_percent < 10 or y_percent > 90:  # 边缘位置
+            position_score = 0.5
+        elif y_percent < 20 or y_percent > 80:  # 较边缘位置
+            position_score = 0.8
+        else:  # 中间位置
+            position_score = 1.0
+        
+        # 综合评分：长度40% + 宽度40% + 位置20%
+        final_score = length_score * 0.4 + width_score * 0.4 + position_score * 0.2
+        
+        return final_score
     
     def _detect_line_in_region(self, black_mask, target_y, search_range, width, line_name):
         """
