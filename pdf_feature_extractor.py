@@ -17,6 +17,7 @@ import numpy as np
 from PIL import Image
 import fitz  # PyMuPDF
 import logging
+from typing import Dict, Any, Optional, Union
 
 # 配置日志
 # 获取项目根目录
@@ -38,20 +39,37 @@ logger = logging.getLogger(__name__)
 class PDFFeatureExtractor:
     """PDF特征提取器"""
     
-    def __init__(self, template_path="templates/mb.png", data_dir="data"):
+    def __init__(self, template_path="templates/mb.png", data_dir="data", config_file=None):
         """
         初始化特征提取器
         
         Args:
             template_path: 标准模板图片路径
             data_dir: 特征数据保存目录
+            config_file: 配置文件路径（可选）
         """
         self.template_path = template_path
         self.data_dir = Path(data_dir)
         self.data_dir.mkdir(exist_ok=True)
         
-        # 颜色特征阈值配置（基于真实标准PDF反馈优化）
-        self.color_thresholds = {
+        # 加载颜色阈值配置
+        self.color_thresholds = self._load_color_thresholds(config_file)
+        
+        # 设置日志
+        self._setup_logging()
+    
+    def _load_color_thresholds(self, config_file: Optional[str] = None) -> Dict[str, Union[int, float]]:
+        """
+        加载颜色阈值配置，支持多种配置方式
+        
+        Args:
+            config_file: 配置文件路径
+            
+        Returns:
+            dict: 颜色阈值配置字典
+        """
+        # 默认配置
+        default_thresholds = {
             'white_bg_min': 200,      # 白色背景最小RGB值
             'black_text_max': 80,     # 黑色文字最大RGB值
             'bg_ratio_min': 0.95,     # 背景色占比最小值（保持95%）
@@ -60,14 +78,164 @@ class PDFFeatureExtractor:
             'brightness_min': 244,    # 最小亮度（降低到244）
             'colored_text_max': 0.05  # 彩色文字最大允许比例（保持5%）
         }
+        
+        # 尝试从配置文件加载
+        if config_file and Path(config_file).exists():
+            try:
+                with open(config_file, 'r', encoding='utf-8') as f:
+                    config_data = json.load(f)
+                    if 'color_thresholds' in config_data:
+                        # 合并配置，保留默认值作为后备
+                        loaded_thresholds = config_data['color_thresholds']
+                        for key, value in loaded_thresholds.items():
+                            if key in default_thresholds:
+                                default_thresholds[key] = value
+                        print(f"✅ 已从配置文件加载颜色阈值: {config_file}")
+            except Exception as e:
+                print(f"⚠️ 配置文件加载失败，使用默认值: {e}")
+        
+        # 尝试从环境变量加载
+        env_thresholds = self._load_from_environment()
+        for key, value in env_thresholds.items():
+            if key in default_thresholds:
+                default_thresholds[key] = value
+        
+        return default_thresholds
     
-    def pdf_to_images(self, pdf_path, max_pages=5):
+    def _load_from_environment(self) -> Dict[str, Union[int, float]]:
+        """
+        从环境变量加载颜色阈值配置
+        
+        Returns:
+            dict: 从环境变量加载的配置
+        """
+        env_thresholds = {}
+        
+        # 环境变量映射
+        env_mapping = {
+            'WHITE_BG_MIN': 'white_bg_min',
+            'BLACK_TEXT_MAX': 'black_text_max',
+            'BG_RATIO_MIN': 'bg_ratio_min',
+            'TEXT_RATIO_MIN': 'text_ratio_min',
+            'CONTRAST_MIN': 'contrast_min',
+            'BRIGHTNESS_MIN': 'brightness_min',
+            'COLORED_TEXT_MAX': 'colored_text_max'
+        }
+        
+        for env_var, config_key in env_mapping.items():
+            env_value = os.getenv(env_var)
+            if env_value is not None:
+                try:
+                    # 尝试转换为适当的类型
+                    if config_key in ['bg_ratio_min', 'text_ratio_min', 'colored_text_max']:
+                        env_thresholds[config_key] = float(env_value)
+                    else:
+                        env_thresholds[config_key] = int(env_value)
+                except ValueError:
+                    print(f"⚠️ 环境变量 {env_var}={env_value} 格式无效，跳过")
+        
+        if env_thresholds:
+            print(f"✅ 已从环境变量加载 {len(env_thresholds)} 个颜色阈值")
+        
+        return env_thresholds
+    
+    def update_color_thresholds(self, new_thresholds: Dict[str, Union[int, float]]) -> None:
+        """
+        运行时更新颜色阈值配置
+        
+        Args:
+            new_thresholds: 新的阈值配置字典
+        """
+        for key, value in new_thresholds.items():
+            if key in self.color_thresholds:
+                old_value = self.color_thresholds[key]
+                self.color_thresholds[key] = value
+                print(f"🔄 更新颜色阈值 {key}: {old_value} -> {value}")
+            else:
+                print(f"⚠️ 未知的颜色阈值键: {key}")
+    
+    def reset_color_thresholds(self) -> None:
+        """重置颜色阈值为默认值"""
+        default_thresholds = {
+            'white_bg_min': 200,
+            'black_text_max': 80,
+            'bg_ratio_min': 0.95,
+            'text_ratio_min': 0.001,
+            'contrast_min': 26,
+            'brightness_min': 244,
+            'colored_text_max': 0.05
+        }
+        
+        for key, value in default_thresholds.items():
+            self.color_thresholds[key] = value
+        
+        print("🔄 颜色阈值已重置为默认值")
+    
+    def get_color_thresholds(self) -> Dict[str, Union[int, float]]:
+        """
+        获取当前的颜色阈值配置
+        
+        Returns:
+            dict: 当前的颜色阈值配置
+        """
+        return self.color_thresholds.copy()
+    
+    def save_color_thresholds(self, config_file: str) -> bool:
+        """
+        保存当前颜色阈值配置到文件
+        
+        Args:
+            config_file: 配置文件路径
+            
+        Returns:
+            bool: 保存是否成功
+        """
+        try:
+            config_data = {
+                'color_thresholds': self.color_thresholds,
+                'description': {
+                    'white_bg_min': '白色背景最小RGB值',
+                    'black_text_max': '黑色文字最大RGB值',
+                    'bg_ratio_min': '背景色占比最小值',
+                    'text_ratio_min': '文字色占比最小值',
+                    'contrast_min': '最小对比度',
+                    'brightness_min': '最小亮度',
+                    'colored_text_max': '彩色文字最大允许比例'
+                },
+                'version': '1.0',
+                'last_updated': '2025-01-10'
+            }
+            
+            with open(config_file, 'w', encoding='utf-8') as f:
+                json.dump(config_data, f, indent=4, ensure_ascii=False)
+            
+            print(f"✅ 颜色阈值配置已保存到: {config_file}")
+            return True
+            
+        except Exception as e:
+            print(f"❌ 保存配置文件失败: {e}")
+            return False
+    
+    def _setup_logging(self):
+        """设置日志配置"""
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        )
+        self.logger = logging.getLogger(__name__)
+    
+    def pdf_to_images(self, pdf_path, max_pages=5, page_mode="first_n"):
         """
         将PDF页面转换为图片
         
         Args:
             pdf_path: PDF文件路径
             max_pages: 最大页数
+            page_mode: 页面选择模式
+                - "first_n": 前N页（默认）
+                - "first_page": 第一页
+                - "all_pages": 所有页面
+                - "last_n": 从后面起的N页
             
         Returns:
             list: 图片数组列表
@@ -75,11 +243,28 @@ class PDFFeatureExtractor:
         try:
             doc = fitz.open(pdf_path)
             images = []
+            total_pages = len(doc)
             
-            pages_to_convert = min(len(doc), max_pages)
-            logger.info(f"正在转换PDF '{pdf_path}' 的前 {pages_to_convert} 页")
+            # 根据页面选择模式确定要转换的页面
+            if page_mode == "first_page":
+                pages_to_convert = 1
+                page_indices = [0]
+                logger.info(f"正在转换PDF '{pdf_path}' 的第1页")
+            elif page_mode == "all_pages":
+                pages_to_convert = total_pages
+                page_indices = list(range(total_pages))
+                logger.info(f"正在转换PDF '{pdf_path}' 的所有 {total_pages} 页")
+            elif page_mode == "last_n":
+                pages_to_convert = min(total_pages, max_pages)
+                start_page = max(0, total_pages - pages_to_convert)
+                page_indices = list(range(start_page, total_pages))
+                logger.info(f"正在转换PDF '{pdf_path}' 的后 {pages_to_convert} 页（从第{start_page + 1}页开始）")
+            else:  # "first_n" 默认模式
+                pages_to_convert = min(total_pages, max_pages)
+                page_indices = list(range(pages_to_convert))
+                logger.info(f"正在转换PDF '{pdf_path}' 的前 {pages_to_convert} 页")
             
-            for page_num in range(pages_to_convert):
+            for page_num in page_indices:
                 page = doc.load_page(page_num)
                 # 设置较高的分辨率以获得更好的图像质量
                 mat = fitz.Matrix(2.0, 2.0)  # 2倍放大
@@ -795,13 +980,18 @@ class PDFFeatureExtractor:
         
         return compliance
     
-    def process_pdf_file(self, pdf_path, max_pages=5):
+    def process_pdf_file(self, pdf_path, max_pages=5, page_mode="first_n"):
         """
         处理单个PDF文件
         
         Args:
             pdf_path: PDF文件路径
             max_pages: 最大处理页数
+            page_mode: 页面选择模式
+                - "first_n": 前N页（默认）
+                - "first_page": 第一页
+                - "all_pages": 所有页面
+                - "last_n": 从后面起的N页
             
         Returns:
             dict: 处理结果
@@ -810,7 +1000,7 @@ class PDFFeatureExtractor:
         logger.info(f"开始处理PDF文件: {pdf_path}")
         
         # 转换PDF页面为图片
-        images = self.pdf_to_images(pdf_path, max_pages)
+        images = self.pdf_to_images(pdf_path, max_pages, page_mode)
         if not images:
             return {
                 'file_path': str(pdf_path),
@@ -823,14 +1013,35 @@ class PDFFeatureExtractor:
         page_results = []
         overall_compliance = True
         
-        for i, image in enumerate(images):
-            logger.info(f"分析第 {i+1} 页特征...")
+        # 根据页面选择模式确定实际的页码
+        if page_mode == "first_page":
+            actual_page_numbers = [1]
+        elif page_mode == "all_pages":
+            actual_page_numbers = list(range(1, len(images) + 1))
+        elif page_mode == "last_n":
+            # 对于后N页模式，需要先获取PDF的总页数
+            try:
+                doc = fitz.open(pdf_path)
+                total_pages = len(doc)
+                doc.close()
+                
+                # 计算起始页码（从后往前数）
+                start_page = max(1, total_pages - len(images) + 1)
+                actual_page_numbers = list(range(start_page, start_page + len(images)))
+            except Exception as e:
+                logger.warning(f"无法获取PDF总页数，使用默认页码: {str(e)}")
+                actual_page_numbers = list(range(1, len(images) + 1))
+        else:  # "first_n" 默认模式
+            actual_page_numbers = list(range(1, len(images) + 1))
+        
+        for i, (image, actual_page_num) in enumerate(zip(images, actual_page_numbers)):
+            logger.info(f"分析第 {actual_page_num} 页特征...")
             features = self.analyze_color_features(image)
             
             if features:
                 compliance = self.check_standard_compliance(features)
                 page_results.append({
-                    'page_number': i + 1,
+                    'page_number': actual_page_num,
                     'features': features,
                     'compliance': compliance
                 })
@@ -840,7 +1051,7 @@ class PDFFeatureExtractor:
                     overall_compliance = False
             else:
                 page_results.append({
-                    'page_number': i + 1,
+                    'page_number': actual_page_num,
                     'features': None,
                     'compliance': False
                 })
@@ -853,25 +1064,31 @@ class PDFFeatureExtractor:
             'pages_analyzed': len(page_results),
             'page_results': page_results,
             'overall_compliance': overall_compliance,
+            'page_mode': page_mode,
             'timestamp': datetime.now().isoformat()
         }
         
-        logger.info(f"PDF '{pdf_path.name}' 处理完成，整体符合性: {'是' if overall_compliance else '否'}")
+        logger.info(f"PDF '{pdf_path.name}' 处理完成，页面模式: {page_mode}，整体符合性: {'是' if overall_compliance else '否'}")
         return result
     
-    def process_pdf_folder(self, folder_path, max_pages=5):
+    def process_pdf_folder(self, folder_path, max_pages=5, page_mode="first_n"):
         """
         处理文件夹中的所有PDF文件
         
         Args:
             folder_path: PDF文件夹路径
             max_pages: 每个PDF最大处理页数
+            page_mode: 页面选择模式
+                - "first_n": 前N页（默认）
+                - "first_page": 第一页
+                - "all_pages": 所有页面
+                - "last_n": 从后面起的N页
             
         Returns:
             dict: 处理结果汇总
         """
         folder_path = Path(folder_path)
-        logger.info(f"开始处理PDF文件夹: {folder_path}")
+        logger.info(f"开始处理PDF文件夹: {folder_path}，页面模式: {page_mode}")
         
         if not folder_path.exists():
             logger.error(f"文件夹不存在: {folder_path}")
@@ -888,7 +1105,8 @@ class PDFFeatureExtractor:
                 'folder_path': str(folder_path),
                 'total_files': 0,
                 'results': [],
-                'summary': {'compliant': 0, 'non_compliant': 0, 'errors': 0}
+                'summary': {'compliant': 0, 'non_compliant': 0, 'errors': 0},
+                'page_mode': page_mode
             }
         
         logger.info(f"找到 {len(pdf_files)} 个PDF文件")
@@ -899,7 +1117,7 @@ class PDFFeatureExtractor:
         
         for pdf_file in pdf_files:
             try:
-                result = self.process_pdf_file(pdf_file, max_pages)
+                result = self.process_pdf_file(pdf_file, max_pages, page_mode)
                 results.append(result)
                 
                 if result['success']:
@@ -927,6 +1145,7 @@ class PDFFeatureExtractor:
             'total_files': len(pdf_files),
             'results': results,
             'summary': summary,
+            'page_mode': page_mode,
             'timestamp': datetime.now().isoformat()
         }
         
@@ -935,6 +1154,7 @@ class PDFFeatureExtractor:
         logger.info(f"  符合标准: {summary['compliant']}")
         logger.info(f"  不符合标准: {summary['non_compliant']}")
         logger.info(f"  处理错误: {summary['errors']}")
+        logger.info(f"  页面模式: {page_mode}")
         
         return folder_result
     
@@ -969,31 +1189,52 @@ class PDFFeatureExtractor:
 def main():
     """主函数"""
     parser = argparse.ArgumentParser(description='PDF特征提取工具')
-    parser.add_argument('input_path', help='输入PDF文件或文件夹路径')
+    parser.add_argument('input_path', nargs='?', help='输入PDF文件或文件夹路径')
     parser.add_argument('--max-pages', type=int, default=5, help='每个PDF最大处理页数（默认：5）')
+    parser.add_argument('--page-mode', choices=['first_n', 'first_page', 'all_pages', 'last_n'], 
+                       default='first_n', help='页面选择模式：first_n(前N页), first_page(第一页), all_pages(所有页面), last_n(后N页)')
     parser.add_argument('--template', default='templates/mb.png', help='标准模板图片路径')
     parser.add_argument('--output', help='输出文件名（可选）')
     parser.add_argument('--data-dir', default='data', help='数据保存目录')
+    parser.add_argument('--config', help='颜色阈值配置文件路径（JSON格式）')
+    parser.add_argument('--save-config', help='保存当前颜色阈值配置到指定文件')
+    parser.add_argument('--show-config', action='store_true', help='显示当前颜色阈值配置')
     
     args = parser.parse_args()
     
     # 创建特征提取器
     extractor = PDFFeatureExtractor(
         template_path=args.template,
-        data_dir=args.data_dir
+        data_dir=args.data_dir,
+        config_file=args.config
     )
+    
+    # 处理配置相关参数
+    if args.show_config:
+        print("=== 当前颜色阈值配置 ===")
+        config = extractor.get_color_thresholds()
+        for key, value in config.items():
+            print(f"  {key}: {value}")
+        print()
+        return 0
+    
+    if args.save_config:
+        if extractor.save_color_thresholds(args.save_config):
+            return 0
+        else:
+            return 1
     
     input_path = Path(args.input_path)
     
     # 处理输入
     if input_path.is_file() and input_path.suffix.lower() == '.pdf':
         # 处理单个PDF文件
-        logger.info("处理模式: 单个PDF文件")
-        results = extractor.process_pdf_file(input_path, args.max_pages)
+        logger.info(f"处理模式: 单个PDF文件，页面模式: {args.page_mode}")
+        results = extractor.process_pdf_file(input_path, args.max_pages, args.page_mode)
     elif input_path.is_dir():
         # 处理PDF文件夹
-        logger.info("处理模式: PDF文件夹")
-        results = extractor.process_pdf_folder(input_path, args.max_pages)
+        logger.info(f"处理模式: PDF文件夹，页面模式: {args.page_mode}")
+        results = extractor.process_pdf_folder(input_path, args.max_pages, args.page_mode)
     else:
         logger.error(f"无效的输入路径: {input_path}")
         return 1

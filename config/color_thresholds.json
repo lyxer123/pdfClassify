@@ -1,0 +1,22 @@
+{
+    "color_thresholds": {
+        "white_bg_min": 200,
+        "black_text_max": 80,
+        "bg_ratio_min": 0.95,
+        "text_ratio_min": 0.001,
+        "contrast_min": 26,
+        "brightness_min": 244,
+        "colored_text_max": 0.05
+    },
+    "description": {
+        "white_bg_min": "白色背景最小RGB值",
+        "black_text_max": "黑色文字最大RGB值",
+        "bg_ratio_min": "背景色占比最小值",
+        "text_ratio_min": "文字色占比最小值",
+        "contrast_min": "最小对比度",
+        "brightness_min": "最小亮度",
+        "colored_text_max": "彩色文字最大允许比例"
+    },
+    "version": "1.0",
+    "last_updated": "2025-01-10"
+}
