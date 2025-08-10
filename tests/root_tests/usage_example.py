@@ -4,6 +4,9 @@
 统一PDF分析器使用示例
 """
 
+# 导入测试包配置
+from tests import PROJECT_ROOT
+
 from pdf_analyzer import UnifiedPDFAnalyzer
 import os
 
@@ -11,9 +14,9 @@ def example_recursive_mode():
     """示例：递归分类模式"""
     print("=== 递归分类模式示例 ===\n")
     
-    # 设置路径（请根据实际情况修改）
-    source_folder = "input_pdfs"  # 源文件夹
-    target_folder = "jc"          # 目标文件夹
+    # 设置路径（使用项目根目录的相对路径）
+    source_folder = str(PROJECT_ROOT / "input_pdfs")  # 源文件夹
+    target_folder = str(PROJECT_ROOT / "jc")          # 目标文件夹
     
     if not os.path.exists(source_folder):
         print(f"❌ 源文件夹不存在: {source_folder}")
@@ -36,9 +39,9 @@ def example_specific_mode():
     """示例：特定文件分析模式"""
     print("=== 特定文件分析模式示例 ===\n")
     
-    # 设置路径（请根据实际情况修改）
-    source_folder = "input_pdfs"  # 源文件夹
-    target_folder = "jc"          # 目标文件夹
+    # 设置路径（使用项目根目录的相对路径）
+    source_folder = str(PROJECT_ROOT / "input_pdfs")  # 源文件夹
+    target_folder = str(PROJECT_ROOT / "jc")          # 目标文件夹
     
     if not os.path.exists(source_folder):
         print(f"❌ 源文件夹不存在: {source_folder}")
@@ -64,8 +67,8 @@ def example_programmatic_usage():
     print("=== 编程接口使用示例 ===\n")
     
     # 设置路径
-    source_folder = "input_pdfs"
-    target_folder = "jc"
+    source_folder = str(PROJECT_ROOT / "input_pdfs")
+    target_folder = str(PROJECT_ROOT / "jc")
     
     if not os.path.exists(source_folder):
         print(f"❌ 源文件夹不存在: {source_folder}")

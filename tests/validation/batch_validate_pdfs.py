@@ -297,8 +297,13 @@ class PDFBatchValidator:
     def save_detailed_results(self, results):
         """保存详细结果到JSON文件"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # 确保tests/data目录存在
+        data_dir = Path(__file__).parent.parent / "data"
+        data_dir.mkdir(parents=True, exist_ok=True)
+        
         output_filename = f"pdf_validation_results_{timestamp}.json"
-        output_path = Path(output_filename)
+        output_path = data_dir / output_filename
         
         # 准备保存的数据
         save_data = {

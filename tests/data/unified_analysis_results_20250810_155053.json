@@ -1,0 +1,22 @@
+{
+  "scan_time": "2025-08-10T15:50:53.899685",
+  "source_directory": "I:\\1T硬盘D",
+  "target_folder": "E:\\github\\pdfClassify\\jc",
+  "statistics": {
+    "total_pdfs": 2160,
+    "first_feature_passed": 655,
+    "second_feature_passed": 201,
+    "copied_files": 201,
+    "errors": 0,
+    "specific_files_analyzed": 0
+  },
+  "files": [
+    {
+      "file_path": "I:\\1T硬盘D\\国网车网人资〔2024〕32号　国网智慧车联网技术有限公司关于刘永相岗位聘任的通知.pdf",
+      "file_name": "国网车网人资〔2024〕32号　国网智慧车联网技术有限公司关于刘永相岗位聘任的通知.pdf",
+      "success": true,
+      "first_feature": true,
+      "second_feature": false,
+      "copied": false,
+      "first_feature_details": {
+        "passed": 

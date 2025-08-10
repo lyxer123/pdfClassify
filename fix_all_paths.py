@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-批量修复tests目录下Python文件的导入问题
+批量修复tests目录下Python文件的导入和路径问题
+合并了fix_imports.py和fix_remaining_paths.py的功能
 """
 
 import os
 import re
 from pathlib import Path
 
-def fix_file_imports(file_path):
-    """修复单个文件的导入问题"""
+def fix_file_paths(file_path):
+    """修复单个文件的导入和路径问题"""
     print(f"修复文件: {file_path}")
     
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -17,7 +18,7 @@ def fix_file_imports(file_path):
     
     original_content = content
     
-    # 修复导入路径问题
+    # ===== 修复导入路径问题 =====
     # 1. 替换sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
     content = re.sub(
         r'import sys\s*\nimport os\s*\nsys\.path\.append\(os\.path\.join\(os\.path\.dirname\(__file__\), \'\.\.\', \'\.\.\'\)\)',
@@ -53,6 +54,7 @@ def fix_file_imports(file_path):
         content
     )
     
+    # ===== 修复路径问题 =====
     # 6. 替换tests/logs/路径
     content = re.sub(
         r'tests/logs/',
@@ -74,6 +76,62 @@ def fix_file_imports(file_path):
         content
     )
     
+    # 9. 修复 'str(TEMPLATES_DIR / 'mb.png') 格式
+    content = re.sub(
+        r"'str\(TEMPLATES_DIR / '([^']+)'\)",
+        r"str(TEMPLATES_DIR / '\1')",
+        content
+    )
+    
+    # 10. 修复 'str(TEMPLATES_DIR / 'mb.png') 格式（没有引号的情况）
+    content = re.sub(
+        r"'str\(TEMPLATES_DIR / ([^']+)'\)",
+        r"str(TEMPLATES_DIR / '\1')",
+        content
+    )
+    
+    # 11. 修复日志文件路径
+    content = re.sub(
+        r"'tests/logs/([^']+)'",
+        r"str(LOGS_DIR / '\1')",
+        content
+    )
+    
+    # 12. 修复相对路径的模板引用
+    content = re.sub(
+        r"'\.\./\.\./templates/([^']+)'",
+        r"str(TEMPLATES_DIR / '\1')",
+        content
+    )
+    
+    # 13. 修复相对路径的模板引用（没有引号的情况）
+    content = re.sub(
+        r"'\.\./\.\./templates/([^']+)'",
+        r"str(TEMPLATES_DIR / '\1')",
+        content
+    )
+    
+    # 14. 修复 'templates/mb.png' 格式
+    content = re.sub(
+        r"'templates/([^']+)'",
+        r"str(TEMPLATES_DIR / '\1')",
+        content
+    )
+    
+    # 15. 修复 tests/data/ 路径
+    content = re.sub(
+        r"'tests/data/([^']+)'",
+        r"str(TEST_DATA_DIR / '\1')",
+        content
+    )
+    
+    # 16. 修复 jc/ 路径（如果需要的话）
+    content = re.sub(
+        r"'jc/([^']+)'",
+        r"str(PROJECT_ROOT / 'jc' / '\1')",
+        content
+    )
+    
     # 如果内容有变化，写回文件
     if content != original_content:
         with open(file_path, 'w', encoding='utf-8') as f:
@@ -86,7 +144,8 @@ def fix_file_imports(file_path):
 
 def main():
     """主函数"""
-    print("开始批量修复tests目录下的导入问题...")
+    print("开始批量修复tests目录下的导入和路径问题...")
+    print("此脚本合并了fix_imports.py和fix_remaining_paths.py的功能")
     
     # 获取tests目录
     tests_dir = Path("tests")
@@ -106,10 +165,11 @@ def main():
     # 修复每个文件
     fixed_count = 0
     for file_path in python_files:
-        if fix_file_imports(file_path):
+        if fix_file_paths(file_path):
             fixed_count += 1
     
     print(f"\n修复完成！共修复了 {fixed_count} 个文件")
+    print("提示：此脚本已合并了之前两个fix文件的所有功能")
 
 if __name__ == "__main__":
     main()

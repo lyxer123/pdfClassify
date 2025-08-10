@@ -15,7 +15,7 @@ def example_usage():
     # 创建特征提取器实例
     extractor = PDFFeatureExtractor(
         template_path="str(TEMPLATES_DIR / 'mb.png",  # 标准模板路径
-        data_dir="data"                    # 特征数据保存目录
+        data_dir="tests/data"                    # 特征数据保存目录
     )
     
     # 示例1：处理单个PDF文件

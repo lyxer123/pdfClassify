@@ -334,7 +334,7 @@ def test_template_analysis():
         }
         
         extractor.save_results(template_result, "mb_template_analysis.json")
-        print(f"💾 模板分析结果已保存到: data/mb_template_analysis.json")
+        print(f"💾 模板分析结果已保存到: mb_template_analysis.json")
         
         return True
     else:

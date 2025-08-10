@@ -4,9 +4,8 @@
 简单测试脚本 - 验证基本功能
 """
 
-import os
-import sys
-from pathlib import Path
+# 导入测试包配置
+from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
 
 def test_imports():
     """测试导入功能"""
@@ -86,14 +85,16 @@ def test_directory_structure():
     
     # 检查目录
     for dir_name in required_dirs:
-        if Path(dir_name).exists():
+        dir_path = PROJECT_ROOT / dir_name
+        if dir_path.exists():
             print(f"✅ 目录存在: {dir_name}")
         else:
             print(f"❌ 目录缺失: {dir_name}")
     
     # 检查文件
     for file_name in required_files:
-        if Path(file_name).exists():
+        file_path = PROJECT_ROOT / file_name
+        if file_path.exists():
             print(f"✅ 文件存在: {file_name}")
         else:
             print(f"❌ 文件缺失: {file_name}")
@@ -104,9 +105,8 @@ def test_template_images():
     """测试模板图片"""
     print("🖼️ 测试模板图片...")
     
-    template_dir = Path("templates")
-    if template_dir.exists():
-        image_files = list(template_dir.glob("*.png"))
+    if TEMPLATES_DIR.exists():
+        image_files = list(TEMPLATES_DIR.glob("*.png"))
         if image_files:
             print(f"✅ 找到 {len(image_files)} 个模板图片")
             for img in image_files[:5]:  # 只显示前5个
@@ -154,4 +154,4 @@ def main():
     return 0 if success else 1
 
 if __name__ == "__main__":
-    sys.exit(main())
+    exit(main())

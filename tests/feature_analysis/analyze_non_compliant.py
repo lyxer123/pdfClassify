@@ -54,4 +54,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         analyze_non_compliant(sys.argv[1])
     else:
-        analyze_non_compliant('data/energy_storage_fixed_analysis.json')
+        analyze_non_compliant('tests/data/energy_storage_fixed_analysis.json')

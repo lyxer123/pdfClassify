@@ -594,12 +594,16 @@ class UnifiedPDFAnalyzer:
                 print(f"{i+1:<4} {file_name:<60} {target_path}")
         
         # 保存详细结果到JSON文件
-        output_file = f"unified_analysis_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        # 确保tests/data目录存在
+        data_dir = Path(__file__).parent / "tests" / "data"
+        data_dir.mkdir(parents=True, exist_ok=True)
+        
+        output_file = data_dir / f"unified_analysis_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         
         summary_data = {
             'scan_time': datetime.now().isoformat(),
             'source_directory': str(self.source_folder),
-            'target_directory': str(self.target_folder),
+            'target_folder': str(self.target_folder),
             'statistics': self.stats,
             'files': self.results
         }

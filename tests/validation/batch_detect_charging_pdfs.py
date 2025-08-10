@@ -9,6 +9,7 @@ import fitz  # PyMuPDF
 import cv2
 import numpy as np
 from PIL import Image
+from pathlib import Path
 # 导入测试包配置
 from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
 from main import PDFFeatureExtractor
@@ -170,7 +171,11 @@ def batch_detect_charging_pdfs():
         print(f"\n❌ 没有文件检测到符合第二特征的页面")
     
     # 保存详细结果到JSON文件
-    output_file = f"charging_pdfs_detection_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    # 确保tests/data目录存在
+    data_dir = Path(__file__).parent.parent / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    
+    output_file = data_dir / f"charging_pdfs_detection_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     
     # 准备JSON数据（去除不能序列化的numpy类型）
     json_results = []

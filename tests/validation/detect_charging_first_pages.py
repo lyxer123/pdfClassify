@@ -9,6 +9,7 @@ import fitz  # PyMuPDF
 import cv2
 import numpy as np
 from PIL import Image
+from pathlib import Path
 # 导入测试包配置
 from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
 
@@ -223,7 +224,11 @@ def detect_charging_first_pages():
                 print(f"    (文件数量较多，不逐一显示)")
     
     # 保存结果到JSON文件
-    output_file = f"charging_first_pages_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    # 确保tests/data目录存在
+    data_dir = Path(__file__).parent.parent / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    
+    output_file = data_dir / f"charging_first_pages_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     
     summary_data = {
         'scan_time': datetime.now().isoformat(),

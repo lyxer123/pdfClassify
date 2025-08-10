@@ -4,6 +4,9 @@
 测试统一PDF分析器
 """
 
+# 导入测试包配置
+from tests import PROJECT_ROOT
+
 from pdf_analyzer import UnifiedPDFAnalyzer
 import os
 
@@ -12,8 +15,8 @@ def test_unified_analyzer():
     print("=== 测试统一PDF分析器 ===\n")
     
     # 测试初始化
-    source_folder = "input_pdfs"  # 使用现有的测试文件夹
-    target_folder = "test_output"
+    source_folder = str(PROJECT_ROOT / "input_pdfs")  # 使用项目根目录下的input_pdfs
+    target_folder = str(PROJECT_ROOT / "test_output")
     
     if not os.path.exists(source_folder):
         print(f"❌ 测试文件夹不存在: {source_folder}")

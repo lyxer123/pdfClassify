@@ -227,15 +227,20 @@ def create_visualization(stats):
     
     plt.tight_layout()
     plt.subplots_adjust(bottom=0.15)  # 为统计信息留出空间
-    plt.savefig('data/standard_pdfs_feature_distribution.png', dpi=300, bbox_inches='tight')
-    print(f"\n📊 特征分布图表已保存到: data/standard_pdfs_feature_distribution.png")
+    # 确保tests/data目录存在
+    data_dir = Path(__file__).parent.parent / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    
+    plt.savefig(data_dir / 'standard_pdfs_feature_distribution.png', dpi=300, bbox_inches='tight')
+    print(f"\n📊 特征分布图表已保存到: {data_dir / 'standard_pdfs_feature_distribution.png'}")
 
 def main():
     """主函数"""
     print("开始分析标准PDF特征分布...\n")
     
     # 加载分析结果
-    data = load_analysis_results('data/standard_pdfs_analysis.json')
+    data_dir = Path(__file__).parent.parent / "data"
+    data = load_analysis_results(data_dir / 'standard_pdfs_analysis.json')
     print(f"✓ 成功加载分析结果")
     print(f"  文件夹: {data['folder_path']}")
     print(f"  总文件数: {data['total_files']}")
@@ -308,10 +313,10 @@ def main():
         'timestamp': data['timestamp']
     }
     
-    with open('data/standard_pdfs_feature_analysis.json', 'w', encoding='utf-8') as f:
+    with open(data_dir / 'standard_pdfs_feature_analysis.json', 'w', encoding='utf-8') as f:
         json.dump(analysis_result, f, ensure_ascii=False, indent=2)
     
-    print(f"\n💾 详细分析结果已保存到: data/standard_pdfs_feature_analysis.json")
+    print(f"\n💾 详细分析结果已保存到: {data_dir / 'standard_pdfs_feature_analysis.json'}")
     
     return optimal_thresholds
 
