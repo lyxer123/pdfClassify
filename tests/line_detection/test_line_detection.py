@@ -14,8 +14,8 @@ import logging
 from pathlib import Path
 import sys
 
-# 添加项目根目录到路径
-sys.path.append(str(Path(__file__).parent))
+# 导入测试包配置
+from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
 
 from main import PDFFeatureExtractor
 

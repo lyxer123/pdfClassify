@@ -12,7 +12,7 @@ def enhance_mb10_line_detection():
     """使用形态学操作增强mb10.png的线条检测"""
     
     # 加载mb10.png
-    mb10_img = np.array(Image.open('templates/mb10.png').convert('RGB'))
+    mb10_img = np.array(Image.open(str(TEMPLATES_DIR / 'mb10.png').convert('RGB'))
     print(f"mb10.png尺寸: {mb10_img.shape}")
     
     height, width = mb10_img.shape[:2]

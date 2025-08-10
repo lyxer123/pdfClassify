@@ -23,7 +23,7 @@ logging.basicConfig(
     level=logging.INFO,  # 恢复到INFO级别
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('pdf_classify.log', encoding='utf-8'),
+        logging.FileHandler('tests/logs/pdf_classify.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )

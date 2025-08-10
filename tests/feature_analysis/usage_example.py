@@ -4,6 +4,8 @@
 使用示例：PDF特征提取工具
 """
 
+# 导入测试包配置
+from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
 from main import PDFFeatureExtractor
 from pathlib import Path
 
@@ -12,7 +14,7 @@ def example_usage():
     
     # 创建特征提取器实例
     extractor = PDFFeatureExtractor(
-        template_path="templates/mb.png",  # 标准模板路径
+        template_path="str(TEMPLATES_DIR / 'mb.png",  # 标准模板路径
         data_dir="data"                    # 特征数据保存目录
     )
     

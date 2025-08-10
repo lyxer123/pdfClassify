@@ -7,6 +7,9 @@
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
+# 导入测试包配置
+from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
+
 from main import PDFFeatureExtractor
 import logging
 
@@ -17,7 +20,7 @@ def test_mb9_detection():
     """测试mb9.png的第二特征检测"""
     
     # 加载mb9.png
-    mb9_img = np.array(Image.open('templates/mb9.png').convert('RGB'))
+    mb9_img = np.array(Image.open(str(TEMPLATES_DIR / 'mb9.png')).convert('RGB'))
     print(f"mb9.png尺寸: {mb9_img.shape}")
     
     extractor = PDFFeatureExtractor()
@@ -114,7 +117,7 @@ def debug_mb9_precise_detection():
     print("="*50)
     
     # 加载mb9.png
-    mb9_img = np.array(Image.open('templates/mb9.png').convert('RGB'))
+    mb9_img = np.array(Image.open(str(TEMPLATES_DIR / 'mb9.png').convert('RGB'))
     height, width = mb9_img.shape[:2]
     gray = cv2.cvtColor(mb9_img, cv2.COLOR_RGB2GRAY)
     

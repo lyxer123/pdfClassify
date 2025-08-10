@@ -13,13 +13,24 @@ import numpy as np
 from PIL import Image
 import cv2
 
-# 添加当前目录到路径
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# 导入测试包配置
+from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
 
 from main import PDFFeatureExtractor
 
 
-def load_template_image(template_path="templates/mb.png"):
+def load_template_image(template_path=None):
+    """
+    加载模板图片
+    
+    Args:
+        template_path: 模板图片路径，如果为None则使用默认路径
+    
+    Returns:
+        numpy.ndarray: 图像数组，如果加载失败返回None
+    """
+    if template_path is None:
+        template_path = TEMPLATES_DIR / "mb.png"
     """
     加载模板图片
     
@@ -93,7 +104,7 @@ def test_color_feature_analysis():
     print("=== 测试颜色特征分析功能 ===")
     
     # 加载mb.png模板图片
-    template_img = load_template_image("templates/mb.png")
+    template_img = load_template_image()
     if template_img is None:
         print("❌ 无法加载模板图片，跳过测试")
         return False
@@ -194,7 +205,7 @@ def test_threshold_configuration():
     print("\n=== 测试阈值配置 ===")
     
     # 加载mb.png模板图片
-    template_img = load_template_image("templates/mb.png")
+    template_img = load_template_image()
     if template_img is None:
         print("❌ 无法加载模板图片，跳过测试")
         return False
@@ -229,7 +240,7 @@ def test_second_feature_detection():
     print("\n=== 测试第二特征检测功能 ===")
     
     # 加载mb.png模板图片
-    template_img = load_template_image("templates/mb.png")
+    template_img = load_template_image()
     if template_img is None:
         print("❌ 无法加载模板图片，跳过测试")
         return False
@@ -278,7 +289,7 @@ def test_template_analysis():
     print("\n=== 测试mb.png模板图片详细分析 ===")
     
     # 加载mb.png模板图片
-    template_img = load_template_image("templates/mb.png")
+    template_img = load_template_image()
     if template_img is None:
         print("❌ 无法加载模板图片，跳过测试")
         return False
@@ -315,7 +326,7 @@ def test_template_analysis():
         
         # 保存详细分析结果
         template_result = {
-            'template_path': 'templates/mb.png',
+            'template_path': str(TEMPLATES_DIR / 'mb.png'),
             'analysis_type': 'template_analysis',
             'features': features,
             'compliance': compliance,

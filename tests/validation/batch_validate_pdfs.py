@@ -11,6 +11,9 @@ import shutil
 import logging
 from pathlib import Path
 from datetime import datetime
+# 导入测试包配置
+from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
+
 from main import PDFFeatureExtractor
 
 # 设置日志
@@ -18,7 +21,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('pdf_validation.log', encoding='utf-8'),
+        logging.FileHandler(str(LOGS_DIR / 'pdf_validation.log'), encoding='utf-8'),
         logging.StreamHandler()
     ]
 )

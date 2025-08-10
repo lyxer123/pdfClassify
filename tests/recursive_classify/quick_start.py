@@ -12,7 +12,9 @@ from pathlib import Path
 # 添加当前目录到Python路径
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from recursive_pdf_classify import RecursivePDFClassifier
+# 导入测试包配置
+from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
+from pdf_analyzer import UnifiedPDFAnalyzer
 
 def get_user_input():
     """获取用户输入"""
@@ -98,13 +100,13 @@ def main():
             logging.getLogger().setLevel(logging.DEBUG)
             print("🔍 已启用详细输出模式")
         
-        # 创建分类器
-        print(f"\n🔄 创建分类器...")
-        classifier = RecursivePDFClassifier(source_folder, target_folder)
+        # 创建分析器
+        print(f"\n🔄 创建分析器...")
+        analyzer = UnifiedPDFAnalyzer()
         
         # 开始扫描和处理
         print(f"🚀 开始扫描和处理...")
-        classifier.scan_and_process()
+        analyzer.recursive_classify_pdfs(source_folder, target_folder)
         
         print(f"\n🎉 处理完成!")
         print(f"📁 符合条件的PDF文件已复制到: {target_folder}")

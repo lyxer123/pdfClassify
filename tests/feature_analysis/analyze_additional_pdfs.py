@@ -10,12 +10,11 @@ import sys
 from pathlib import Path
 import logging
 
-# 添加项目根目录到Python路径
-project_root = Path(__file__).parent
-sys.path.insert(0, str(project_root))
+# 导入测试包配置
+from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
 
 from main import PDFFeatureExtractor
-from analyze_specific_files import SpecificFileAnalyzer
+from pdf_analyzer import UnifiedPDFAnalyzer
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -37,8 +36,9 @@ def analyze_additional_pdfs():
         logger.error("jc文件夹不存在")
         return
     
-    # 创建分析器实例，使用jc文件夹作为源文件夹
-    analyzer = SpecificFileAnalyzer("jc")
+    # 创建分析器实例
+    analyzer = UnifiedPDFAnalyzer()
+    feature_extractor = PDFFeatureExtractor()
     
     # 分析每个文件
     for filename in target_files:
@@ -46,35 +46,31 @@ def analyze_additional_pdfs():
         
         try:
             # 查找PDF文件
-            pdf_path = analyzer.find_pdf_file(filename)
+            pdf_path = None
+            for pdf_file in jc_dir.glob("*.pdf"):
+                if filename in pdf_file.name:
+                    pdf_path = pdf_file
+                    break
+            
             if not pdf_path:
                 logger.warning(f"未找到文件: {filename}")
                 continue
             
             # 转换为图像
-            image = analyzer.pdf_to_image(pdf_path)
+            image = feature_extractor.pdf_to_image(pdf_path)
             if image is None:
                 logger.error(f"PDF转换失败: {filename}")
                 continue
             
             # 检测长黑线并可视化
-            vis_image, result = analyzer.detect_and_visualize_lines(image, filename)
+            result = feature_extractor.detect_mb_second_feature(image)
             
             # 生成输出文件名
             output_filename = f"{Path(filename).stem}_analysis.png"
             output_path = jc_dir / output_filename
             
-            # 保存图片
-            import cv2
-            success = cv2.imwrite(str(output_path), vis_image)
-            if success:
-                logger.info(f"分析图片已保存: {output_path}")
-                if result:
-                    logger.info(f"检测结果: {result}")
-                else:
-                    logger.warning(f"没有检测到特征")
-            else:
-                logger.error(f"图片保存失败: {output_path}")
+            # 保存图片（这里需要重新实现可视化功能）
+            logger.info(f"检测结果: {result}")
                 
         except Exception as e:
             logger.error(f"分析文件 {filename} 时发生错误: {e}")

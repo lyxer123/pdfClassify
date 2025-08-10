@@ -12,7 +12,9 @@ from pathlib import Path
 # 添加当前目录到Python路径
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from recursive_pdf_classify import RecursivePDFClassifier
+# 导入测试包配置
+from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
+from pdf_analyzer import UnifiedPDFAnalyzer
 
 def demo_basic_usage():
     """演示基本用法"""
@@ -28,12 +30,12 @@ def demo_basic_usage():
     if source_folder.exists():
         print(f"✅ 找到源文件夹: {source_folder}")
         
-        # 创建分类器
-        classifier = RecursivePDFClassifier(source_folder)
+        # 创建分析器
+        analyzer = UnifiedPDFAnalyzer()
         
         # 开始处理
         print("🔄 开始处理...")
-        classifier.scan_and_process()
+        analyzer.recursive_classify_pdfs(source_folder)
         
     else:
         print(f"❌ 未找到源文件夹: {source_folder}")
@@ -51,12 +53,12 @@ def demo_custom_target():
         print(f"✅ 找到源文件夹: {source_folder}")
         print(f"🎯 自定义目标文件夹: {custom_target}")
         
-        # 创建分类器
-        classifier = RecursivePDFClassifier(source_folder, custom_target)
+        # 创建分析器
+        analyzer = UnifiedPDFAnalyzer()
         
         # 开始处理
         print("🔄 开始处理...")
-        classifier.scan_and_process()
+        analyzer.recursive_classify_pdfs(source_folder, custom_target)
         
     else:
         print(f"❌ 未找到源文件夹: {source_folder}")
@@ -71,8 +73,8 @@ def demo_error_handling():
     print(f"🔍 尝试处理不存在的文件夹: {non_existent_folder}")
     
     try:
-        classifier = RecursivePDFClassifier(non_existent_folder)
-        classifier.scan_and_process()
+        analyzer = UnifiedPDFAnalyzer()
+        analyzer.recursive_classify_pdfs(non_existent_folder)
     except Exception as e:
         print(f"✅ 正确捕获错误: {str(e)}")
 
@@ -85,8 +87,8 @@ def demo_statistics():
     if source_folder.exists():
         print(f"✅ 找到源文件夹: {source_folder}")
         
-        # 创建分类器
-        classifier = RecursivePDFClassifier(source_folder)
+        # 创建分析器
+        analyzer = UnifiedPDFAnalyzer()
         
         # 只扫描文件，不处理
         print("🔍 扫描文件...")

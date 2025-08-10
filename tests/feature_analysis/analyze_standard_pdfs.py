@@ -8,6 +8,9 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
+# 导入测试包配置
+from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
+
 from main import PDFFeatureExtractor
 
 def load_analysis_results(file_path):

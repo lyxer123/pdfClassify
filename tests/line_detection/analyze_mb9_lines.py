@@ -12,7 +12,7 @@ def analyze_mb9_lines():
     """分析mb9.png的线条分布"""
     
     # 加载mb9.png
-    mb9_img = np.array(Image.open('templates/mb9.png').convert('RGB'))
+    mb9_img = np.array(Image.open(str(TEMPLATES_DIR / 'mb9.png').convert('RGB'))
     print(f"mb9.png尺寸: {mb9_img.shape}")
     
     height, width = mb9_img.shape[:2]

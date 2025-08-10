@@ -12,7 +12,7 @@ def analyze_mb10_upper_region():
     """分析mb10.png上部区域寻找第二条长横线"""
     
     # 加载mb10.png
-    mb10_img = np.array(Image.open('templates/mb10.png').convert('RGB'))
+    mb10_img = np.array(Image.open(str(TEMPLATES_DIR / 'mb10.png').convert('RGB'))
     print(f"mb10.png尺寸: {mb10_img.shape}")
     
     height, width = mb10_img.shape[:2]
@@ -234,7 +234,7 @@ if __name__ == "__main__":
     lines_in_range, merged_candidates = analyze_mb10_upper_region()
     
     # 加载图像用于可视化
-    mb10_img = np.array(Image.open('templates/mb10.png').convert('RGB'))
+    mb10_img = np.array(Image.open(str(TEMPLATES_DIR / 'mb10.png').convert('RGB'))
     create_analysis_visualization(mb10_img, lines_in_range, merged_candidates)
     
     print(f"\n{'='*60}")

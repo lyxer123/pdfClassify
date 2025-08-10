@@ -7,6 +7,8 @@
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
+# 导入测试包配置
+from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
 from main import PDFFeatureExtractor
 import logging
 
@@ -17,7 +19,7 @@ def test_new_detection():
     """测试新的连通组件分析方法"""
     
     # 加载模板图片
-    template_img = np.array(Image.open('templates/mb.png').convert('RGB'))
+    template_img = np.array(Image.open(str(TEMPLATES_DIR / 'mb.png').convert('RGB'))
     print(f"图片尺寸: {template_img.shape}")
     
     extractor = PDFFeatureExtractor()

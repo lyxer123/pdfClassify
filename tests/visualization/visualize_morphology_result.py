@@ -12,7 +12,7 @@ def visualize_morphology_components():
     """可视化形态学操作后的连通组件"""
     
     # 加载模板图片
-    template_img = np.array(Image.open('templates/mb.png').convert('RGB'))
+    template_img = np.array(Image.open(str(TEMPLATES_DIR / 'mb.png').convert('RGB'))
     print(f"图片尺寸: {template_img.shape}")
     
     height, width = template_img.shape[:2]

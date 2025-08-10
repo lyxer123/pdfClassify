@@ -16,8 +16,8 @@ def analyze_red_lines_in_mb88():
     """分析mb88.png中的红色长横线标注"""
     
     # 加载原始图片和标注图片
-    original_img = np.array(Image.open('templates/mb.png').convert('RGB'))
-    annotated_img = np.array(Image.open('templates/mb88.png').convert('RGB'))
+    original_img = np.array(Image.open(str(TEMPLATES_DIR / 'mb.png')).convert('RGB')
+    annotated_img = np.array(Image.open(str(TEMPLATES_DIR / 'mb88.png')).convert('RGB')
     
     print(f"原始图片尺寸: {original_img.shape}")
     print(f"标注图片尺寸: {annotated_img.shape}")
@@ -169,7 +169,7 @@ def analyze_red_lines_in_mb88():
 def create_analysis_visualization(correct_lines):
     """创建分析可视化图像"""
     
-    original_img = np.array(Image.open('templates/mb.png').convert('RGB'))
+    original_img = np.array(Image.open(str(TEMPLATES_DIR / 'mb.png').convert('RGB'))
     pil_image = Image.fromarray(original_img)
     draw = ImageDraw.Draw(pil_image)
     

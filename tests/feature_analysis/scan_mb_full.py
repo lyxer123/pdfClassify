@@ -12,7 +12,7 @@ def scan_mb_full():
     """全面扫描mb.png寻找所有长横线"""
     
     # 加载mb.png
-    mb_img = np.array(Image.open('templates/mb.png').convert('RGB'))
+    mb_img = np.array(Image.open(str(TEMPLATES_DIR / 'mb.png').convert('RGB'))
     print(f"mb.png尺寸: {mb_img.shape}")
     
     height, width = mb_img.shape[:2]

@@ -8,10 +8,10 @@ import os
 import sys
 from pathlib import Path
 
-# 添加当前目录到Python路径
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# 导入测试包配置
+from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
 
-from recursive_pdf_classify import RecursivePDFClassifier
+from pdf_analyzer import UnifiedPDFAnalyzer
 
 def test_recursive_classifier():
     """测试递归PDF分类器"""
@@ -31,12 +31,12 @@ def test_recursive_classifier():
     print(f"📁 源文件夹: {input_folder}")
     print(f"📁 目标文件夹: {jc_folder}")
     
-    # 创建分类器
-    classifier = RecursivePDFClassifier(input_folder, jc_folder)
+    # 创建分析器
+    analyzer = UnifiedPDFAnalyzer()
     
     # 开始扫描和处理
     try:
-        classifier.scan_and_process()
+        analyzer.recursive_classify_pdfs(input_folder, jc_folder)
         print("\n✅ 测试完成!")
         
     except Exception as e:
@@ -53,12 +53,12 @@ def test_with_custom_folder(folder_path):
     
     print(f"🧪 使用自定义文件夹测试: {folder_path}")
     
-    # 创建分类器
-    classifier = RecursivePDFClassifier(folder_path, "jc")
+    # 创建分析器
+    analyzer = UnifiedPDFAnalyzer()
     
     # 开始扫描和处理
     try:
-        classifier.scan_and_process()
+        analyzer.recursive_classify_pdfs(folder_path, "jc")
         print("\n✅ 测试完成!")
         
     except Exception as e:

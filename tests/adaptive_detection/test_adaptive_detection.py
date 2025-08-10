@@ -7,6 +7,9 @@
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
+# 导入测试包配置
+from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
+
 from main import PDFFeatureExtractor
 import logging
 
@@ -17,8 +20,8 @@ def test_adaptive_detection():
     """测试自适应检测算法在不同图片上的表现"""
     
     test_images = [
-        ('templates/mb.png', 'mb.png'),
-        ('templates/mb9.png', 'mb9.png')
+        (str(TEMPLATES_DIR / 'mb.png'), 'mb.png'),
+        (str(TEMPLATES_DIR / 'mb9.png'), 'mb9.png')
     ]
     
     extractor = PDFFeatureExtractor()
