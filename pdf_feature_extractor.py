@@ -19,11 +19,16 @@ import fitz  # PyMuPDF
 import logging
 
 # 配置日志
+# 获取项目根目录
+project_root = Path(__file__).parent
+log_dir = project_root / "tests" / "logs"
+log_dir.mkdir(parents=True, exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,  # 恢复到INFO级别
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('tests/logs/pdf_classify.log', encoding='utf-8'),
+        logging.FileHandler(log_dir / 'pdf_classify.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )

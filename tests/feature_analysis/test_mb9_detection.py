@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 # 导入测试包配置
 from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
 
-from main import PDFFeatureExtractor
+from pdf_feature_extractor import PDFFeatureExtractor
 import logging
 
 # 启用DEBUG日志

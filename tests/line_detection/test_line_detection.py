@@ -17,7 +17,7 @@ import sys
 # 导入测试包配置
 from tests import PROJECT_ROOT, TEMPLATES_DIR, DATA_DIR
 
-from main import PDFFeatureExtractor
+from pdf_feature_extractor import PDFFeatureExtractor
 
 # 配置日志
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')

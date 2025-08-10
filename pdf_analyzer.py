@@ -14,7 +14,7 @@ import fitz  # PyMuPDF
 import cv2
 import numpy as np
 from PIL import Image
-from main import PDFFeatureExtractor
+from pdf_feature_extractor import PDFFeatureExtractor
 import logging
 import json
 from datetime import datetime
@@ -23,11 +23,16 @@ import argparse
 import io
 
 # 设置日志
+# 获取项目根目录
+project_root = Path(__file__).parent
+log_dir = project_root / "tests" / "logs"
+log_dir.mkdir(parents=True, exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('tests/logs/pdf_analyzer.log', encoding='utf-8'),
+        logging.FileHandler(log_dir / 'pdf_analyzer.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
@@ -600,12 +605,25 @@ class UnifiedPDFAnalyzer:
         
         output_file = data_dir / f"unified_analysis_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         
+        # 清理数据，确保JSON序列化兼容
+        cleaned_results = []
+        for result in self.results:
+            cleaned_result = {}
+            for key, value in result.items():
+                if isinstance(value, (bool, int, float, str)):
+                    cleaned_result[key] = value
+                elif value is None:
+                    cleaned_result[key] = None
+                else:
+                    cleaned_result[key] = str(value)
+            cleaned_results.append(cleaned_result)
+        
         summary_data = {
             'scan_time': datetime.now().isoformat(),
             'source_directory': str(self.source_folder),
             'target_folder': str(self.target_folder),
             'statistics': self.stats,
-            'files': self.results
+            'files': cleaned_results
         }
         
         with open(output_file, 'w', encoding='utf-8') as f:

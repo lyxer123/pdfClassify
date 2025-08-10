@@ -120,7 +120,7 @@ def demonstrate_feature_extraction():
     print("🔬 演示特征提取功能...")
     
     try:
-        from main import PDFFeatureExtractor
+        from pdf_feature_extractor import PDFFeatureExtractor
         
         # 创建特征提取器
         extractor = PDFFeatureExtractor()

@@ -82,7 +82,7 @@ if pdf_path:
 ```
 pdfClassify/
 ├── pdf_analyzer.py          # 统一PDF分析器主文件
-├── main.py                  # PDF特征提取器
+├── pdf_feature_extractor.py # PDF特征提取器
 ├── demo.py                  # 演示脚本
 ├── usage_example.py         # 使用示例
 ├── requirements.txt         # 依赖包列表
@@ -150,7 +150,7 @@ color_thresholds = {
 ### 1. 自定义配置
 ```python
 # 创建自定义特征提取器
-from main import PDFFeatureExtractor
+from pdf_feature_extractor import PDFFeatureExtractor
 
 extractor = PDFFeatureExtractor(
     template_path="custom_template.png",

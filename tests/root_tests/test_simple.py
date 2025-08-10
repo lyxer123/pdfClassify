@@ -19,7 +19,7 @@ def test_imports():
         return False
     
     try:
-        from main import PDFFeatureExtractor
+        from pdf_feature_extractor import PDFFeatureExtractor
         print("✅ PDFFeatureExtractor 导入成功")
     except ImportError as e:
         print(f"❌ PDFFeatureExtractor 导入失败: {e}")
@@ -57,7 +57,7 @@ def test_feature_extractor():
     print("🔬 测试特征提取器...")
     
     try:
-        from main import PDFFeatureExtractor
+        from pdf_feature_extractor import PDFFeatureExtractor
         
         # 创建特征提取器
         extractor = PDFFeatureExtractor()
@@ -81,7 +81,7 @@ def test_directory_structure():
     print("📁 测试目录结构...")
     
     required_dirs = ["input_pdfs", "jc", "templates", "data"]
-    required_files = ["pdf_analyzer.py", "main.py", "requirements.txt"]
+    required_files = ["pdf_analyzer.py", "pdf_feature_extractor.py", "requirements.txt"]
     
     # 检查目录
     for dir_name in required_dirs:
