@@ -81,6 +81,10 @@
 *<div align="center">划分为三个区域 （正在实施）</div>*
 
 
+## 🎬 演示视频
+
+https://github.com/your-username/pdfClassify/assets/your-user-id/demo.mp4
+
 ## 🚀 主要功能
 
 ### 1. 递归分类模式 (Recursive Classification Mode)
@@ -99,6 +103,8 @@
 - 提供完整的Python API
 - 支持自定义分析流程
 - 灵活的结果处理
+
+
 
 ## 📋 系统要求
 
