@@ -22,7 +22,7 @@ python -c "import cv2, numpy, PIL, fitz" >nul 2>&1
 if errorlevel 1 (
     echo ⚠️ 警告: 部分依赖包未安装
     echo 正在尝试安装依赖包...
-    pip install -r requirements.txt
+            pip install -r ../../requirements.txt
     if errorlevel 1 (
         echo ❌ 依赖包安装失败
         echo 请手动安装: pip install opencv-python numpy pillow PyMuPDF

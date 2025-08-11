@@ -38,7 +38,7 @@ try {
     Write-Host "正在尝试安装依赖包..." -ForegroundColor Yellow
     
     try {
-        pip install -r requirements.txt
+        pip install -r ../../requirements.txt
         if ($LASTEXITCODE -eq 0) {
             Write-Host "✅ 依赖包安装成功" -ForegroundColor Green
         } else {

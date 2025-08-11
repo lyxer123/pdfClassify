@@ -14,7 +14,24 @@ from pathlib import Path
 def setup_paths():
     """设置路径，确保能够导入项目模块"""
     current_file = Path(__file__)
-    project_root = current_file.parent.parent.parent
+    
+    # 尝试多种路径组合来找到项目根目录
+    possible_paths = [
+        current_file.parent.parent,  # tests/root_tests -> tests -> project_root
+        current_file.parent.parent.parent,  # tests/root_tests -> tests -> project_root (if tests is deeper)
+        Path.cwd(),  # 当前工作目录
+        Path.cwd().parent,  # 当前工作目录的父目录
+    ]
+    
+    for path in possible_paths:
+        # 检查是否是项目根目录（包含pdf_feature_extractor.py）
+        if path and path.exists() and (path / "pdf_feature_extractor.py").exists():
+            if str(path) not in sys.path:
+                sys.path.insert(0, str(path))
+            return path
+    
+    # 如果都找不到，使用默认的父目录路径
+    project_root = current_file.parent.parent
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
     return project_root
