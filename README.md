@@ -83,7 +83,12 @@
 
 ## 🎬 演示视频
 
-https://github.com/your-username/pdfClassify/assets/your-user-id/demo.mp4
+https://github.com/lyxer123/pdfClassify/blob/main/templates/demo.mp4
+
+   <video width="100%" controls>
+     <source src="demo.mp4" type="video/mp4">
+     Your browser does not support the video tag.
+   </video>
 
 ## 🚀 主要功能
 
