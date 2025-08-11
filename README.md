@@ -83,12 +83,12 @@
 
 ## 🎬 演示视频
 
-https://github.com/lyxer123/pdfClassify/blob/main/templates/demo.mp4
+<video width="100%" controls>
+  <source src="templates/demo.mp4" type="video/mp4">
+  您的浏览器不支持视频播放，请下载视频文件查看。
+</video>
 
-   <video width="100%" controls>
-     <source src="demo.mp4" type="video/mp4">
-     Your browser does not support the video tag.
-   </video>
+*<div align="center">点击播放按钮观看PDF分析器功能演示</div>*
 
 ## 🚀 主要功能
 
